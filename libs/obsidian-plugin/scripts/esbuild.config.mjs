@@ -21,8 +21,12 @@ export async function buildPlugin(options) {
 	while (currentDir !== path.parse(currentDir).root) {
 		const checkPath = path.join(currentDir, 'elo-config.json');
 		const workspaceCheckPath = path.join(currentDir, 'workspace', 'elo-config.json');
+		const eloWorkspaceCheckPath = path.join(currentDir, 'elo-workspace', 'elo-config.json');
 
-		if (fs.existsSync(workspaceCheckPath)) {
+		if (fs.existsSync(eloWorkspaceCheckPath)) {
+			configPath = eloWorkspaceCheckPath;
+			break;
+		} else if (fs.existsSync(workspaceCheckPath)) {
 			configPath = workspaceCheckPath;
 			break;
 		} else if (fs.existsSync(checkPath)) {
