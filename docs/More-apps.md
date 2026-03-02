@@ -2,7 +2,7 @@ This is a modular system that can be extended with additional apps and utilities
 
 # Available apps
 
-All this plugins are Open Source and available in the [Elo Workbench](https://github.com/elocuency/elo-workbench) repository.
+All this plugins are Open Source and available in the https://github.com/jesuscarsan.
 
 ## elo-obsidian-core-plugin
 

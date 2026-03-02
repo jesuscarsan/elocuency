@@ -1,0 +1,11 @@
+{
+  "id": "elocuency",
+  "name": "Elocuency",
+  "version": "0.1.100",
+  "main": "main.js",
+  "minAppVersion": "1.5.0",
+  "description": "Add utilities for my KB.",
+  "author": "Joshua",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}

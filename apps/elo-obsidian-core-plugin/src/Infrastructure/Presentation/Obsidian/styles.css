@@ -1,0 +1,169 @@
+/* Header Progress Bar Styles */
+.header-progress-container {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.header-progress-bar {
+    width: 60px;
+    height: 8px;
+    border-radius: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    overflow: hidden;
+}
+
+.header-progress-bar::-webkit-progress-bar {
+    background-color: var(--background-modifier-border);
+    border-radius: 4px;
+}
+
+.header-progress-bar::-webkit-progress-value {
+    background-color: var(--interactive-accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.header-progress-label {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    margin-left: 5px;
+    font-weight: normal;
+}
+
+/* Header Metadata Container */
+.header-metadata-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px; 
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+    vertical-align: middle;
+    font-size: 1rem;
+}
+
+.header-metadata-container:hover {
+    opacity: 1;
+}
+
+/* Individual Items */
+.hm-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    background-color: transparent;
+    border: none; 
+    cursor: help;
+    line-height: normal; /* Important for alignment */
+}
+
+/* Importance (Stars) */
+.hm-importance {
+    /* Color handled inline for robustness */
+    font-size: 0.9em;
+    letter-spacing: 0px;
+    line-height: 1;
+}
+
+/* SVG Wrappers */
+.hm-score-svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Live Session Tabs */
+.live-session-tabs {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 2px solid var(--background-modifier-border);
+    margin-bottom: 15px;
+    background-color: var(--background-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.live-session-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.live-session-tab:hover {
+    color: var(--text-normal);
+    background-color: var(--background-secondary);
+}
+
+.live-session-tab.active {
+    color: var(--interactive-accent);
+    border-bottom: 2px solid var(--interactive-accent);
+    margin-bottom: -2px; /* Overlap border */
+}
+
+.tab-content {
+    display: none;
+    padding-top: 10px;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fade-in 0.2s ease;
+}
+
+/* Chat Toolbar */
+.chat-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.chat-stop-btn {
+    background-color: var(--interactive-accent); /* Or a destructve color like red? */
+    color: var(--text-on-accent);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.chat-stop-btn:hover {
+    background-color: var(--interactive-accent-hover);
+}
+
+.chat-stop-btn.destructive {
+    background-color: var(--text-error);
+    color: white;
+}
+.chat-stop-btn.destructive:hover {
+    background-color: #c92a2a; /* Darker red */
+}
+
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Hide empty properties in Reading View */
+body.hide-empty-properties .markdown-preview-view .metadata-property:has(.metadata-property-value.is-empty),
+body.hide-empty-properties .markdown-preview-view .metadata-property:has(.metadata-property-value:empty),
+body.hide-empty-properties .markdown-preview-view .metadata-property[data-property-key]:has(.metadata-property-value .metadata-input-longtext:empty) {
+    display: none;
+}

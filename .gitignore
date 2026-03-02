@@ -1,6 +1,7 @@
 apps/*
 !apps/elo-server
 !apps/elo-cli
+!apps/elo-obsidian-core-plugin
 !README.md
 node_modules
 .pnpm-store
