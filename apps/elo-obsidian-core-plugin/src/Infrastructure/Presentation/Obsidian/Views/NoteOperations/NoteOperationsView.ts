@@ -9,7 +9,7 @@ import {
 } from 'obsidian';
 import ObsidianExtension from '@/Infrastructure/Presentation/Obsidian/main';
 import { AudioRecorder } from '@/Infrastructure/Adapters/Obsidian/ObsidianAudioRecorderAdapter';
-import { GeminiTranscriptionAdapter } from '@/Infrastructure/Adapters/Google/GeminiTranscriptionAdapter';
+import { EloServerTranscriptionAdapter } from '@/Infrastructure/Adapters/EloServer/EloServerTranscriptionAdapter';
 import { getActiveMarkdownView } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 
@@ -23,7 +23,7 @@ export class NoteOperationsView extends ItemView {
 
 	// Audio Services
 	private audioRecorder: AudioRecorder;
-	private transcriptionAdapter: GeminiTranscriptionAdapter | null = null;
+	private transcriptionAdapter: EloServerTranscriptionAdapter | null = null;
 	private micButton: ButtonComponent | null = null;
 
 	constructor(leaf: WorkspaceLeaf, plugin: ObsidianExtension) {
@@ -45,9 +45,10 @@ export class NoteOperationsView extends ItemView {
 	}
 
 	async onOpen() {
-		// Initialize adapter with current API key
-		this.transcriptionAdapter = new GeminiTranscriptionAdapter(
-			this.plugin.settings.geminiApiKey ?? '',
+		// Initialize adapter with current settings
+		this.transcriptionAdapter = new EloServerTranscriptionAdapter(
+			this.plugin.settings.eloServerUrl,
+			this.plugin.settings.eloServerToken,
 			this.plugin.translationService,
 		);
 
@@ -155,9 +156,10 @@ export class NoteOperationsView extends ItemView {
 		if (blob) {
 			showMessage(this.plugin.translationService.t('noteOperations.transcribing'));
 			try {
-				// Ensure adapter has latest key
-				this.transcriptionAdapter = new GeminiTranscriptionAdapter(
-					this.plugin.settings.geminiApiKey ?? '',
+				// Ensure adapter has latest settings
+				this.transcriptionAdapter = new EloServerTranscriptionAdapter(
+					this.plugin.settings.eloServerUrl,
+					this.plugin.settings.eloServerToken,
 					this.plugin.translationService,
 				);
 

@@ -12,6 +12,7 @@ class ServerConfig(BaseModel):
 class AIConfig(BaseModel):
     api_key: str
     model: str = "gemini-2.0-flash"
+    search_engine_id: Optional[str] = None
 
 class ObsidianConfig(BaseModel):
     vault_path: Optional[str] = None
@@ -83,7 +84,8 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     ai_data = config_dict.get("ai", {})
     ai_config = {
         "api_key": os.getenv("GOOGLE_API_KEY", ""),
-        "model": ai_data.get("model", os.getenv("AI_MODEL", "gemini-2.0-flash"))
+        "model": ai_data.get("model", os.getenv("AI_MODEL", "gemini-2.0-flash")),
+        "search_engine_id": ai_data.get("search_engine_id", os.getenv("GOOGLE_SEARCH_ENGINE_ID"))
     }
     
     # Obsidian Config

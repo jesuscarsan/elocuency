@@ -16,6 +16,8 @@ from typing import Callable, AsyncContextManager
 def create_app(ask_ai_use_case: AskAIUseCase, lifespan: Callable[[FastAPI], AsyncContextManager[None]] = None) -> FastAPI:
     app = FastAPI(title="Elo Server API", lifespan=lifespan)
 
+    from src.infrastructure.adapters.api.ai_router import router as ai_router
+
     # Enable CORS for LangServe Playground
     app.add_middleware(
         CORSMiddleware,
@@ -24,6 +26,8 @@ def create_app(ask_ai_use_case: AskAIUseCase, lifespan: Callable[[FastAPI], Asyn
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.include_router(ai_router)
 
     @app.get("/health")
 # ... rest of file ...

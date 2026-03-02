@@ -8,3 +8,5 @@ node_modules
 elocuency.code-workspace
 elo-workspace/
 .env
+*.log
+*.pid

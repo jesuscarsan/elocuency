@@ -14,8 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./Adapters/GoogleGeminiAdapter/GoogleGeminiAdapter"), exports);
-__exportStar(require("./Adapters/GoogleGeminiAdapter/GoogleGeminiImagesAdapter"), exports);
+__exportStar(require("./Adapters/EloServerLlmAdapter"), exports);
+__exportStar(require("./Adapters/EloServerImagesAdapter"), exports);
 __exportStar(require("./Adapters/GoogleGeminiLiveAdapter/GoogleGeminiChatAdapter"), exports);
 __exportStar(require("./Adapters/GoogleGeminiLiveAdapter/IGeminiSessionAdapter"), exports);
 // Domain Ports

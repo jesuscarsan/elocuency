@@ -1,5 +1,5 @@
-export * from './Adapters/GoogleGeminiAdapter/GoogleGeminiAdapter';
-export * from './Adapters/GoogleGeminiAdapter/GoogleGeminiImagesAdapter';
+export * from './Adapters/EloServerLlmAdapter';
+export * from './Adapters/EloServerImagesAdapter';
 export * from './Adapters/GoogleGeminiLiveAdapter/GoogleGeminiChatAdapter';
 export * from './Adapters/GoogleGeminiLiveAdapter/IGeminiSessionAdapter';
 

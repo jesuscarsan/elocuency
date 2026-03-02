@@ -11,6 +11,8 @@ export interface UnresolvedLinkGeneratorSettings {
 	userLanguage: string;
 	toLearnLanguage: string;
 	geminiRolesFolder: string;
+	eloServerUrl: string;
+	eloServerToken: string;
 }
 
 export const DEFAULT_SETTINGS: UnresolvedLinkGeneratorSettings = {
@@ -24,4 +26,6 @@ export const DEFAULT_SETTINGS: UnresolvedLinkGeneratorSettings = {
 	userLanguage: 'es',
 	toLearnLanguage: 'en',
 	geminiRolesFolder: 'Personas',
+	eloServerUrl: 'http://localhost:8001',
+	eloServerToken: '',
 };

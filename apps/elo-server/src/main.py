@@ -293,6 +293,13 @@ def bootstrap():
     # 2. Initialize Use Cases (Application)
     ask_ai_use_case = AskAIUseCase(ai_adapter)
     
+    from src.application.use_cases.ai_tools_use_case import AIToolsUseCase
+    ai_tools_use_case = AIToolsUseCase(
+        api_key=config.ai.api_key,
+        default_model=config.ai.model,
+        search_engine_id=config.ai.search_engine_id
+    )
+    
     # Initialize Task Watcher
     global task_watcher
     task_watcher = TaskWatcherService(
@@ -302,6 +309,7 @@ def bootstrap():
 
     # 3. Initialize API (Infrastructure)
     app = create_app(ask_ai_use_case, lifespan=lifespan)
+    app.state.ai_tools_use_case = ai_tools_use_case
     
     # 4. Add LangServe Routes
     
