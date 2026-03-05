@@ -1,4 +1,4 @@
 export interface NotificationPort {
-    showMessage(message: string): void;
-    showError(message: string): void;
+    showMessage(keyOrMessage: string, args?: Record<string, any>): void;
+    showError(keyOrMessage: string, args?: Record<string, any>): void;
 }

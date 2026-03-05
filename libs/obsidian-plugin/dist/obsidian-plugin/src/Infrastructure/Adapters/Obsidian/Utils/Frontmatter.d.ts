@@ -1,7 +1,7 @@
 export interface FrontmatterUpdateOptions {
     overwrite?: boolean;
 }
-type FrontmatterSplit = {
+declare type FrontmatterSplit = {
     frontmatterText: string | null;
     body: string;
 };

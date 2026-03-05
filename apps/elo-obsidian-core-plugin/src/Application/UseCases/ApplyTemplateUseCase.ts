@@ -5,7 +5,7 @@ import { UIServicePort, CommandExecutorPort, TranslationService } from '@elo/obs
 import { ImageServicePort } from '../../Domain/Ports/ImageServicePort';
 import {
 	formatFrontmatterBlock,
-	mergeFrontmatterSuggestions,
+	applyFrontmatterUpdates,
 	parseFrontmatter,
 	splitFrontmatter,
 } from '../../Domain/Utils/FrontmatterUtils';
@@ -26,7 +26,7 @@ export class ApplyTemplateUseCase {
 		private readonly personasOrganizer: PersonasNoteOrganizer,
 		private readonly networkPort: NetworkPort,
 		private readonly translationService: TranslationService,
-	) {}
+	) { }
 
 	async execute(targetNotePath: string, promptUrl?: string) {
 		console.log('[ApplyTemplateUseCase] Start');
@@ -125,7 +125,7 @@ export class ApplyTemplateUseCase {
 					delete enrichment.frontmatter.tag;
 				}
 
-				let updatedFrontmatter = mergeFrontmatterSuggestions(
+				let updatedFrontmatter = applyFrontmatterUpdates(
 					mergedFrontmatter,
 					enrichment.frontmatter,
 				);

@@ -4,10 +4,17 @@ import { TranslationService } from '@elo/obsidian-plugin';
 
 export class EloServerTranscriptionAdapter implements TranscriptionPort {
     constructor(
-        private readonly baseUrl: string,
-        private readonly authToken: string,
+        private baseUrl: string,
+        private authToken: string,
         private readonly translationService: TranslationService,
-    ) { }
+    ) {
+        this.updateConfig(baseUrl, authToken);
+    }
+
+    public updateConfig(baseUrl: string, authToken: string) {
+        this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        this.authToken = authToken;
+    }
 
     async transcribe(audioBlob: Blob): Promise<string> {
         const base64Data = await this.blobToBase64(audioBlob);

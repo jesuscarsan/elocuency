@@ -40,4 +40,14 @@ export class DependencyContainer {
 		const headerDataRepo = new ObsidianHeaderDataRepository(app);
 		this.headerDataService = new HeaderDataService(headerDataRepo);
 	}
+
+	public updateSettings(settings: UnresolvedLinkGeneratorSettings) {
+		const serverUrl = settings.eloServerUrl || 'http://localhost:8001';
+		const serverToken = settings.eloServerToken || '';
+
+		this.llm.updateConfig(serverUrl, serverToken);
+		this.geminiImages.updateConfig(serverUrl, serverToken);
+		this.imageSearch.updateConfig(serverUrl, serverToken);
+		this.transcription.updateConfig(serverUrl, serverToken);
+	}
 }

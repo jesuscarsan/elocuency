@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = os.getenv("GOOGLE_AI_API_KEY", os.getenv("GOOGLE_API_KEY"))
 if not api_key:
     # Try looking in config.yaml if not in env
     import yaml

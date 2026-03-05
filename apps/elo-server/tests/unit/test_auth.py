@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 import os
 from unittest import mock
 
-from src.infrastructure.adapters.api.auth import verify_token
+from src.infrastructure.in_adapters.api.auth import verify_token
 
 # Dummy app for testing the dependency directly
 app = FastAPI()

@@ -4,8 +4,8 @@ import { App, normalizePath, TFolder, TFile } from 'obsidian';
  * Checks if a given folder path matches a target folder configuration.
  * Supports exact matches and wildcard matches using '/**' suffix.
  *
- * @param folderPath The path of the folder to check (e.g., "Lugares/SubFolder").
- * @param targetFolder The configured target folder (e.g., "Lugares/**" or "Lugares").
+ * @param folderPath The path of the folder to check (e.g., "Mi mundo/SubFolder").
+ * @param targetFolder The configured target folder (e.g., "Mi mundo/**" or "Mi mundo").
  * @returns True if the folder matches the target configuration.
  */
 export function isFolderMatch(folderPath: string, targetFolder: string): boolean {

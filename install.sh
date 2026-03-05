@@ -15,6 +15,10 @@ echo "========================================="
 # Dar permisos de ejecución al script envoltorio
 chmod +x "$DIR/apps/elo-cli/elo"
 
+# Build the Docker image for elo-cli
+echo "🔨 Building Elo CLI Docker image..."
+docker build -t elo-cli-env "$DIR/apps/elo-cli"
+
 # Crear enlace simbólico en /usr/local/bin
 # Dependiendo del sistema, esto puede requerir sudo
 DEST="/usr/local/bin/elo"

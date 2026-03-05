@@ -1,5 +1,5 @@
 import { App, TFile, LinkCache, FrontmatterLinkCache } from 'obsidian';
-import { ContextProviderPort } from "@elo/core";
+import { ContextProviderPort } from "../../../../../core-typescript/dist";
 
 export class ObsidianContextAdapter implements ContextProviderPort {
     constructor(private app: App) { }

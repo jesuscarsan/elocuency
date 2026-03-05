@@ -24,3 +24,14 @@ def test_load_config_env_vars(monkeypatch):
     # Assert
     assert config.server.port == 9000
     assert config.ai.api_key == "env-key"
+
+def test_load_config_prioritize_ai_key(monkeypatch):
+    # Arrange
+    monkeypatch.setenv("GOOGLE_API_KEY", "old-key")
+    monkeypatch.setenv("GOOGLE_AI_API_KEY", "new-key")
+
+    # Act
+    config = load_config()
+
+    # Assert
+    assert config.ai.api_key == "new-key"

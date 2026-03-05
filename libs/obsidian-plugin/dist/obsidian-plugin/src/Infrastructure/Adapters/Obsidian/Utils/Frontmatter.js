@@ -1,14 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringifyFrontmatter = stringifyFrontmatter;
-exports.splitFrontmatter = splitFrontmatter;
-exports.parseFrontmatter = parseFrontmatter;
-exports.buildMergedFrontmatter = buildMergedFrontmatter;
-exports.formatFrontmatterBlock = formatFrontmatterBlock;
-exports.stripLeadingFrontmatter = stripLeadingFrontmatter;
-exports.mergeFrontmatterSuggestions = mergeFrontmatterSuggestions;
-exports.applyFrontmatterUpdates = applyFrontmatterUpdates;
-exports.hasMeaningfulValue = hasMeaningfulValue;
+exports.hasMeaningfulValue = exports.applyFrontmatterUpdates = exports.mergeFrontmatterSuggestions = exports.stripLeadingFrontmatter = exports.formatFrontmatterBlock = exports.buildMergedFrontmatter = exports.parseFrontmatter = exports.splitFrontmatter = exports.stringifyFrontmatter = void 0;
 const obsidian_1 = require("obsidian");
 function stringifyFrontmatter(frontmatter) {
     if (!frontmatter) {
@@ -22,6 +14,7 @@ function stringifyFrontmatter(frontmatter) {
         return '{}';
     }
 }
+exports.stringifyFrontmatter = stringifyFrontmatter;
 function splitFrontmatter(content) {
     const match = content.match(/^---\s*\n([\s\S]*?)\n---\s*(?:\n|$)/);
     if (!match || match.index !== 0) {
@@ -37,6 +30,7 @@ function splitFrontmatter(content) {
         body,
     };
 }
+exports.splitFrontmatter = splitFrontmatter;
 function parseFrontmatter(frontmatter) {
     if (!frontmatter) {
         return null;
@@ -52,6 +46,7 @@ function parseFrontmatter(frontmatter) {
     }
     return null;
 }
+exports.parseFrontmatter = parseFrontmatter;
 function buildMergedFrontmatter(templateFrontmatter, currentFrontmatter) {
     const templateData = parseFrontmatter(templateFrontmatter);
     const currentData = parseFrontmatter(currentFrontmatter);
@@ -85,10 +80,12 @@ function buildMergedFrontmatter(templateFrontmatter, currentFrontmatter) {
     }
     return merged;
 }
+exports.buildMergedFrontmatter = buildMergedFrontmatter;
 function formatFrontmatterBlock(data) {
     const yaml = (0, obsidian_1.stringifyYaml)(data).replace(/\s+$/, '');
     return `---\n${yaml}\n---`;
 }
+exports.formatFrontmatterBlock = formatFrontmatterBlock;
 function stripLeadingFrontmatter(text) {
     const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*(?:\n|$)/);
     if (!match || match.index !== 0) {
@@ -96,6 +93,7 @@ function stripLeadingFrontmatter(text) {
     }
     return text.slice(match[0].length).replace(/^[\n\r]+/, '');
 }
+exports.stripLeadingFrontmatter = stripLeadingFrontmatter;
 function mergeFrontmatterSuggestions(current, suggestions) {
     if (!suggestions || Object.keys(suggestions).length === 0) {
         return current;
@@ -113,6 +111,7 @@ function mergeFrontmatterSuggestions(current, suggestions) {
     }
     return changed ? base : null;
 }
+exports.mergeFrontmatterSuggestions = mergeFrontmatterSuggestions;
 function applyFrontmatterUpdates(current, updates) {
     if (!updates || Object.keys(updates).length === 0) {
         return current;
@@ -137,6 +136,7 @@ function applyFrontmatterUpdates(current, updates) {
     }
     return changed ? base : null;
 }
+exports.applyFrontmatterUpdates = applyFrontmatterUpdates;
 function hasMeaningfulValue(value) {
     if (value === null || value === undefined) {
         return false;
@@ -152,6 +152,7 @@ function hasMeaningfulValue(value) {
     }
     return true;
 }
+exports.hasMeaningfulValue = hasMeaningfulValue;
 function upsertEntry(entries, positions, key, value) {
     if (positions.has(key)) {
         const index = positions.get(key);

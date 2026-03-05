@@ -4,10 +4,10 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/elo-workbench/apps/elo-server
 
 # Set work directory
-WORKDIR /app
+WORKDIR /elo-workbench/apps/elo-server
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -34,4 +34,4 @@ EXPOSE 8001
 # Run the application
 # We use uvicorn with --reload and specify the log-config to handle log redirection if needed
 # However, redirection will be handled via docker-compose command or application config
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload", "--reload-dir", "src"]

@@ -28,4 +28,4 @@ var CommandEnum;
     CommandEnum["SyncContacts"] = "SyncContactsCommand";
     CommandEnum["ToggleHideEmptyProperties"] = "ToggleHideEmptyProperties";
     CommandEnum["TokenizeAndCreateDictionaryNotes"] = "TokenizeAndCreateDictionaryNotesCommand";
-})(CommandEnum || (exports.CommandEnum = CommandEnum = {}));
+})(CommandEnum = exports.CommandEnum || (exports.CommandEnum = {}));

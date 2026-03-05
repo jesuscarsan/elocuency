@@ -4,7 +4,7 @@ export declare const HeaderMetadataKeys: {
     readonly Importance: "importance";
     readonly Attempts: "attempts";
 };
-export type HeaderMetadataKey = (typeof HeaderMetadataKeys)[keyof typeof HeaderMetadataKeys];
+export declare type HeaderMetadataKey = (typeof HeaderMetadataKeys)[keyof typeof HeaderMetadataKeys];
 export interface HeaderMetadataFieldConfig {
     key: HeaderMetadataKey;
     description: string;

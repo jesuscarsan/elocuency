@@ -21,20 +21,23 @@ services:
       dockerfile: ../../setup/Dockerfile
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
+      - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY}
+      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - PYTHONPATH=/elo-workbench/apps/elo-server
       - N8N_HOST=http://n8n:5678
-      - N8N_WORKFLOWS_DIR=/app/workspace/n8n/workflows
-      - LOG_FILE=/app/workspace/logs/elo-server.log
+      - N8N_WORKFLOWS_DIR=/elo-workbench/elo-workspace/n8n/workflows
+      - LOG_FILE=/elo-workbench/elo-workspace/logs/elo-server.log
       - OBSIDIAN_API_KEY=${OBSIDIAN_API_KEY}
       - OBSIDIAN_URL=${OBSIDIAN_URL}
       - SERVER_AUTH_TOKEN=${SERVER_AUTH_TOKEN}
+    working_dir: /elo-workbench/apps/elo-server
     ports:
       - "8001:8001"
     volumes:
-      - ../apps/elo-server/src:/app/src
-      - ../apps/elo-server/assets:/app/assets
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}:/app/workspace
+      - ..:/elo-workbench
       - ${VAULT_PATH}:/data/vault:ro
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/elo-config.json:/app/elo-config.json
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"

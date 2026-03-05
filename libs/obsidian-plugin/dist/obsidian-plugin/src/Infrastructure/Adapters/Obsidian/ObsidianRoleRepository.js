@@ -8,7 +8,7 @@ class ObsidianRoleRepository {
         this.settings = settings;
     }
     async loadRoles() {
-        const folderPath = this.settings.getGeminiRolesFolder();
+        const folderPath = 'Personas';
         if (!folderPath)
             return [];
         const folder = this.app.vault.getAbstractFileByPath(folderPath);

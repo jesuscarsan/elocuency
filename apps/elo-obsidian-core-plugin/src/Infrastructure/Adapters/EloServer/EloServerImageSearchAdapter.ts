@@ -3,9 +3,16 @@ import { ImageSearchPort } from '@elo/core';
 
 export class EloServerImageSearchAdapter implements ImageSearchPort {
     constructor(
-        private readonly baseUrl: string,
-        private readonly authToken: string,
-    ) { }
+        private baseUrl: string,
+        private authToken: string,
+    ) {
+        this.updateConfig(baseUrl, authToken);
+    }
+
+    public updateConfig(baseUrl: string, authToken: string) {
+        this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        this.authToken = authToken;
+    }
 
     async searchImages(query: string, count: number = 10): Promise<string[]> {
         const url = `${this.baseUrl.replace(/\/$/, '')}/api/ai/image-search`;

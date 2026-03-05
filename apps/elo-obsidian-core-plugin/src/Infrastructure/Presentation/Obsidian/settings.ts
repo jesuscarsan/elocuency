@@ -3,14 +3,11 @@ export type LocationStrategy = 'same-folder' | 'fixed-folder';
 export interface UnresolvedLinkGeneratorSettings {
 	locationStrategy: LocationStrategy;
 	targetFolder: string;
+	locationsFolder: string;
 	missingNotesTemplatePath: string;
-	geminiApiKey: string;
-	googleCustomSearchApiKey: string;
-	googleCustomSearchEngineId: string;
 	hideEmptyProperties: boolean;
 	userLanguage: string;
 	toLearnLanguage: string;
-	geminiRolesFolder: string;
 	eloServerUrl: string;
 	eloServerToken: string;
 }
@@ -18,14 +15,11 @@ export interface UnresolvedLinkGeneratorSettings {
 export const DEFAULT_SETTINGS: UnresolvedLinkGeneratorSettings = {
 	locationStrategy: 'same-folder',
 	targetFolder: '',
+	locationsFolder: 'Mi mundo',
 	missingNotesTemplatePath: '# {{title}}\n',
-	geminiApiKey: '',
-	googleCustomSearchApiKey: '',
-	googleCustomSearchEngineId: '',
 	hideEmptyProperties: false,
 	userLanguage: 'es',
 	toLearnLanguage: 'en',
-	geminiRolesFolder: 'Personas',
 	eloServerUrl: 'http://localhost:8001',
 	eloServerToken: '',
 };

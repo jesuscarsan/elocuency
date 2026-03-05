@@ -37,8 +37,13 @@ SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 # Calculamos la raíz del monorepo (2 niveles arriba de apps/elo-cli)
 DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
 
-# 4. Propagar variables de entorno relevantes
+# 4. Propagar variables de entorno y montar vols
+WORKSPACE_CONFIG="$DIR/elo-workspace/elo-config.json"
+DOCKER_ENV_FLAGS=()
+DOCKER_VOLUMES=("-v" "$DIR":"$DIR")
+
 ENV_VARS=(
+    "GOOGLE_AI_API_KEY"
     "GOOGLE_API_KEY"
     "OBSIDIAN_API_KEY"
     "VAULT_PATH"
@@ -47,20 +52,28 @@ ENV_VARS=(
     "OBSIDIAN_URL"
 )
 
-DOCKER_ENV_FLAGS=()
 for var in "${ENV_VARS[@]}"; do
     if [ -n "${!var}" ]; then
         DOCKER_ENV_FLAGS+=("-e" "$var=${!var}")
     fi
 done
 
-# 5. Delegar el comando al contenedor de Node (con acceso a Docker host)
+if [ -f "$WORKSPACE_CONFIG" ] && command -v jq &> /dev/null; then
+    VAULTS=$(jq -r '.markdownVaults? // empty | .[]' "$WORKSPACE_CONFIG")
+    while IFS= read -r vault; do
+        if [ -n "$vault" ]; then
+            DOCKER_VOLUMES+=("-v" "$vault":"$vault")
+        fi
+    done <<< "$VAULTS"
+fi
+
+# 5. Delegar el comando al contenedor de Elo CLI
 docker run --rm $DOCKER_INTERACTIVE_FLAGS \
   -e npm_config_update_notifier=false \
   "${DOCKER_ENV_FLAGS[@]}" \
-  -v "$DIR":"$DIR" \
+  "${DOCKER_VOLUMES[@]}" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --add-host host.docker.internal:host-gateway \
   -w "$DIR" \
   --network host \
-  node:20-alpine sh -c 'apk add --no-cache docker-cli docker-cli-compose > /dev/null 2>&1 && npx tsx apps/elo-cli/src/index.ts "$@"' -- "$@"
+  elo-cli-env "$@"

@@ -28,7 +28,7 @@ describe('ImageEnricherService', () => {
 		const result = await service.searchImages('query');
 
 		expect(result).toEqual([]);
-		expect(showMessage).toHaveBeenCalledWith('images.notFound');
+		expect(showMessage).toHaveBeenCalledWith('images.notFound', undefined, translationService);
 	});
 
 	it('should return unique images and show success message', async () => {
@@ -38,7 +38,7 @@ describe('ImageEnricherService', () => {
 		const result = await service.searchImages('query');
 
 		expect(result).toEqual(['url1', 'url2']);
-		expect(showMessage).toHaveBeenCalledWith(expect.stringContaining('images.foundCount'));
+		expect(showMessage).toHaveBeenCalledWith('images.foundCount', { count: 2 }, translationService);
 	});
 
 	it('should return empty array and show error message on search failure', async () => {
@@ -47,6 +47,6 @@ describe('ImageEnricherService', () => {
 		const result = await service.searchImages('query');
 
 		expect(result).toEqual([]);
-		expect(showMessage).toHaveBeenCalledWith('images.searchError');
+		expect(showMessage).toHaveBeenCalledWith('images.searchError', undefined, translationService);
 	});
 });

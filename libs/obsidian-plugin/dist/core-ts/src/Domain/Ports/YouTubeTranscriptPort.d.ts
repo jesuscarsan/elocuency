@@ -1,4 +1,4 @@
-export type YouTubeTranscriptParams = {
+export declare type YouTubeTranscriptParams = {
     videoId: string;
 };
 export interface YouTubeTranscriptPort {

@@ -4,10 +4,10 @@ services:
   elo-server:
     volumes:
       # Mount source code for hot-reloading
-      - ..:/app
+      - ..:/elo-workbench
     command: >
-      sh -c "mkdir -p /app/workspace/logs && 
-             uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload 2>&1 | tee -a /app/workspace/logs/elo-server.log"
+      sh -c "mkdir -p /elo-workbench/elo-workspace/logs && 
+             uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload --reload-dir /elo-workbench/apps/elo-server/src 2>&1 | tee -a /elo-workbench/elo-workspace/logs/elo-server.log"
 
   n8n:
     # Use the tunnel flag for development to get an HTTPS URL for Telegram

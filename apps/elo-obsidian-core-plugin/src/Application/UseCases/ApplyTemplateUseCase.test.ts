@@ -114,8 +114,7 @@ describe('ApplyTemplateUseCase', () => {
 
 		await useCase.execute(note.path);
 
-		expect(uiService.showMessage).toHaveBeenCalledWith(expect.stringContaining('apply.applying'));
-		expect(uiService.showMessage).toHaveBeenCalledWith(expect.stringContaining('template: T1'));
+		expect(uiService.showMessage).toHaveBeenCalledWith('apply.applying', { template: 'T1' });
 		expect(noteRepository.saveNote).toHaveBeenCalled();
 	});
 
@@ -136,7 +135,7 @@ describe('ApplyTemplateUseCase', () => {
 		llm.requestEnrichment.mockResolvedValue({ body: 'B' });
 
 		await useCase.execute(note.path);
-		expect(uiService.showMessage).toHaveBeenCalledWith(expect.stringContaining('apply.fetchError'));
+		expect(uiService.showMessage).toHaveBeenCalledWith('apply.fetchError', { url: 'http://fail' });
 	});
 
 	it('should handle images if configured in template', async () => {
@@ -147,7 +146,7 @@ describe('ApplyTemplateUseCase', () => {
 				template: {
 					basename: 'T1',
 					config: { prompt: 'P', images: { count: 1, query: 'Q' } },
-					content: '---\n' + FrontmatterKeys.EloImages + ': []\n---\nBody',
+					content: '---\n"' + FrontmatterKeys.EloImages + '": []\n---\nBody',
 				},
 				score: 1,
 			} as any,
@@ -204,7 +203,7 @@ describe('ApplyTemplateUseCase', () => {
 				template: {
 					basename: 'T1',
 					config: { prompt: 'P' },
-					content: '---\n' + FrontmatterKeys.EloImages + ': []\n---\nBody',
+					content: '---\n"' + FrontmatterKeys.EloImages + '": []\n---\nBody',
 				},
 				score: 1,
 			} as any,

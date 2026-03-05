@@ -45,10 +45,6 @@ describe('ObsidianSettingsAdapter', () => {
 		expect(adapter.getToLearnLanguage()).toBe('fr');
 	});
 
-	it('should get roles folder', () => {
-		expect(adapter.getGeminiRolesFolder()).toBe('Personas');
-	});
-
 	it('should save settings', async () => {
 		await adapter.saveSettings();
 		expect(mockPlugin.saveSettings).toHaveBeenCalled();

@@ -12,6 +12,7 @@ class ServerConfig(BaseModel):
 class AIConfig(BaseModel):
     api_key: str
     model: str = "gemini-2.0-flash"
+    search_api_key: Optional[str] = None
     search_engine_id: Optional[str] = None
 
 class ObsidianConfig(BaseModel):
@@ -63,6 +64,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     # 1. Find and load elo-config.json
     possible_json_paths = [
         "elo-config.json",
+        "/elo-workbench/elo-workspace/elo-config.json",
         "/app/elo-config.json",
         "/app/workspace/elo-config.json",
         os.path.join(os.path.dirname(__file__), "..", "..", "elo-config.json"),
@@ -83,8 +85,9 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     # AI Config
     ai_data = config_dict.get("ai", {})
     ai_config = {
-        "api_key": os.getenv("GOOGLE_API_KEY", ""),
+        "api_key": os.getenv("GOOGLE_AI_API_KEY", os.getenv("GOOGLE_API_KEY", "")),
         "model": ai_data.get("model", os.getenv("AI_MODEL", "gemini-2.0-flash")),
+        "search_api_key": os.getenv("GOOGLE_SEARCH_API_KEY", os.getenv("GOOGLE_AI_API_KEY", os.getenv("GOOGLE_API_KEY"))),
         "search_engine_id": ai_data.get("search_engine_id", os.getenv("GOOGLE_SEARCH_ENGINE_ID"))
     }
     
@@ -122,9 +125,9 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     is_docker = os.path.exists("/.dockerenv") or os.environ.get("DOCKER_CONTAINER") == "true"
     
     if is_docker:
-        project_root = "/app"
-        workspace_path = "/app/workspace"
-        assets_path = "/app/assets"
+        project_root = "/elo-workbench/apps/elo-server"
+        workspace_path = "/elo-workbench/elo-workspace"
+        assets_path = "/elo-workbench/apps/elo-server/assets"
     else:
         # Local development: we need to find where 'workspace' and 'assets' effectively are.
         # usually ../../../workspace relative to elo-server if in mono-repo structure
@@ -192,7 +195,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
 
     # 4. Automate filesystem allowed_paths for Docker
     if is_docker:
-        config.filesystem = FilesystemConfig(allowed_paths=["/app", "/data/vault"])
+        config.filesystem = FilesystemConfig(allowed_paths=["/elo-workbench", "/data/vault"])
     elif not config.filesystem:
          # Allow workspace and assets locally
          config.filesystem = FilesystemConfig(allowed_paths=[workspace_path, assets_path])

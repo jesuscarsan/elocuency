@@ -47,7 +47,7 @@ export declare const FrontmatterKeys: {
     readonly Habilidades: "Habilidades";
     readonly Residencias: "Residencias";
 };
-export type FrontmatterKey = (typeof FrontmatterKeys)[keyof typeof FrontmatterKeys];
+export declare type FrontmatterKey = (typeof FrontmatterKeys)[keyof typeof FrontmatterKeys];
 export interface FrontmatterFieldConfig {
     key: FrontmatterKey;
     description: string;

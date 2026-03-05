@@ -1,6 +1,6 @@
 import { App, TFile, HeadingCache } from "obsidian";
-import { HeaderMetadataRegistry, HeaderMetadataKey, HeaderMetadata } from "@elo/core";
-import { MetadataPort } from '@elo/core';
+import { HeaderMetadataRegistry, HeaderMetadataKey, HeaderMetadata } from "../../../../../core-typescript/dist";
+import { MetadataPort } from '../../../../../core-typescript/dist';
 
 export class ObsidianMetadataAdapter implements MetadataPort {
     constructor(private app: App) { }

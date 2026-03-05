@@ -26,9 +26,6 @@ export default {
 	'ribbon.noteOperations': 'Operaciones de Nota',
 
 	'properties.hiddenMessage': 'Propiedades vacías ocultas',
-	'properties.visibleMessage': 'Propiedades vacías visibles',
-
-	'noteOperations.geminiKeyMissing': 'Falta la API Key de Gemini. No se puede transcribir.',
 	'noteOperations.listening': 'Escuchando...',
 	'noteOperations.transcribing': 'Transcribiendo...',
 	'noteOperations.textInserted': 'Texto insertado.',
@@ -210,20 +207,14 @@ export default {
 	'settings.locationStrategyFixed': 'Carpeta fija',
 	'settings.targetFolderName': 'Carpeta destino',
 	'settings.targetFolderDesc': 'Carpeta donde se crean las notas cuando se usa la estrategia fija.',
+	'settings.locationsFolderName': 'Carpeta de Lugares',
+	'settings.locationsFolderDesc': 'Nombre de la carpeta principal para notas de ubicaciones (ej., "Mi mundo").',
 	'settings.templateName': 'Plantilla de nota',
 	'settings.templateDesc': 'Plantilla usada al crear nuevas notas (soporta {{title}}).',
-	'settings.geminiApiKeyName': 'Clave API de Gemini',
-	'settings.geminiApiKeyDesc':
-		'Usada para pedir descripciones a Gemini cuando una plantilla no tiene contenido en el cuerpo.',
-	'settings.googleApiKeyName': 'Clave API de Google Custom Search',
-	'settings.googleApiKeyDesc': 'Usada para buscar imágenes.',
-	'settings.googleEngineIdName': 'ID del motor de búsqueda personalizada de Google',
-	'settings.googleEngineIdDesc': 'ID CX para el motor de búsqueda personalizada.',
-
-	'geminiLive.apiKeyMissing': 'Falta la API Key de Gemini',
-	'geminiLive.connectionError': 'Error al crear la conexión WebSocket',
-	'geminiLive.websocketError': 'Error en la conexión con Gemini Live',
-	'geminiLive.apiError': 'Error de Gemini: {message}',
+	'settings.eloServerUrlName': 'URL del Elo Server',
+	'settings.eloServerUrlDesc': 'La URL base de tu instancia de Elo Server.',
+	'settings.eloServerTokenName': 'Token del Elo Server',
+	'settings.eloServerTokenDesc': 'Token de autenticación para el Elo Server.',
 	'geminiLive.micError': 'No se pudo acceder al micrófono.',
 
 	'imageSource.title': 'Fuente de imágenes',

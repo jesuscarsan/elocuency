@@ -8,7 +8,6 @@ export default defineConfig({
     minify: true,
     outDir: "dist",
     target: "es2022",
-    noExternal: ["commander"],
     banner: {
         js: "#!/usr/bin/env node",
     }

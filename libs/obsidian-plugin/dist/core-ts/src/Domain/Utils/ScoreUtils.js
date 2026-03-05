@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeImportance = normalizeImportance;
-exports.normalizeDifficulty = normalizeDifficulty;
-exports.difficultyToColor = difficultyToColor;
+exports.difficultyToColor = exports.normalizeDifficulty = exports.normalizeImportance = void 0;
 /**
  * Ensures importance is between 1 and 5.
  * @param importance The raw importance score.
@@ -15,6 +13,7 @@ function normalizeImportance(importance) {
         return 5;
     return Math.round(importance);
 }
+exports.normalizeImportance = normalizeImportance;
 /**
  * Ensures difficulty is between 1 and 3.
  */
@@ -25,6 +24,7 @@ function normalizeDifficulty(difficulty) {
         return 3;
     return Math.round(difficulty);
 }
+exports.normalizeDifficulty = normalizeDifficulty;
 /**
  * Converts a difficulty score (1-3) to a mapped color.
  * 1: Baja (Green)
@@ -39,3 +39,4 @@ function difficultyToColor(difficulty) {
         return '#ffb86c'; // Orange
     return '#ff5555'; // Red
 }
+exports.difficultyToColor = difficultyToColor;

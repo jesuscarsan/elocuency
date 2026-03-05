@@ -25,7 +25,7 @@ import {
 	getActiveMarkdownView,
 } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
 import { TemplateContext } from '@/Infrastructure/Presentation/Obsidian/Utils/TemplateContext';
-import { GoogleGeminiImagesAdapter, ImageContent } from '@elo/core';
+import { EloServerImagesAdapter as ImagesAdapter, ImageContent } from '@elo/core';
 import { ImageSourceModal } from '@/Infrastructure/Presentation/Obsidian/Views/Modals/ImageSourceModal';
 import { ImageProcessor } from '@/Infrastructure/Presentation/Obsidian/Utils/ImageProcessor';
 import * as fs from 'fs';
@@ -35,7 +35,7 @@ import { TranslationService } from '@elo/obsidian-plugin';
 
 export class ApplyTemplateFromImageCommand {
 	constructor(
-		private readonly geminiImages: GoogleGeminiImagesAdapter,
+		private readonly geminiImages: ImagesAdapter,
 		private readonly obsidian: ObsidianApp,
 		private readonly settings: UnresolvedLinkGeneratorSettings,
 		private readonly translationService: TranslationService,

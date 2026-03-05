@@ -133,12 +133,6 @@ export class NoteOperationsView extends ItemView {
 	private async handleStartRecording(e: Event) {
 		if (this.audioRecorder.isRecording()) return;
 
-		const settings = this.plugin.settings;
-		if (!settings.geminiApiKey) {
-			showMessage('noteOperations.geminiKeyMissing', undefined, this.plugin.translationService);
-			return;
-		}
-
 		console.log('Starting Gemini Live...');
 		const success = await this.audioRecorder.start();
 		if (success) {

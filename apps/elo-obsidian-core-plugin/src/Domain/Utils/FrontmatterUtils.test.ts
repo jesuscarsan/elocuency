@@ -50,10 +50,10 @@ describe('Frontmatter Utils', () => {
 			expect(hasMeaningfulValue(undefined)).toBe(false);
 			expect(hasMeaningfulValue('')).toBe(false);
 			expect(hasMeaningfulValue('  ')).toBe(false);
+			expect(hasMeaningfulValue([])).toBe(false);
 		});
 
-		it('should return true for empty structures', () => {
-			expect(hasMeaningfulValue([])).toBe(true);
+		it('should return true for empty objects', () => {
 			expect(hasMeaningfulValue({})).toBe(true);
 		});
 	});

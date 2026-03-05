@@ -1,5 +1,8 @@
 import { NotificationPort } from '../../../Domain/Ports/NotificationPort';
+import { TranslationService } from '../../../Domain/Interfaces/TranslationService';
 export declare class ObsidianNotificationAdapter implements NotificationPort {
-    showMessage(message: string): void;
-    showError(message: string): void;
+    private readonly translationService?;
+    constructor(translationService?: TranslationService | undefined);
+    showMessage(keyOrMessage: string, args?: Record<string, any>): void;
+    showError(keyOrMessage: string, args?: Record<string, any>): void;
 }

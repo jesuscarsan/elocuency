@@ -1,7 +1,7 @@
-export type LlmParams = {
+export declare type LlmParams = {
     prompt: string;
 };
-export type LlmResponse = {
+export declare type LlmResponse = {
     body?: string;
     frontmatter?: Record<string, unknown>;
 };

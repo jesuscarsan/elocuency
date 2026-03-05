@@ -5,9 +5,10 @@ Obsidian plugin inside elocuency framework, to share main functionality, like AI
 This repo must be installed from the elocuency framework.
 
 ## Documentation
+
 - [Overview](docs/overview.md)
 - [Architecture](docs/architecture.md)
-- [Testing Strategy](../../libs/core-ts/docs/testing-strategy.md)
+- [Testing Strategy](../../libs/core-typescript/docs/testing-strategy.md)
 
 ## Development
 

@@ -1,5 +1,5 @@
 import { App, TFile } from 'obsidian';
-import { GoogleGeminiAdapter } from '@elo/core';
+import { EloServerLlmAdapter as LlmAdapter } from '@elo/core';
 import { InputModal } from '@/Infrastructure/Presentation/Obsidian/Views/Modals/InputModal';
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 
@@ -8,9 +8,9 @@ import { TranslationService } from '@elo/obsidian-plugin';
 export class NaturalLanguageSearchCommand {
 	constructor(
 		private app: App,
-		private llm: GoogleGeminiAdapter,
+		private llm: LlmAdapter,
 		private translationService: TranslationService,
-	) {}
+	) { }
 
 	async execute(): Promise<void> {
 		new InputModal(
@@ -60,7 +60,7 @@ export class NaturalLanguageSearchCommand {
       Consulta del usuario: "${userQuery}"
     `;
 
-		const searchQuery = await this.llm.request({ prompt });
+		const searchQuery = await this.llm.request({ prompt: prompt });
 
 		if (!searchQuery) {
 			showMessage(this.translationService.t('search.interpretError'));

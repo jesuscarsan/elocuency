@@ -24,9 +24,6 @@ export default {
 	'ribbon.noteOperations': 'Note Operations',
 
 	'properties.hiddenMessage': 'Empty properties hidden',
-	'properties.visibleMessage': 'Empty properties visible',
-
-	'noteOperations.geminiKeyMissing': 'Gemini API Key missing. Cannot transcribe.',
 	'noteOperations.listening': 'Listening...',
 	'noteOperations.transcribing': 'Transcribing...',
 	'noteOperations.textInserted': 'Text inserted.',
@@ -208,20 +205,14 @@ export default {
 	'settings.targetFolderName': 'Target folder',
 	'settings.targetFolderDesc':
 		'Folder where notes are created when using the fixed folder strategy.',
+	'settings.locationsFolderName': 'Locations folder',
+	'settings.locationsFolderDesc': 'Default folder name for location-based notes (e.g., "Mi mundo").',
 	'settings.templateName': 'Note template',
 	'settings.templateDesc': 'Template used when creating new notes (supports {{title}}).',
-	'settings.geminiApiKeyName': 'Gemini API key',
-	'settings.geminiApiKeyDesc':
-		'Used to ask Gemini for descriptions when a template has no body content.',
-	'settings.googleApiKeyName': 'Google Custom Search API key',
-	'settings.googleApiKeyDesc': 'Used for searching images.',
-	'settings.googleEngineIdName': 'Google Custom Search Engine ID',
-	'settings.googleEngineIdDesc': 'CX ID for the custom search engine.',
-
-	'geminiLive.apiKeyMissing': 'Gemini API Key is missing',
-	'geminiLive.connectionError': 'Error creating WebSocket connection',
-	'geminiLive.websocketError': 'Error in connection with Gemini Live',
-	'geminiLive.apiError': 'Gemini Error: {message}',
+	'settings.eloServerUrlName': 'Elo Server URL',
+	'settings.eloServerUrlDesc': 'The base URL of your Elo Server instance.',
+	'settings.eloServerTokenName': 'Elo Server Token',
+	'settings.eloServerTokenDesc': 'Authentication token for the Elo Server.',
 	'geminiLive.micError': 'Could not access the microphone.',
 
 	'imageSource.title': 'Image Source',

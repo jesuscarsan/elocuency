@@ -2,8 +2,6 @@ import { Plugin, TFile, MarkdownView, Platform } from 'obsidian';
 import { DEFAULT_SETTINGS, UnresolvedLinkGeneratorSettings } from './settings';
 import { DependencyContainer } from './DependencyContainer';
 import { buildNoteCommands, NoteCommand } from './CommandRegistry';
-import { GoogleGeminiAdapter } from '@elo/core';
-
 import { SettingsView } from '@/Infrastructure/Presentation/Obsidian/Views/Settings/SettingsView';
 import { registerImageGalleryRenderer } from '@/Infrastructure/Presentation/Obsidian/Views/Renderers/ImageGalleryRenderer';
 import {
@@ -19,6 +17,7 @@ import { createHeaderProgressRenderer } from './MarkdownPostProcessors/HeaderPro
 import { createHeaderMetadataRenderer } from './MarkdownPostProcessors/HeaderMetadataRenderer';
 import en from '@/I18n/locales/en';
 import es from '@/I18n/locales/es';
+import { EloServerLlmAdapter as LlmAdapter } from '@elo/core';
 
 export default class ObsidianExtension extends Plugin {
 	settings: UnresolvedLinkGeneratorSettings = DEFAULT_SETTINGS;
@@ -27,7 +26,7 @@ export default class ObsidianExtension extends Plugin {
 
 	private container!: DependencyContainer;
 
-	public get llm(): GoogleGeminiAdapter {
+	public get llm(): LlmAdapter {
 		return this.container.llm;
 	}
 
@@ -113,6 +112,7 @@ export default class ObsidianExtension extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		this.container.updateSettings(this.settings);
 	}
 
 	public getNoteCommands() {

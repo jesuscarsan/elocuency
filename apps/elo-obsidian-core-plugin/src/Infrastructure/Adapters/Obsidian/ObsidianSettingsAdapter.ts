@@ -2,7 +2,7 @@ import { SettingsPort } from '@elo/core';
 import ObsidianExtension from '../../Presentation/Obsidian/main';
 
 export class ObsidianSettingsAdapter implements SettingsPort {
-	constructor(private plugin: ObsidianExtension) {}
+	constructor(private plugin: ObsidianExtension) { }
 
 	getSpotifyClientId(): string {
 		return '';
@@ -42,10 +42,6 @@ export class ObsidianSettingsAdapter implements SettingsPort {
 
 	setSpotifyPkceVerifier(verifier: string): void {
 		// No-op
-	}
-
-	getGeminiRolesFolder(): string {
-		return this.plugin.settings.geminiRolesFolder;
 	}
 
 	getUserLanguage(): string {

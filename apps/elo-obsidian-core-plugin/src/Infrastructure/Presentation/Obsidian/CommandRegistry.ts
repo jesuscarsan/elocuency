@@ -121,7 +121,9 @@ export function buildNoteCommands(
 			id: CommandEnum.RelocateNoteByLinkField,
 			name: plugin.translationService.t('command.relocateNoteByLinkField'),
 			callback: async (file?: TFile) => {
-				await new RelocateNoteByLinkFieldCommand(app, plugin.translationService).execute(file);
+				await new RelocateNoteByLinkFieldCommand(app, plugin.translationService, settings).execute(
+					file,
+				);
 			},
 		},
 		{

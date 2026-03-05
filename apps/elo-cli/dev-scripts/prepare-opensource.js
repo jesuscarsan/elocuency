@@ -89,7 +89,7 @@ function processApp(appName) {
 
 	// Scan libs to find available packages
 	const libsDir = path.join(MONOREPO_ROOT, 'libs');
-	const availableLibs = {}; // '@elo/core': 'core-ts', ...
+	const availableLibs = {}; // '@elo/core': 'core-typescript', ...
 
 	if (fs.existsSync(libsDir)) {
 		const libFolders = fs.readdirSync(libsDir);
@@ -128,7 +128,7 @@ function processApp(appName) {
 	eloDeps.forEach((depName) => {
 		// depName: @elo/core
 		const simpleName = depName.replace('@elo/', ''); // core
-		const sourceFolderName = availableLibs[depName]; // core-ts (might be different)
+		const sourceFolderName = availableLibs[depName]; // core-typescript (might be different)
 
 		if (!sourceFolderName) {
 			log.warn(`Library package ${depName} not found in libs directory, skipping.`);
@@ -137,7 +137,7 @@ function processApp(appName) {
 
 		const libSourcePath = path.join(MONOREPO_ROOT, 'libs', sourceFolderName);
 
-		// We copy source from libs/core-ts/src -> src/libs/core
+		// We copy source from libs/core-typescript/src -> src/libs/core
 		const libSrcSource = path.join(libSourcePath, 'src');
 		const libDest = path.join(libsTargetDir, simpleName);
 

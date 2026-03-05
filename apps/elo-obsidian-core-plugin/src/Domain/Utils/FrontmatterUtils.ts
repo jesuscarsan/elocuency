@@ -179,6 +179,10 @@ export function hasMeaningfulValue(value: unknown): boolean {
 		return value.trim().length > 0;
 	}
 
+	if (Array.isArray(value)) {
+		return value.length > 0;
+	}
+
 	return true;
 }
 

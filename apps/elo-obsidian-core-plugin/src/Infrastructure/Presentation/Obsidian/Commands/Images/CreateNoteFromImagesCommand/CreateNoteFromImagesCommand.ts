@@ -1,6 +1,6 @@
 import { App, Modal, Notice, Setting, MarkdownView, TFile } from 'obsidian';
 import { getActiveMarkdownView } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
-import { GoogleGeminiImagesAdapter, ImageContent } from '@elo/core';
+import { EloServerImagesAdapter as ImagesAdapter, ImageContent } from '@elo/core';
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,9 +15,9 @@ import { TranslationService } from '@elo/obsidian-plugin';
 export class CreateNoteFromImagesCommand {
 	constructor(
 		private readonly app: App,
-		private readonly adapter: GoogleGeminiImagesAdapter,
+		private readonly adapter: ImagesAdapter,
 		private readonly translationService: TranslationService,
-	) {}
+	) { }
 
 	async execute(file?: TFile) {
 		console.log('[CreateNoteFromImagesCommand] Start');

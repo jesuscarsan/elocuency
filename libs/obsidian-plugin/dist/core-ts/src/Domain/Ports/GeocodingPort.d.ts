@@ -1,8 +1,8 @@
-export type GeocodingParams = {
+export declare type GeocodingParams = {
     placeName: string;
     placeId?: string;
 };
-export type GeocodingResponse = {
+export declare type GeocodingResponse = {
     lugar?: string;
     barrio?: string;
     municipio: string;

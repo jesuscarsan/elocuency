@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getActiveMarkdownView = getActiveMarkdownView;
-exports.executeInEditMode = executeInEditMode;
+exports.executeInEditMode = exports.getActiveMarkdownView = void 0;
 const obsidian_1 = require("obsidian");
 /**
  * Helper to get the active MarkdownView, supporting specific file targeting and fallback
@@ -26,6 +25,7 @@ function getActiveMarkdownView(app, targetFile) {
     }
     return view;
 }
+exports.getActiveMarkdownView = getActiveMarkdownView;
 /**
  * Executes an action in edit (source) mode and ensures the view returns to preview mode afterwards.
  *
@@ -48,3 +48,4 @@ async function executeInEditMode(view, action) {
         }
     }
 }
+exports.executeInEditMode = executeInEditMode;

@@ -39,7 +39,7 @@ It follows **Hexagonal Architecture** and uses **snake_case** per PEP 8 standard
 
 2.  Open `.env` and set your Google Gemini API Key:
     ```
-    GOOGLE_API_KEY=your_api_key_here
+    GOOGLE_AI_API_KEY=your_api_key_here
     PORT=8000
     ```
 

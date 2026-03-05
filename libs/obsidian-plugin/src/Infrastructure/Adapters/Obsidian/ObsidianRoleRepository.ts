@@ -1,7 +1,7 @@
 import { App, TFolder, TFile } from 'obsidian';
-import { RoleRepositoryPort } from "@elo/core";
-import { SettingsPort } from "@elo/core";
-import { Role } from "@elo/core";
+import { RoleRepositoryPort } from "../../../../../core-typescript/dist";
+import { SettingsPort } from "../../../../../core-typescript/dist";
+import { Role } from "../../../../../core-typescript/dist";
 
 export class ObsidianRoleRepository implements RoleRepositoryPort {
     constructor(
@@ -10,7 +10,7 @@ export class ObsidianRoleRepository implements RoleRepositoryPort {
     ) { }
 
     async loadRoles(): Promise<Role[]> {
-        const folderPath = this.settings.getGeminiRolesFolder();
+        const folderPath = 'Personas';
         if (!folderPath) return [];
 
         const folder = this.app.vault.getAbstractFileByPath(folderPath);

@@ -1,7 +1,7 @@
 import { App, TFile, normalizePath } from 'obsidian';
-import { NoteManagerPort, NoteItem, NoteMetadata } from '@elo/core';
+import { NoteManagerPort, NoteItem, NoteMetadata } from '../../../../../core-typescript/dist';
 import { ObsidianMetadataAdapter } from './ObsidianMetadataAdapter';
-import { HeaderMetadata } from '@elo/core';
+import { HeaderMetadata } from '../../../../../core-typescript/dist';
 
 export class ObsidianNoteManager implements NoteManagerPort {
 	constructor(private app: App) { }

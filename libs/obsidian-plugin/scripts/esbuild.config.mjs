@@ -42,9 +42,9 @@ export async function buildPlugin(options) {
 	}
 
 	const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-	const mdVaults = config.mdVaults || [];
+	const markdownVaults = config.markdownVaults || [];
 
-	const targetDirs = mdVaults.map((vault) => path.join(vault, `.obsidian/plugins/${pluginId}`));
+	const targetDirs = markdownVaults.map((vault) => path.join(vault, `.obsidian/plugins/${pluginId}`));
 
 	const copyPlugin = {
 		name: 'copy-plugin',

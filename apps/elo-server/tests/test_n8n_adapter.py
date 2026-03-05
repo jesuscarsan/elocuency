@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 from infrastructure.config import N8nConfig
-from infrastructure.adapters.n8n.n8n_adapter import N8nAdapter
+from infrastructure.out_adapters.n8n.n8n_adapter import N8nAdapter
 import json
 
 def test_n8n_adapter_listing():

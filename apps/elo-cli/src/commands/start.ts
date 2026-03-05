@@ -14,6 +14,11 @@ export const startCommand = new Command("start")
             try {
                 execSync("docker compose -f setup/docker-compose.yml up -d", { stdio: "inherit" });
                 console.log(chalk.green("\n✅ Elo environment is starting up!"));
+
+                console.log(chalk.bold("\n🔌 Servicios y Puertos Disponibles:"));
+                console.log(`   ${chalk.cyan("Elo Server API:")}            http://localhost:80`);
+                console.log(`   ${chalk.cyan("Elo Server API (Directo):")}  http://localhost:8001`);
+                console.log(`   ${chalk.cyan("Motor de Automatización n8n:")} http://localhost/n8n/`);
             } catch (error) {
                 console.error(chalk.red("\n❌ Failed to start Elo environment:"), error instanceof Error ? error.message : String(error));
             }

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
 from src.infrastructure.config import load_config
-from src.infrastructure.adapters.obsidian.langchain_obsidian_adapter import LangChainObsidianAdapter
+from src.infrastructure.out_adapters.obsidian.langchain_obsidian_adapter import LangChainObsidianAdapter
 from src.application.use_cases.query_vault_use_case import QueryVaultUseCase
 
 def main():
@@ -16,17 +16,17 @@ def main():
     # Configuration
     VAULT_PATH = config.obsidian.vault_path
     PERSIST_DIRECTORY = config.obsidian.persist_directory
-    GOOGLE_API_KEY = config.ai.api_key
+    AI_API_KEY = config.ai.api_key
     
-    if not GOOGLE_API_KEY:
-        print("Error: GOOGLE_API_KEY not found in config or .env")
+    if not AI_API_KEY:
+        print("Error: GOOGLE_AI_API_KEY not found in config or .env")
         return
 
     print(f"Initializing Obsidian Adapter for vault: {VAULT_PATH}")
     print(f"Using persistence directory: {PERSIST_DIRECTORY}")
     adapter = LangChainObsidianAdapter(
         vault_path=VAULT_PATH,
-        google_api_key=GOOGLE_API_KEY,
+        google_api_key=AI_API_KEY,
         persist_directory=PERSIST_DIRECTORY
     )
     

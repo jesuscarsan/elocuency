@@ -9,12 +9,14 @@ import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messag
 import { moveFile } from '@elo/obsidian-plugin';
 
 import { TranslationService } from '@elo/obsidian-plugin';
+import { UnresolvedLinkGeneratorSettings } from '@/Infrastructure/Presentation/Obsidian/settings';
 
 export class RelocateNoteByLinkFieldCommand {
 	constructor(
 		private readonly app: App,
 		private readonly translationService: TranslationService,
-	) {}
+		private readonly settings: UnresolvedLinkGeneratorSettings,
+	) { }
 
 	async execute(targetFile?: TFile): Promise<void> {
 		console.log('[RelocateNoteByLinkFieldCommand] Start');
@@ -171,7 +173,7 @@ export class RelocateNoteByLinkFieldCommand {
 
 			console.log('RelocateNote: determined suffix:', targetFolderSuffix);
 
-			const isTargetLugar = targetFolder.path.startsWith('Lugares');
+			const isTargetLugar = targetFolder.path.startsWith(this.settings.locationsFolder);
 
 			let finalFolderPath = targetFolder.path;
 

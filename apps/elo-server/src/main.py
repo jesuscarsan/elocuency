@@ -3,20 +3,22 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from src.infrastructure.config import load_config
-from src.infrastructure.adapters.ai.langgraph_agent_adapter import LangGraphAgentAdapter
+from src.infrastructure.out_adapters.ai.langgraph_agent_adapter import LangGraphAgentAdapter
 from src.application.use_cases.ask_ai_use_case import AskAIUseCase
-from src.infrastructure.adapters.api.fastapi_adapter import create_app
+from src.infrastructure.in_adapters.api.fastapi_adapter import create_app
 from src.infrastructure.mcp.manager import MCPManager
 from src.infrastructure.tools.local_tool_manager import LocalToolManager
+from src.infrastructure.out_adapters.google.gemini_adapter import GeminiAdapter
+from src.infrastructure.out_adapters.google.google_search_adapter import GoogleSearchAdapter
 from langserve import add_routes, RemoteRunnable
 import re as re_module
 from starlette.types import ASGIApp, Receive, Scope, Send
 from fastapi import Request, HTTPException
-from src.infrastructure.adapters.api.auth import verify_token
+from src.infrastructure.in_adapters.api.auth import verify_token
 from src.application.services.task_watcher_service import TaskWatcherService
 
-from src.infrastructure.adapters.obsidian.langchain_obsidian_adapter import LangChainObsidianAdapter
-from src.infrastructure.adapters.n8n.n8n_adapter import N8nAdapter
+from src.infrastructure.out_adapters.obsidian.langchain_obsidian_adapter import LangChainObsidianAdapter
+from src.infrastructure.out_adapters.n8n.n8n_adapter import N8nAdapter
 from langchain_core.tools import tool
 
 from src.infrastructure.logging.logger import setup_logging, get_logger
@@ -294,10 +296,20 @@ def bootstrap():
     ask_ai_use_case = AskAIUseCase(ai_adapter)
     
     from src.application.use_cases.ai_tools_use_case import AIToolsUseCase
-    ai_tools_use_case = AIToolsUseCase(
+    
+    # 2.2 Specialized AI Adapters
+    gemini_adapter = GeminiAdapter(
         api_key=config.ai.api_key,
-        default_model=config.ai.model,
+        default_model=config.ai.model
+    )
+    google_search_adapter = GoogleSearchAdapter(
+        api_key=config.ai.search_api_key,
         search_engine_id=config.ai.search_engine_id
+    )
+    
+    ai_tools_use_case = AIToolsUseCase(
+        ai_provider=gemini_adapter,
+        search_provider=google_search_adapter
     )
     
     # Initialize Task Watcher
@@ -391,7 +403,7 @@ def bootstrap():
         playground_type="chat"
     )
 
-    from src.infrastructure.adapters.ai.langgraph_agent_adapter import ChatInputSchema
+    from src.infrastructure.out_adapters.ai.langgraph_agent_adapter import ChatInputSchema
     from langchain_core.messages import AnyMessage
 
     add_routes(

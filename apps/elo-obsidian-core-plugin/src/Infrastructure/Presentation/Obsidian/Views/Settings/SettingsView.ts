@@ -83,6 +83,19 @@ export class SettingsView extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
+			.setName(t('settings.locationsFolderName'))
+			.setDesc(t('settings.locationsFolderDesc'))
+			.addText((text: TextComponent) => {
+				text
+					.setPlaceholder('Mi mundo')
+					.setValue(this.plugin.settings.locationsFolder)
+					.onChange(async (value: string) => {
+						this.plugin.settings.locationsFolder = value.trim();
+						await this.plugin.saveSettings();
+					});
+			});
+
+		new Setting(containerEl)
 			.setName(t('settings.templateName'))
 			.setDesc(t('settings.templateDesc'))
 			.addTextArea((text: TextAreaComponent) => {
@@ -97,44 +110,30 @@ export class SettingsView extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName(t('settings.geminiApiKeyName'))
-			.setDesc(t('settings.geminiApiKeyDesc'))
+			.setName(t('settings.eloServerUrlName'))
+			.setDesc(t('settings.eloServerUrlDesc'))
 			.addText((text: TextComponent) => {
 				text
-					.setPlaceholder('AIza...')
-					.setValue(this.plugin.settings.geminiApiKey)
+					.setPlaceholder('http://localhost:8001')
+					.setValue(this.plugin.settings.eloServerUrl)
 					.onChange(async (value: string) => {
-						this.plugin.settings.geminiApiKey = value.trim();
+						this.plugin.settings.eloServerUrl = value.trim();
 						await this.plugin.saveSettings();
 					});
-				text.inputEl.type = 'password';
 			});
 
 		new Setting(containerEl)
-			.setName(t('settings.googleApiKeyName'))
-			.setDesc(t('settings.googleApiKeyDesc'))
+			.setName(t('settings.eloServerTokenName'))
+			.setDesc(t('settings.eloServerTokenDesc'))
 			.addText((text: TextComponent) => {
 				text
-					.setPlaceholder('AIza...')
-					.setValue(this.plugin.settings.googleCustomSearchApiKey)
+					.setPlaceholder('token...')
+					.setValue(this.plugin.settings.eloServerToken)
 					.onChange(async (value: string) => {
-						this.plugin.settings.googleCustomSearchApiKey = value.trim();
+						this.plugin.settings.eloServerToken = value.trim();
 						await this.plugin.saveSettings();
 					});
 				text.inputEl.type = 'password';
-			});
-
-		new Setting(containerEl)
-			.setName(t('settings.googleEngineIdName'))
-			.setDesc(t('settings.googleEngineIdDesc'))
-			.addText((text: TextComponent) => {
-				text
-					.setPlaceholder('0123456789...')
-					.setValue(this.plugin.settings.googleCustomSearchEngineId)
-					.onChange(async (value: string) => {
-						this.plugin.settings.googleCustomSearchEngineId = value.trim();
-						await this.plugin.saveSettings();
-					});
 			});
 	}
 }

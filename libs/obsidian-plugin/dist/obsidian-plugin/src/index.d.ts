@@ -17,3 +17,5 @@ export * from './Infrastructure/Adapters/Obsidian/Utils/ViewMode';
 export * from './Infrastructure/Adapters/Obsidian/Utils/Frontmatter';
 export * from './Infrastructure/Adapters/Obsidian/ObsidianRoleRepository';
 export * from './Infrastructure/Adapters/Obsidian/ObsidianNoteManager';
+export * from './Domain/Interfaces/TranslationService';
+export * from './Infrastructure/Adapters/Obsidian/ObsidianTranslationAdapter';

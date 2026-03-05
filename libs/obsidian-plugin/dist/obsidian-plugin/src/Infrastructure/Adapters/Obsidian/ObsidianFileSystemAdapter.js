@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isFolderMatch = isFolderMatch;
-exports.ensureFolderExists = ensureFolderExists;
-exports.pathExists = pathExists;
-exports.getTemplatesFolder = getTemplatesFolder;
-exports.moveFile = moveFile;
-exports.ensureFolderNotes = ensureFolderNotes;
+exports.ensureFolderNotes = exports.moveFile = exports.getTemplatesFolder = exports.pathExists = exports.ensureFolderExists = exports.isFolderMatch = void 0;
 const obsidian_1 = require("obsidian");
 /**
  * Checks if a given folder path matches a target folder configuration.
@@ -50,6 +45,7 @@ function isFolderMatch(folderPath, targetFolder) {
     }
     return true;
 }
+exports.isFolderMatch = isFolderMatch;
 async function ensureFolderExists(app, filePath) {
     const folderPath = filePath.split('/').slice(0, -1).join('/');
     if (!folderPath) {
@@ -61,6 +57,7 @@ async function ensureFolderExists(app, filePath) {
         await createFolderRecursively(app, normalized);
     }
 }
+exports.ensureFolderExists = ensureFolderExists;
 async function pathExists(app, path) {
     const file = app.vault.getAbstractFileByPath(path);
     if (file) {
@@ -68,6 +65,7 @@ async function pathExists(app, path) {
     }
     return app.vault.adapter.exists(path);
 }
+exports.pathExists = pathExists;
 function getTemplatesFolder(app) {
     const internalPlugins = app.internalPlugins;
     const templatesPlugin = internalPlugins?.getPluginById?.('templates');
@@ -91,6 +89,7 @@ function getTemplatesFolder(app) {
     }
     return null;
 }
+exports.getTemplatesFolder = getTemplatesFolder;
 async function createFolderRecursively(app, folderPath) {
     const parts = folderPath.split('/');
     let current = '';
@@ -138,6 +137,7 @@ async function moveFile(app, file, targetPath) {
     // Perform the move
     await app.fileManager.renameFile(file, targetPath);
 }
+exports.moveFile = moveFile;
 async function ensureFolderNotes(app, filePath) {
     const normalized = (0, obsidian_1.normalizePath)(filePath);
     const parts = normalized.split('/');
@@ -171,3 +171,4 @@ async function ensureFolderNotes(app, filePath) {
         }
     }
 }
+exports.ensureFolderNotes = ensureFolderNotes;

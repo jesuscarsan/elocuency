@@ -4,10 +4,12 @@ exports.ObsidianUIServiceAdapter = void 0;
 const obsidian_1 = require("obsidian");
 const GenericFuzzySuggestModal_1 = require("../../Presentation/Obsidian/Views/Modals/GenericFuzzySuggestModal");
 class ObsidianUIServiceAdapter {
-    constructor(app) {
+    constructor(app, translationService) {
         this.app = app;
+        this.translationService = translationService;
     }
-    showMessage(message) {
+    showMessage(keyOrMessage, args) {
+        const message = this.translationService.t(keyOrMessage, args);
         new obsidian_1.Notice(message);
     }
     async showSelectionModal(placeholder, items, labelFn) {

@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from src.infrastructure.config import load_config
-from src.infrastructure.adapters.ai.langgraph_agent_adapter import LangGraphAgentAdapter
+from src.infrastructure.out_adapters.ai.langgraph_agent_adapter import LangGraphAgentAdapter
 from src.infrastructure.mcp.manager import MCPManager
 
 async def test_langgraph_agent():

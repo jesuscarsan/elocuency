@@ -1,5 +1,5 @@
 import { mergeConfig } from 'vitest/config';
-import baseConfig from '../../libs/core-ts/vitest.config.base';
+import baseConfig from '../../libs/core-typescript/vitest.config.base';
 import path from 'path';
 
 export default mergeConfig(baseConfig, {
