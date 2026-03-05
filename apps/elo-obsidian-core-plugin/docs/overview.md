@@ -13,7 +13,7 @@ The `elo-obsidian-core-plugin` is the central plugin for the Elocuency framework
 
 ## Testing
 
-This project follows a comprehensive testing strategy based on Hexagonal Architecture principles. See [Testing Strategy](../../../libs/core-typescript/docs/testing-strategy.md) for detailed guidelines on:
+This project follows a comprehensive testing strategy based on Hexagonal Architecture principles. See [Testing Strategy](../../../libs/core-typescript/docs/Testing-strategy.md) for detailed guidelines on:
 
 - What to test (and what to skip)
 - Layer-specific testing approaches

@@ -1,21 +1,23 @@
 # Elocuency
 
-Elocuency is a personal agent developer framework to make your digital twin.
+Elocuency is a framework for developing personal AI agents to create your digital twin.
 
-Elocuency uses Obsidian as the knowledge base and langchaing as the agent framework, running in docker to provide a consistent environment.
+It provides Obsidian-based tools to enrich your local Markdown vault with personal information, which can then be accessed and modified through a chatbot agent.
 
-Allow external connectivity throw N8N and allow to use MCPs and langchain tools.
+Elocuency uses Obsidian as its knowledge base and LangChain as its agent framework, running in Docker to ensure a consistent and isolated environment.
 
-For more info see the /docs/Overview.md file (or the /docs/Overview.pdf file).
+It supports external connectivity through n8n and enables the use of Model Context Protocol (MCP) and LangChain tools.
+
+For more information, please refer to the [Overview](docs/Overview.md) (or the [PDF version](docs/Overview.pdf)).
 
 # Installation
 
-See the /docs/Installation.md file for more information.
+Refer to the [Installation guide](docs/Installation.md) for setup details.
 
-# Elo commands
+# Elo Commands
 
-There are a set of commands to interact with the elocuency environment from shell.
+A set of CLI commands is available to interact with the Elocuency environment from your terminal.
 
-Exec> elo --help to see the available commands.
+Run `elo --help` to view a list of available commands.
 
-More info in the /apps/elo-cli/docs/Commands.md file.
+For detailed command information, see the [Commands documentation](apps/elo-cli/docs/Commands.md).
