@@ -14,6 +14,7 @@ class AskResponse(BaseModel):
 from typing import Callable, AsyncContextManager
 import os
 import shutil
+import json
 from src.infrastructure.config import AppConfig
 
 class InitVaultRequest(BaseModel):
@@ -46,6 +47,17 @@ def create_app(ask_ai_use_case: AskAIUseCase, config: AppConfig, lifespan: Calla
     @app.get("/api/config", dependencies=[Depends(verify_token)])
     async def get_config():
         return {"user": config.user.model_dump(), "obsidian": config.obsidian.model_dump()}
+
+    @app.get("/api/config/json", dependencies=[Depends(verify_token)])
+    async def get_config_json():
+        if not config.config_file_path or not os.path.exists(config.config_file_path):
+            raise HTTPException(status_code=404, detail="Config file not found on server.")
+        
+        try:
+            with open(config.config_file_path, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to read config file: {e}")
 
     @app.post("/api/vault/init", response_model=InitVaultResponse, dependencies=[Depends(verify_token)])
     async def init_vault(request: InitVaultRequest):

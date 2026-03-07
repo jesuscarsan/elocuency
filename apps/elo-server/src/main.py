@@ -33,7 +33,7 @@ logger = get_logger(__name__)
 
 # Global instances (needed for lifespan access)
 # Global instances (needed for lifespan access)
-mcp_manager = MCPManager(workspace_path=config.paths.mcps)
+mcp_manager = MCPManager(workspace_paths=config.paths.mcps)
 local_tool_manager = LocalToolManager(
     tools_dirs=config.paths.local_tools, 
     root_path=config.paths.root,

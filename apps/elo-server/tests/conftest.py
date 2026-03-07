@@ -13,7 +13,7 @@ def mock_config():
         root="/app",
         workspace="/app/workspace",
         assets="/app/assets",
-        mcps="/app/workspace/mcps",
+        mcps=["/app/workspace/mcps"],
         local_tools=[]
     )
     return AppConfig(

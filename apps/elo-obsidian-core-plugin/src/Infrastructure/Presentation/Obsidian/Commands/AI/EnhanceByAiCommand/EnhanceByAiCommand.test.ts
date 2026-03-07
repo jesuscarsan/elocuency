@@ -3,7 +3,7 @@ import { EnhanceByAiCommand } from './EnhanceByAiCommand';
 import { TemplateContext } from '@/Infrastructure/Presentation/Obsidian/Utils/TemplateContext';
 import { TestContext } from '@/__test-utils__/TestContext';
 import { LlmPort } from '@elo/core';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys, setFrontmatterRegistry } from '@elo/core';
 import { createMockTranslationService } from '@/__test-utils__/mockFactories';
 
 describe('EnhanceByAiCommand', () => {
@@ -45,6 +45,15 @@ describe('EnhanceByAiCommand', () => {
 		};
 
 		command = new EnhanceByAiCommand(context.app as any, settings, mockLlm, translationService);
+
+		setFrontmatterRegistry({
+			Countries: { key: 'Countries', type: 'array', description: '', asLink: true, isRelocateField: true },
+			Países: { key: 'Países', type: 'array', description: '', asLink: true, isRelocateField: true },
+			EloPrompt: { key: '!!prompt', type: 'string', description: '' },
+			EloCommands: { key: '!!commands', type: 'array', description: '' },
+			summary: { key: 'summary', type: 'string', description: '' },
+			tags: { key: 'tags', type: 'array', description: '' },
+		});
 	});
 
 	test('should enhance note using frontmatter prompt', async () => {

@@ -6,6 +6,7 @@ import {
 	createMockTranslationService,
 } from '../../__test-utils__/mockFactories';
 import { TemplateContext } from '../../Infrastructure/Presentation/Obsidian/Utils/TemplateContext';
+import { setFrontmatterRegistry } from '@elo/core';
 
 describe('ImproveNoteWithAiUseCase', () => {
 	let useCase: ImproveNoteWithAiUseCase;
@@ -21,6 +22,13 @@ describe('ImproveNoteWithAiUseCase', () => {
 		showMessage = vi.fn();
 		useCase = new ImproveNoteWithAiUseCase(llm, editor, translationService);
 		TemplateContext.activeConfig = null;
+
+		setFrontmatterRegistry({
+			Countries: { key: 'Countries', type: 'array', description: '', asLink: true, isRelocateField: true },
+			Países: { key: 'Países', type: 'array', description: '', asLink: true, isRelocateField: true },
+			EloPrompt: { key: '!!prompt', type: 'string', description: '' },
+			EloCommands: { key: '!!commands', type: 'array', description: '' },
+		});
 	});
 
 	it('should show message if no prompt is configured', async () => {

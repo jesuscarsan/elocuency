@@ -1,4 +1,4 @@
-import { Plugin, TFile, MarkdownView, Platform } from 'obsidian';
+import { Plugin, TFile, MarkdownView, Platform, requestUrl } from 'obsidian';
 import { DEFAULT_SETTINGS, UnresolvedLinkGeneratorSettings } from './settings';
 import { DependencyContainer } from './DependencyContainer';
 import { buildNoteCommands, NoteCommand } from './CommandRegistry';
@@ -17,7 +17,7 @@ import { createHeaderProgressRenderer } from './MarkdownPostProcessors/HeaderPro
 import { createHeaderMetadataRenderer } from './MarkdownPostProcessors/HeaderMetadataRenderer';
 import en from '@/I18n/locales/en';
 import es from '@/I18n/locales/es';
-import { EloServerLlmAdapter as LlmAdapter, setFrontmatterLanguage, setTagFolderMapping } from '@elo/core';
+import { EloServerLlmAdapter as LlmAdapter, setTagFolderMapping, setFrontmatterRegistry } from '@elo/core';
 
 export default class ObsidianExtension extends Plugin {
 	settings: UnresolvedLinkGeneratorSettings = DEFAULT_SETTINGS;
@@ -58,7 +58,6 @@ export default class ObsidianExtension extends Plugin {
 		// --- Initialization ---
 		await this.loadSettings();
 		await this.loadAndSyncConfig();
-		setFrontmatterLanguage(this.settings.userLanguage);
 
 		// --- I18n ---
 		this.translationService = new ObsidianTranslationAdapter({ en, es });
@@ -118,28 +117,87 @@ export default class ObsidianExtension extends Plugin {
 	}
 
 	async loadAndSyncConfig() {
+		try {
+			// 1. Try server config
+			const serverConfig = await this.fetchConfigFromServer();
+			if (serverConfig) {
+				console.log('[ObsidianExtension] Config loaded from server');
+				this.applyConfig(serverConfig);
+				return;
+			}
+
+			// 2. Fallback to local config
+			const localConfig = await this.loadLocalConfig();
+			if (localConfig) {
+				console.log('[ObsidianExtension] Config loaded from local vault');
+				this.applyConfig(localConfig);
+				return;
+			}
+
+			// 3. Last fallback: empty mappings
+			console.log('[ObsidianExtension] No config found, using defaults');
+			this.applyConfig({});
+		} catch (e) {
+			console.error('[ObsidianExtension] Error in loadAndSyncConfig', e);
+			this.applyConfig({});
+		}
+	}
+
+	private async fetchConfigFromServer(): Promise<any | null> {
+		const serverUrl = this.settings.eloServerUrl || 'http://localhost:8001';
+		const serverToken = this.settings.eloServerToken || '';
+		const url = `${serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl}/api/config/json`;
+
+		try {
+			const response = await requestUrl({
+				url,
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${serverToken}`,
+				},
+			});
+
+			if (response.status === 200) {
+				return response.json;
+			}
+			return null;
+		} catch (e) {
+			console.warn('[ObsidianExtension] Failed to fetch config from server', e);
+			return null;
+		}
+	}
+
+	private async loadLocalConfig(): Promise<any | null> {
 		const configPath = 'elo-config.json';
-		let config: any = {};
-		
 		try {
 			const exists = await this.app.vault.adapter.exists(configPath);
 			if (exists) {
 				const content = await this.app.vault.adapter.read(configPath);
-				config = JSON.parse(content);
-				
-				// Sync mapping
-				if (config.tagFolderMapping) {
-					setTagFolderMapping(config.tagFolderMapping);
-				} else {
-					setTagFolderMapping({});
-				}
-			} else {
-				setTagFolderMapping({});
+				return JSON.parse(content);
 			}
 		} catch (e) {
-			console.error('Failed to load elo-config.json', e);
-			// Fallback to empty mappings
+			console.warn('[ObsidianExtension] Failed to load local elo-config.json', e);
+		}
+		return null;
+	}
+
+	private applyConfig(config: any) {
+		console.log('[ObsidianExtension] Applying config:', config);
+		
+		// Sync mapping
+		if (config.tagFolderMapping) {
+			setTagFolderMapping(config.tagFolderMapping);
+			console.log('[ObsidianExtension] TagFolderMapping initialized:', Object.keys(config.tagFolderMapping));
+		} else {
 			setTagFolderMapping({});
+		}
+
+		if (config.frontmatterRegistry) {
+			setFrontmatterRegistry(config.frontmatterRegistry);
+			console.log('[ObsidianExtension] FrontmatterRegistry initialized:', Object.keys(config.frontmatterRegistry));
+		} else {
+			setFrontmatterRegistry({});
 		}
 	}
 

@@ -16,9 +16,9 @@ from src.infrastructure.logging.logger import get_logger
 logger = get_logger(__name__)
 
 class MCPManager:
-    def __init__(self, workspace_path: str):
+    def __init__(self, workspace_paths: List[str]):
         self.config = load_config()
-        self.workspace_path = Path(workspace_path).resolve()
+        self.workspace_paths = [Path(p).resolve() for p in workspace_paths]
         # Map server_name -> ClientSession
         self._sessions: Dict[str, ClientSession] = {}
         self._exit_stack = AsyncExitStack()
@@ -28,67 +28,67 @@ class MCPManager:
         """
         Starts the MCP client sessions.
         """
-        # Search for MCP servers in the workspace
-        if not self.workspace_path.exists():
-            logger.warning(f"MCP workspace path does not exist: {self.workspace_path}")
-            return
+        for workspace_path in self.workspace_paths:
+            if not workspace_path.exists():
+                logger.warning(f"MCP workspace path does not exist: {workspace_path}")
+                continue
 
-        for server_dir in self.workspace_path.iterdir():
-            if server_dir.is_dir() and not server_dir.name.startswith("."):
-                server_name = server_dir.name
-                
-                # Check if this MCP is activated in config
-                mcp_config = next((m for m in self.config.activated_mcps if m.name == server_name), None)
-                if not mcp_config or not mcp_config.active:
-                    logger.info(f"Skipping deactivated MCP server: {server_name}")
-                    continue
-
-                # Standard pattern: workspace/mcps/server-name/src/index.js (or similar)
-                # For now, let's assume bitbonsai/mcp-obsidian pattern
-                
-                server_path = None
-                command = None
-                args = []
-                
-                # node/js
-                if (server_dir / "dist" / "index.js").exists():
-                    server_path = server_dir / "dist" / "index.js"
-                    command = "node"
-                    args = [str(server_path)]
-                elif (server_dir / "index.js").exists():
-                    server_path = server_dir / "index.js"
-                    command = "node"
-                    args = [str(server_path)]
-                # python
-                elif (server_dir / "src" / server_name / "server.py").exists():
-                    server_path = server_dir / "src" / server_name / "server.py"
-                    command = "python" # or python3
-                    args = [str(server_path)]
-                
-                if command:
-                    try:
-                        logger.info(f"Connecting to {server_name} MCP server at {server_path}...")
-                        server_params = StdioServerParameters(
-                            command=command,
-                            args=args,
-                            env=os.environ.copy()
-                        )
-                        
-                        # Use AsyncExitStack to manage session lifecycles
-                        read, write = await self._exit_stack.enter_async_context(stdio_client(server_params))
-                        session = await self._exit_stack.enter_async_context(ClientSession(read, write))
-                        
-                        logger.info(f"Initializing {server_name} session...")
-                        await asyncio.wait_for(session.initialize(), timeout=30.0)
-                        self._sessions[server_name] = session
-                        logger.info(f"Connected and initialized {server_name} MCP server.")
-                        
-                    except asyncio.TimeoutError:
-                        logger.error(f"Timeout initializing MCP server {server_name}")
-                    except Exception as e:
-                        logger.error(f"Error starting MCP server {server_name}: {e}")
-                        import traceback
-                        logger.error(traceback.format_exc())
+            for server_dir in workspace_path.iterdir():
+                if server_dir.is_dir() and not server_dir.name.startswith("."):
+                    server_name = server_dir.name
+                    
+                    # Check if this MCP is activated in config
+                    mcp_config = next((m for m in self.config.activated_mcps if m.name == server_name), None)
+                    if not mcp_config or not mcp_config.active:
+                        logger.info(f"Skipping deactivated MCP server: {server_name}")
+                        continue
+    
+                    # Standard pattern: workspace/mcps/server-name/src/index.js (or similar)
+                    # For now, let's assume bitbonsai/mcp-obsidian pattern
+                    
+                    server_path = None
+                    command = None
+                    args = []
+                    
+                    # node/js
+                    if (server_dir / "dist" / "index.js").exists():
+                        server_path = server_dir / "dist" / "index.js"
+                        command = "node"
+                        args = [str(server_path)]
+                    elif (server_dir / "index.js").exists():
+                        server_path = server_dir / "index.js"
+                        command = "node"
+                        args = [str(server_path)]
+                    # python
+                    elif (server_dir / "src" / server_name / "server.py").exists():
+                        server_path = server_dir / "src" / server_name / "server.py"
+                        command = "python" # or python3
+                        args = [str(server_path)]
+                    
+                    if command:
+                        try:
+                            logger.info(f"Connecting to {server_name} MCP server at {server_path}...")
+                            server_params = StdioServerParameters(
+                                command=command,
+                                args=args,
+                                env=os.environ.copy()
+                            )
+                            
+                            # Use AsyncExitStack to manage session lifecycles
+                            read, write = await self._exit_stack.enter_async_context(stdio_client(server_params))
+                            session = await self._exit_stack.enter_async_context(ClientSession(read, write))
+                            
+                            logger.info(f"Initializing {server_name} session...")
+                            await asyncio.wait_for(session.initialize(), timeout=30.0)
+                            self._sessions[server_name] = session
+                            logger.info(f"Connected and initialized {server_name} MCP server.")
+                            
+                        except asyncio.TimeoutError:
+                            logger.error(f"Timeout initializing MCP server {server_name}")
+                        except Exception as e:
+                            logger.error(f"Error starting MCP server {server_name}: {e}")
+                            import traceback
+                            logger.error(traceback.format_exc())
 
     async def stop(self):
         """

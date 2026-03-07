@@ -41,7 +41,7 @@ class PathsConfig(BaseModel):
     root: str
     workspace: str
     assets: str
-    mcps: str
+    mcps: List[str] = Field(default_factory=list)
     local_tools: List[str] = Field(default_factory=list)
 
 class UserConfig(BaseModel):
@@ -59,6 +59,7 @@ class AppConfig(BaseModel):
     paths: PathsConfig
     activated_mcps: List[MCPConfig] = Field(default_factory=list)
     activated_tools: List[ToolConfig] = Field(default_factory=list)
+    config_file_path: Optional[str] = None
 
 def load_config(config_path: Optional[str] = None) -> AppConfig:
     """
@@ -80,10 +81,12 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     ]
     
     config_dict = {}
+    source_path = None
     for p in possible_json_paths:
         if os.path.exists(p):
             with open(p, "r") as f:
                 config_dict = json.load(f)
+                source_path = os.path.abspath(p)
             break
             
     # 2. Map JSON keys to AppConfig structure (handling flattening/renaming)
@@ -169,7 +172,9 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
              
         assets_path = potential_assets
 
-    mcps_path = os.path.join(workspace_path, "mcps")
+    mcps_workspace_path = os.path.join(workspace_path, "mcps")
+    mcps_apps_path = os.path.join(project_root, "..")
+    mcps_paths = [mcps_workspace_path, mcps_apps_path]
     
     # Tool directories
     tool_dirs = []
@@ -186,7 +191,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         "root": project_root,
         "workspace": workspace_path,
         "assets": assets_path,
-        "mcps": mcps_path,
+        "mcps": mcps_paths,
         "local_tools": tool_dirs
     }
 
@@ -198,7 +203,8 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         "user": user_config,
         "paths": paths_config,
         "activated_mcps": config_dict.get("mcps", []),
-        "activated_tools": config_dict.get("langchainTools", [])
+        "activated_tools": config_dict.get("langchainTools", []),
+        "config_file_path": source_path
     }
     
     config = AppConfig(**full_config_dict)
