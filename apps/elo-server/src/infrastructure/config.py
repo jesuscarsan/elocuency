@@ -69,25 +69,14 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
     3. Docker-specific path automation
     """
     # 1. Find and load elo-config.json
-    possible_json_paths = [
-        "elo-config.json",
-        "/elo-workbench/elo-workspace/elo-config.json",
-        "/app/elo-config.json",
-        "/app/workspace/elo-config.json",
-        os.path.join(os.path.dirname(__file__), "..", "..", "elo-config.json"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "workspace", "elo-config.json"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "elo-config.json"),
-        os.path.join(os.path.dirname(__file__), "..", "..", "..", "workspace", "elo-config.json")
-    ]
+    target_config_path = "/elo-workbench/elo-workspace/elo-config.json"
     
     config_dict = {}
     source_path = None
-    for p in possible_json_paths:
-        if os.path.exists(p):
-            with open(p, "r") as f:
-                config_dict = json.load(f)
-                source_path = os.path.abspath(p)
-            break
+    if os.path.exists(target_config_path):
+        with open(target_config_path, "r") as f:
+            config_dict = json.load(f)
+            source_path = os.path.abspath(target_config_path)
             
     # 2. Map JSON keys to AppConfig structure (handling flattening/renaming)
     
@@ -146,31 +135,10 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         workspace_path = "/elo-workbench/elo-workspace"
         assets_path = "/elo-workbench/apps/elo-server/assets"
     else:
-        # Local development: we need to find where 'workspace' and 'assets' effectively are.
-        # usually ../../../workspace relative to elo-server if in mono-repo structure
-        # or just inside elo-server if standalone.
-        # Based on user info: /Users/joshua/my-docs/code/elocuency-v3/apps/elo-server
-        # Workspace is at /Users/joshua/my-docs/code/elocuency-v3/workspace
-        
-        # Check standard locations (prioritize monorepo root elo-workspace)
+        # Local development
         monorepo_root = os.path.dirname(os.path.dirname(project_root))
-        potential_workspace = os.path.join(monorepo_root, "elo-workspace")
-        
-        if not os.path.exists(potential_workspace):
-            potential_workspace = os.path.join(monorepo_root, "workspace")
-            if not os.path.exists(potential_workspace):
-                potential_workspace = os.path.join(project_root, "elo-workspace")
-                if not os.path.exists(potential_workspace):
-                    potential_workspace = os.path.join(project_root, "workspace")
-        
-        workspace_path = potential_workspace
-        
-        potential_assets = os.path.join(project_root, "assets")
-        if not os.path.exists(potential_assets):
-             monorepo_root = os.path.dirname(project_root)
-             potential_assets = os.path.join(monorepo_root, "assets")
-             
-        assets_path = potential_assets
+        workspace_path = os.path.join(monorepo_root, "elo-workspace")
+        assets_path = os.path.join(project_root, "assets")
 
     mcps_workspace_path = os.path.join(workspace_path, "mcps")
     mcps_apps_path = os.path.join(project_root, "..")
