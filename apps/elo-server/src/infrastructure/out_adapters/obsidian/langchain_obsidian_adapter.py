@@ -36,9 +36,8 @@ class LangChainObsidianAdapter(ObsidianPort):
         self.last_sync_attempt = None
         self.sync_cooldown_seconds = 300 # 5 minutes
         
-        # 1. Initialize Embeddings
         self.embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/gemini-embedding-001",
+            model="models/gemini-embedding-2-preview",
             google_api_key=google_api_key,
             task_type="retrieval_document"
         )
