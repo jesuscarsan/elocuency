@@ -19,9 +19,8 @@ export class ObsidianCommandExecutorAdapter implements CommandExecutorPort {
 				if (command.callback) {
 					await command.callback();
 				} else if (command.editorCallback) {
-					// Requires editor. We try to find active view.
-					const leaf = this.app.workspace.getLeavesOfType('markdown')[0]; // Simple approach
-					const view = leaf?.view as MarkdownView; // Cast safely?
+					// Use standard Obsidian API for active markdown view
+					const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 					if (view && view.editor) {
 						await command.editorCallback(view.editor, view);
 					} else {

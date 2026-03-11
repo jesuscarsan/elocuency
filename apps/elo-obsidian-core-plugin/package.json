@@ -1,6 +1,6 @@
 {
   "name": "elo-obsidian-core-plugin",
-  "version": "0.1.116",
+  "version": "0.1.119",
   "description": "Obsidian helper extension.",
   "main": "dist/main.js",
   "scripts": {

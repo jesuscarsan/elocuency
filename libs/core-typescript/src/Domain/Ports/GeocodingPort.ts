@@ -4,12 +4,12 @@ export type GeocodingParams = {
 };
 
 export type GeocodingResponse = {
-  lugar?: string;
-  barrio?: string;
-  municipio: string;
-  provincia: string;
+  name?: string;
+  neighborhood?: string;
+  city: string;
+  province: string;
   region: string;
-  pais: string;
+  country: string;
   googlePlaceId?: string;
   lat?: number;
   lng?: number;

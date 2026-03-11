@@ -3,7 +3,7 @@ import {
 	executeInEditMode,
 	getActiveMarkdownView,
 } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
-import { FrontmatterRegistry } from '@elo/core';
+import { FrontmatterRegistry } from '../../../Constants/FrontmatterRegistry';
 import { GenericFuzzySuggestModal } from '@elo/obsidian-plugin';
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 

@@ -296,7 +296,8 @@ export class GenerateMissingNotesFromLinksCommand {
 
 		return name
 			.replace(/\\/g, '/')
-			.replace(/:+/g, ' -')
+			.replace(/:/g, ' -')
+			.replace(/[*?"<>|]/g, ' ')
 			.replace(/[\n\r\t]/g, ' ')
 			.replace(/\s+/g, ' ')
 			.trim();

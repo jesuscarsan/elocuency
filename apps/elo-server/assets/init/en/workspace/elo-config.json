@@ -1,4 +1,42 @@
 {
+    "myWorld": {
+        "placesTagsNameStart": "Places/",
+        "placeSuffixes": [
+            "Restaurants",
+            "Monuments",
+            "Landscapes",
+            "Beaches",
+            "Mountains",
+            "Parks",
+            "Cafes",
+            "Bars",
+            "Museums-Arts",
+            "Museums-Science",
+            "Hotels",
+            "Shops",
+            "Stadiums",
+            "Auditoriums",
+            "Libraries",
+            "Capitals",
+            "Municipalities",
+            "Provinces",
+            "Regions",
+            "Countries",
+            "Cities",
+            "Continents",
+            "Neighborhoods",
+            "Villages",
+            "Department-stores",
+            "Nature-parks",
+            "Houses",
+            "Offices",
+            "Apartments",
+            "Streets",
+            "Islands",
+            "Clothing-stores",
+            "Hospitals"
+        ]
+    },
     "markdownVaults": [
         "/Users/joshua/my-docs/KBs/JACS"
     ],
@@ -54,9 +92,9 @@
         "Lugares/Cafeterías": "(Bares)",
         "Lugares/Negocios": "(Negocios)",
         "Lugares/Tiendas": "(Tiendas)",
-        "Eventos/Fiestas": "(Eventos)",
-        "Eventos/Festivales-de-cine": "(Eventos)",
-        "Eventos/Festivales-de-música": "(Eventos)",
-        "Eventos/Festivales-de-teatro": "(Eventos)"
+        "Lugares/Eventos/Fiestas": "(Eventos)",
+        "Lugares/Eventos/Festivales-de-cine": "(Eventos)",
+        "Lugares/Eventos/Festivales-de-música": "(Eventos)",
+        "Lugares/Eventos/Festivales-de-teatro": "(Eventos)"
     }
 }

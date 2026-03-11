@@ -11,7 +11,7 @@ import {
 	createMockNetworkPort,
 	createMockTranslationService,
 } from '../../__test-utils__/mockFactories';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys } from '../../Infrastructure/Presentation/Obsidian/Constants/FrontmatterRegistry';
 
 describe('ApplyTemplateUseCase', () => {
 	let useCase: ApplyTemplateUseCase;

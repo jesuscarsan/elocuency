@@ -3,7 +3,7 @@ import {
 	executeInEditMode,
 	getActiveMarkdownView,
 } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
-import { FrontmatterRegistry } from '@elo/core';
+import { FrontmatterKeys, FrontmatterRegistry } from '../../Constants/FrontmatterRegistry';
 import { TagFolderMappingRegistry } from '@elo/core';
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 import { moveFile } from '@elo/obsidian-plugin';

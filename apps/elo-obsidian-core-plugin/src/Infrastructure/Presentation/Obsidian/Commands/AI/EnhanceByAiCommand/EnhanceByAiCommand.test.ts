@@ -3,7 +3,7 @@ import { EnhanceByAiCommand } from './EnhanceByAiCommand';
 import { TemplateContext } from '@/Infrastructure/Presentation/Obsidian/Utils/TemplateContext';
 import { TestContext } from '@/__test-utils__/TestContext';
 import { LlmPort } from '@elo/core';
-import { FrontmatterKeys, setFrontmatterRegistry } from '@elo/core';
+import { FrontmatterKeys, setFrontmatterRegistry } from '../../../Constants/FrontmatterRegistry';
 import { createMockTranslationService } from '@/__test-utils__/mockFactories';
 
 describe('EnhanceByAiCommand', () => {

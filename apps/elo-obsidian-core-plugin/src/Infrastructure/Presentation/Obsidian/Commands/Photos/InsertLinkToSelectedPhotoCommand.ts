@@ -10,7 +10,7 @@ import {
 	executeInEditMode,
 	getActiveMarkdownView,
 } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys, FrontmatterRegistry } from '../../Constants/FrontmatterRegistry';
 
 import { TranslationService } from '@elo/obsidian-plugin';
 

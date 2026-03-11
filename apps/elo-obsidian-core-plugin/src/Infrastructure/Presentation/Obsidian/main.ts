@@ -17,7 +17,10 @@ import { createHeaderProgressRenderer } from './MarkdownPostProcessors/HeaderPro
 import { createHeaderMetadataRenderer } from './MarkdownPostProcessors/HeaderMetadataRenderer';
 import en from '@/I18n/locales/en';
 import es from '@/I18n/locales/es';
-import { EloServerLlmAdapter as LlmAdapter, setTagFolderMapping, setFrontmatterRegistry } from '@elo/core';
+import { EloServerLlmAdapter as LlmAdapter, setTagFolderMapping } from '@elo/core';
+import { setFrontmatterRegistry, FrontmatterKeys, FrontmatterRegistry, FrontmatterFieldConfig } from './Constants/FrontmatterRegistry';
+import { setMyWorldConfig, MyWorldConfig, MyWorldRegistry } from './Constants/MyWorldRegistry';
+import { getPlaceTypes, getPlaceTypeRegistry, PlaceTypeConfig } from './Constants/PlaceTypes';
 
 export default class ObsidianExtension extends Plugin {
 	settings: UnresolvedLinkGeneratorSettings = DEFAULT_SETTINGS;
@@ -199,10 +202,37 @@ export default class ObsidianExtension extends Plugin {
 		} else {
 			setFrontmatterRegistry({});
 		}
+
+		if (config.myWorld) {
+			setMyWorldConfig(config.myWorld);
+			console.log('[ObsidianExtension] MyWorldConfig initialized:', config.myWorld);
+		} else {
+			setMyWorldConfig({});
+		}
 	}
 
 	public getNoteCommands() {
 		return this.noteCommands;
+	}
+
+	public getMyWorldConfig(): MyWorldConfig {
+		return MyWorldRegistry;
+	}
+
+	public getPlaceTypes(): string[] {
+		return getPlaceTypes();
+	}
+
+	public getPlaceTypeRegistry(): Partial<Record<string, PlaceTypeConfig>> {
+		return getPlaceTypeRegistry();
+	}
+
+	public getFrontmatterKeys(): Record<string, string> {
+		return FrontmatterKeys;
+	}
+
+	public getFrontmatterRegistry(): Record<string, FrontmatterFieldConfig> {
+		return FrontmatterRegistry;
 	}
 
 	async activateNoteOperationsView() {

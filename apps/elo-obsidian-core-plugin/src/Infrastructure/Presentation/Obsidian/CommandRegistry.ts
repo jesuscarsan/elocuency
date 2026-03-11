@@ -1,5 +1,4 @@
 import { TFile, MarkdownView } from 'obsidian';
-import { CommandEnum } from '@elo/core';
 
 import { ApplyTemplateCommand } from '@/Infrastructure/Presentation/Obsidian/Commands/ApplyTemplateCommand/ApplyTemplateCommand';
 import { ApplyTemplateWithUrlCommand } from '@/Infrastructure/Presentation/Obsidian/Commands/ApplyTemplateCommand/ApplyTemplateWithUrlCommand';
@@ -44,7 +43,7 @@ export function buildNoteCommands(
 
 	return [
 		{
-			id: CommandEnum.ApplyTemplate,
+			id: 'ApplyTemplateCommand',
 			name: plugin.translationService.t('command.applyTemplate'),
 			callback: async (file?: TFile) => {
 				await new ApplyTemplateCommand(
@@ -57,7 +56,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.ApplyTemplateWithUrl,
+			id: 'ApplyTemplateWithUrlCommand',
 			name: plugin.translationService.t('command.applyTemplateWithUrl'),
 			callback: async (file?: TFile) => {
 				await new ApplyTemplateWithUrlCommand(
@@ -70,14 +69,14 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.EnhanceByAi,
+			id: 'EnhanceByAiCommand',
 			name: plugin.translationService.t('command.enhanceByAi'),
 			callback: async (file?: TFile) => {
 				await new EnhanceByAiCommand(app, settings, llm, plugin.translationService).execute(file);
 			},
 		},
 		{
-			id: CommandEnum.EnrichWithPromptUrl,
+			id: 'EnrichWithPromptUrlCommand',
 			name: plugin.translationService.t('command.enrichWithPromptUrl'),
 			callback: async (file?: TFile) => {
 				await new EnrichWithPromptUrlCommand(
@@ -90,14 +89,14 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.AddImages,
+			id: 'AddImagesCommand',
 			name: plugin.translationService.t('command.addImages'),
 			callback: async (file?: TFile) => {
 				await new AddImagesCommand(app, imageEnricher, plugin.translationService).execute(file);
 			},
 		},
 		{
-			id: CommandEnum.CreateNoteFromImages,
+			id: 'CreateNoteFromImagesCommand',
 			name: plugin.translationService.t('command.createNoteFromImages'),
 			callback: async (file?: TFile) => {
 				await new CreateNoteFromImagesCommand(app, geminiImages, plugin.translationService).execute(
@@ -106,7 +105,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.ApplyTemplateFromImage,
+			id: 'ApplyTemplateFromImageCommand',
 			name: plugin.translationService.t('command.applyTemplateFromImage'),
 			callback: async (file?: TFile) => {
 				await new ApplyTemplateFromImageCommand(
@@ -118,7 +117,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.RelocateNoteByLinkField,
+			id: 'RelocateNoteByLinkFieldCommand',
 			name: plugin.translationService.t('command.relocateNoteByLinkField'),
 			callback: async (file?: TFile) => {
 				await new RelocateNoteByLinkFieldCommand(app, plugin.translationService, settings).execute(
@@ -127,7 +126,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.GenerateMissingNotesFromLinks,
+			id: 'GenerateMissingNotesFromLinksCommand',
 			name: plugin.translationService.t('command.generateMissingNotes'),
 			callback: async (file?: TFile) => {
 				await new GenerateMissingNotesFromLinksCommand(
@@ -138,21 +137,21 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.CreateReciprocityLinksNotes,
+			id: 'CreateReciprocityLinksNotesCommand',
 			name: plugin.translationService.t('command.createReciprocityLinksNotes'),
 			callback: async (file?: TFile) => {
 				await new CreateReciprocityLinksNotesCommand(app, plugin.translationService).execute(file);
 			},
 		},
 		{
-			id: CommandEnum.AnalyzeAndLinkEntities,
+			id: 'AnalyzeAndLinkEntitiesCommand',
 			name: plugin.translationService.t('command.analyzeAndLinkEntities'),
 			callback: async (file?: TFile) => {
 				await new AnalyzeAndLinkEntitiesCommand(app, llm, plugin.translationService).execute(file);
 			},
 		},
 		{
-			id: CommandEnum.GenerateMissingNotesFromListField,
+			id: 'GenerateMissingNotesFromListFieldCommand',
 			name: plugin.translationService.t('command.generateMissingNotesFromListField'),
 			callback: async (file?: TFile) => {
 				await new GenerateMissingNotesFromListFieldCommand(
@@ -165,14 +164,14 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.InsertLinkToSelectedPhoto,
+			id: 'InsertLinkToSelectedPhotoCommand',
 			name: plugin.translationService.t('command.insertLinkToSelectedPhoto'),
 			callback: async (file?: TFile) => {
 				await new InsertLinkToSelectedPhotoCommand(app, plugin.translationService).execute(file);
 			},
 		},
 		{
-			id: CommandEnum.OpenLinkedPhoto,
+			id: 'OpenLinkedPhotoCommand',
 			name: plugin.translationService.t('command.openLinkedPhoto'),
 			callback: async (file?: TFile) => {
 				await new OpenLinkedPhotoCommand(app, plugin.translationService).execute(file);
@@ -187,7 +186,7 @@ export function buildNoteCommands(
 		},
 
 		{
-			id: CommandEnum.TokenizeAndCreateDictionaryNotes,
+			id: 'TokenizeAndCreateDictionaryNotesCommand',
 			name: plugin.translationService.t('command.tokenizeAndCreateDictionaryNotes'),
 			callback: async (file?: TFile) => {
 				await new TokenizeAndCreateDictionaryNotesCommand(
@@ -198,7 +197,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: CommandEnum.ToggleHideEmptyProperties,
+			id: 'ToggleHideEmptyProperties',
 			name: plugin.translationService.t('command.toggleHideEmptyProperties'),
 			callback: async () => {
 				settings.hideEmptyProperties = !settings.hideEmptyProperties;

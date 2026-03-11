@@ -1,5 +1,5 @@
 import { App, TFile, Command, MarkdownView } from 'obsidian';
-import { FrontmatterRegistry } from '@elo/core';
+import { FrontmatterRegistry } from '../Constants/FrontmatterRegistry';
 
 export class MetadataChangeListener {
 	private app: App;
@@ -48,7 +48,7 @@ export class MetadataChangeListener {
 				// console.log(`[FrontmatterEventService] Field '${fieldConfig.key}' changed in ${file.basename}. Executing commands:`, fieldConfig.commands);
 
 				for (const commandId of fieldConfig.commands) {
-					this.executeCommand(commandId);
+					await this.executeCommand(commandId);
 				}
 			}
 		}

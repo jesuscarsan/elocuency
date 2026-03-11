@@ -1,6 +1,6 @@
 import { App as ObsidianApp, MarkdownView, Notice, TFile } from 'obsidian';
 import type { ImageEnricherService } from '@/Application/Services/ImageEnricherService';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys } from '../../../Constants/FrontmatterRegistry';
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 import {
 	formatFrontmatterBlock,

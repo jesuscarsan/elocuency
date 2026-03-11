@@ -17,7 +17,7 @@ export class AnalyzeAndLinkEntitiesCommand {
 		private readonly app: App,
 		private readonly llm: LlmPort,
 		private readonly translationService: TranslationService,
-	) {}
+	) { }
 
 	async execute(targetFile?: TFile) {
 		console.log('[AnalyzeAndLinkEntitiesCommand] Start');
@@ -95,7 +95,7 @@ Content:
 Extract:
 1.  **People** (Personas): Specific individuals mentioned.
 2.  **Places** (Lugares): Locations, cities, countries.
-3.  **Concepts** (Conceptos): Events or things with their own name.
+3.  **Concepts** (Conceptos): Events or things with their own name relevant to the note content.
 
 Return a JSON ARRAY of objects. Each object must have:
 - "name": The exact string occurrence in the text (case-sensitive preference, but normalize if needed).

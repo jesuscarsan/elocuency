@@ -14,6 +14,7 @@ class AIConfig(BaseModel):
     model: str = "gemini-2.0-flash"
     search_api_key: Optional[str] = None
     search_engine_id: Optional[str] = None
+    maps_api_key: Optional[str] = None
 
 class ObsidianConfig(BaseModel):
     vault_path: Optional[str] = None
@@ -94,7 +95,8 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         "api_key": os.getenv("GOOGLE_AI_API_KEY", ""),
         "model": ai_data.get("model", os.getenv("AI_MODEL", "gemini-2.0-flash")),
         "search_api_key": os.getenv("GOOGLE_SEARCH_API_KEY", os.getenv("GOOGLE_AI_API_KEY")),
-        "search_engine_id": ai_data.get("search_engine_id", os.getenv("GOOGLE_SEARCH_ENGINE_ID"))
+        "search_engine_id": ai_data.get("search_engine_id", os.getenv("GOOGLE_SEARCH_ENGINE_ID")),
+        "maps_api_key": os.getenv("GOOGLE_MAPS_API_KEY"),
     }
     
     # Obsidian Config

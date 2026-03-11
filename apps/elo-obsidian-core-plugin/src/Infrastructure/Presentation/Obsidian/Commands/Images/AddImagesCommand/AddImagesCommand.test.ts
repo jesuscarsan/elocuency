@@ -2,7 +2,7 @@ import { App, TFile, MarkdownView } from 'obsidian';
 import { AddImagesCommand } from './AddImagesCommand';
 import { TestContext } from '@/__test-utils__/TestContext';
 import { ImageEnricherService } from '@/Application/Services/ImageEnricherService';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys } from '../../../Constants/FrontmatterRegistry';
 import { createMockTranslationService } from '@/__test-utils__/mockFactories';
 
 describe('AddImagesCommand', () => {

@@ -28,6 +28,7 @@ def create_app(ask_ai_use_case: AskAIUseCase, config: AppConfig, lifespan: Calla
     app = FastAPI(title="Elo Server API", lifespan=lifespan)
 
     from src.infrastructure.in_adapters.api.ai_router import router as ai_router
+    from src.infrastructure.in_adapters.api.geocoding_router import router as geocoding_router
 
     # Enable CORS for LangServe Playground
     app.add_middleware(
@@ -39,6 +40,7 @@ def create_app(ask_ai_use_case: AskAIUseCase, config: AppConfig, lifespan: Calla
     )
 
     app.include_router(ai_router)
+    app.include_router(geocoding_router)
 
     @app.get("/health")
     async def health():

@@ -1,4 +1,4 @@
-import { App, TFile, normalizePath } from 'obsidian';
+import { App, TFile, normalizePath, MarkdownView } from 'obsidian';
 import { NoteRepositoryPort } from '../../../Domain/Ports/NoteRepositoryPort';
 import { Note } from '@/Domain/Models/Note';
 import {
@@ -31,15 +31,24 @@ export class ObsidianNoteRepositoryAdapter implements NoteRepositoryPort {
 	async saveNote(note: Note): Promise<void> {
 		const file = this.app.vault.getAbstractFileByPath(note.path);
 		if (!(file instanceof TFile)) {
-			// If file doesn't exist, create it?
-			// The Interface implies save updates existing or we need createNote.
-			// Let's try to update if exists, or create if not.
 			await this.createNote(note.path, note.content);
 			return;
 		}
 
-		// We assume note.content is fully formed with frontmatter
+		// Update vault
 		await this.app.vault.modify(file, note.content);
+
+		// SYNC: Update any open editor for this file immediately
+		const leaves = this.app.workspace.getLeavesOfType('markdown');
+		for (const leaf of leaves) {
+			const view = leaf.view as MarkdownView;
+			if (view.file?.path === note.path) {
+				// Only update if content is different to avoid cursor jumps
+				if (view.editor.getValue() !== note.content) {
+					view.editor.setValue(note.content);
+				}
+			}
+		}
 	}
 
 	async createNote(path: string, content: string): Promise<void> {

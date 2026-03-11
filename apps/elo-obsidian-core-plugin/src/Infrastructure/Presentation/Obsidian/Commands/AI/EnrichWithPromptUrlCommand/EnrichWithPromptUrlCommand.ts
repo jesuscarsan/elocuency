@@ -7,7 +7,7 @@ import {
 } from '@/Domain/Utils/FrontmatterUtils';
 import type { LlmPort } from '@elo/core';
 import type { ImageEnricherService } from '@/Application/Services/ImageEnricherService';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys } from '../../../Constants/FrontmatterRegistry';
 import { getActiveMarkdownView } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
 import { InputModal } from '@/Infrastructure/Presentation/Obsidian/Views/Modals/InputModal';
 import { UnresolvedLinkGeneratorSettings } from '@/Infrastructure/Presentation/Obsidian/settings';

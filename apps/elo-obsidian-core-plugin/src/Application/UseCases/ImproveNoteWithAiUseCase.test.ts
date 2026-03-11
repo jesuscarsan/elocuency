@@ -6,7 +6,7 @@ import {
 	createMockTranslationService,
 } from '../../__test-utils__/mockFactories';
 import { TemplateContext } from '../../Infrastructure/Presentation/Obsidian/Utils/TemplateContext';
-import { setFrontmatterRegistry } from '@elo/core';
+import { setFrontmatterRegistry } from '../../Infrastructure/Presentation/Obsidian/Constants/FrontmatterRegistry';
 
 describe('ImproveNoteWithAiUseCase', () => {
 	let useCase: ImproveNoteWithAiUseCase;

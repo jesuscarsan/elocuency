@@ -7,7 +7,7 @@ import {
 	parseFrontmatter,
 	splitFrontmatter,
 } from '@/Domain/Utils/FrontmatterUtils';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys } from '../../../Constants/FrontmatterRegistry';
 import {
 	getAllTemplateConfigs,
 	TemplateMatch,

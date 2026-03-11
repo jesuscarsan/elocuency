@@ -1,5 +1,5 @@
 import { Plugin, MarkdownPostProcessorContext, TFile } from 'obsidian';
-import { FrontmatterKeys } from '@elo/core';
+import { FrontmatterKeys } from '../../Constants/FrontmatterRegistry';
 
 export function registerImageGalleryRenderer(plugin: Plugin) {
     console.log("[ImageGalleryRenderer] Registering markdown post processor")

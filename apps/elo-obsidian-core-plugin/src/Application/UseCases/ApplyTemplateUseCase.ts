@@ -1,4 +1,5 @@
-import { LlmPort, FrontmatterKeys } from '@elo/core';
+import { LlmPort } from '@elo/core';
+import { FrontmatterKeys } from '../../Infrastructure/Presentation/Obsidian/Constants/FrontmatterRegistry';
 import { NoteRepositoryPort } from '../../Domain/Ports/NoteRepositoryPort';
 import { TemplateRepositoryPort, TemplateMatch } from '../../Domain/Ports/TemplateRepositoryPort';
 import { UIServicePort, CommandExecutorPort, TranslationService } from '@elo/obsidian-plugin';

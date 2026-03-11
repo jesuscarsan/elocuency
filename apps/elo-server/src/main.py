@@ -10,6 +10,7 @@ from src.infrastructure.mcp.manager import MCPManager
 from src.infrastructure.tools.local_tool_manager import LocalToolManager
 from src.infrastructure.out_adapters.google.gemini_adapter import GeminiAdapter
 from src.infrastructure.out_adapters.google.google_search_adapter import GoogleSearchAdapter
+from src.infrastructure.out_adapters.google.google_maps_geocoding_adapter import GoogleMapsGeocodingAdapter
 from langserve import add_routes, RemoteRunnable
 import re as re_module
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -322,6 +323,15 @@ def bootstrap():
     # 3. Initialize API (Infrastructure)
     app = create_app(ask_ai_use_case, config=config, lifespan=lifespan)
     app.state.ai_tools_use_case = ai_tools_use_case
+
+    # Geocoding
+    if config.ai.maps_api_key:
+        geocoding_adapter = GoogleMapsGeocodingAdapter(api_key=config.ai.maps_api_key)
+        app.state.geocoding_port = geocoding_adapter
+        logger.info("Geocoding adapter initialized (Google Maps).")
+    else:
+        app.state.geocoding_port = None
+        logger.warning("GOOGLE_MAPS_API_KEY not set. Geocoding endpoint will not be available.")
     
     # 4. Add LangServe Routes
     

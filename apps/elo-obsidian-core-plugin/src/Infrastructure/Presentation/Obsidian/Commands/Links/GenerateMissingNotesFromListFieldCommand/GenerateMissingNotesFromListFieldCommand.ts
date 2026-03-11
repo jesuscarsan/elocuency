@@ -182,8 +182,11 @@ export class GenerateMissingNotesFromListFieldCommand {
 			this.translationService,
 		);
 
-		for (const noteName of missingNotes) {
+		for (let noteName of missingNotes) {
 			try {
+				noteName = this.sanitizeLinkName(noteName);
+				if (!noteName) continue;
+
 				// Default: Same folder as active note.
 				const parentPath = activeFile.parent ? activeFile.parent.path : '';
 				const newFilePath = normalizePath(`${parentPath}/${noteName}.md`);
@@ -208,6 +211,20 @@ export class GenerateMissingNotesFromListFieldCommand {
 
 		showMessage('missingNotes.list.finished', undefined, this.translationService);
 		console.log('[GenerateMissingNotesFromListFieldCommand] End');
+	}
+
+	private sanitizeLinkName(linkName: string): string {
+		const name = linkName.split('|')[0]?.trim();
+		if (!name) {
+			return '';
+		}
+
+		return name
+			.replace(/:/g, ' -')
+			.replace(/[\/\\*?"<>|]/g, ' ')
+			.replace(/[\n\r\t]/g, ' ')
+			.replace(/\s+/g, ' ')
+			.trim();
 	}
 
 	private extractLinkText(text: string): string | null {
