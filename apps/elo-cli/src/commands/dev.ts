@@ -10,7 +10,7 @@ const watchCommand = new Command("watch")
         try {
             // Use a robust shell configuration for pnpm execution
             const shell = process.env.SHELL || '/bin/sh';
-            execSync(`pnpm --filter ${app} run dev`, {
+            execSync(`pnpm --filter ${app} run --parallel dev`, {
                 stdio: "inherit",
                 env: {
                     ...process.env,

@@ -27,7 +27,8 @@ export class ObsidianTranslationAdapter implements TranslationService {
 
         if (args) {
             Object.keys(args).forEach(argKey => {
-                translation = translation.replace(`{${argKey}}`, args[argKey]);
+                const value = args[argKey] === undefined || args[argKey] === null ? '' : String(args[argKey]);
+                translation = translation.split(`{{${argKey}}}`).join(value).split(`{${argKey}}`).join(value);
             });
         }
 

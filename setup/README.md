@@ -33,6 +33,20 @@ The script will:
 - Build the local Docker images.
 - Start the server and automation engine.
 
+## Google Cloud Configuration
+
+To use the Google Maps and AI features, you must configure your API key in the [Google Cloud Console](https://console.cloud.google.com/):
+
+1.  **Enable APIs**:
+    - **Geocoding API**: Required for address lookups.
+    - **Places API**: Required for POI search (schools, businesses, etc.).
+    - **Generative Language API**: Required for Gemini AI features.
+2.  **Configure API Key Restrictions**:
+    - Go to **APIs & Services > Credentials**.
+    - Edit your API Key.
+    - Under **API restrictions**, either select **"Don't restrict key"** (easiest for development) or ensure all three APIs mentioned above are explicitly allowed.
+3.  **Propagation**: Changes may take up to 5 minutes to take effect. If you see `REQUEST_DENIED` errors in the logs, double-check these settings.
+
 ## Configuration
 
 Your configuration is stored in `.env` inside this directory. You can edit it manually if needed.

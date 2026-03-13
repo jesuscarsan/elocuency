@@ -80,7 +80,7 @@ class GoogleMapsGeocodingAdapter(GeocodingPort):
         place_id: Optional[str] = None,
         language: str = "es",
     ) -> List[GeocodingResult]:
-        trimmed_name = place_name.strip() if place_name else ""
+        trimmed_name = place_name.strip().strip('{}') if place_name else ""
 
         if not trimmed_name and not place_id:
             logger.warning(f"{LOG_PREFIX} Geocode request skipped: empty name and ID.")
@@ -117,25 +117,24 @@ class GoogleMapsGeocodingAdapter(GeocodingPort):
             status = data.get("status", "")
 
             if status == "ZERO_RESULTS":
-                logger.warning(f"{LOG_PREFIX} No results for \"{trimmed_name}\".")
-                return []
-
-            if status == "INVALID_REQUEST":
+                logger.warning(f"{LOG_PREFIX} ZERO_RESULTS for \"{trimmed_name}\" in Geocoding API. Proceeding to secondary search...")
+            elif status == "INVALID_REQUEST":
                 logger.error(f"{LOG_PREFIX} INVALID_REQUEST. PlaceID: {place_id_to_use}, Name: {trimmed_name}")
                 return []
-
-            if status != "OK":
+            elif status != "OK":
                 error_msg = data.get("error_message", "Unknown error")
                 logger.error(f"{LOG_PREFIX} API error ({status}): {error_msg}")
-                return []
+                raise Exception(f"Google Maps API error ({status}): {error_msg}")
 
             # If no place_id, try Places Text Search first for POIs (schools, etc.)
             if not place_id_to_use and trimmed_name:
                 logger.info(f"{LOG_PREFIX} Searching for POIs using Places API: \"{trimmed_name}\"")
                 place_results = await self._search_places(client, trimmed_name, language)
                 if place_results:
-                    logger.info(f"{LOG_PREFIX} Places API found {len(place_results)} results.")
+                    logger.info(f"{LOG_PREFIX} Places API found {len(place_results)} results for \"{trimmed_name}\".")
                     return place_results
+                else:
+                    logger.warning(f"{LOG_PREFIX} Places API found 0 results for \"{trimmed_name}\".")
 
             # Fallback/Default: Geocoding API
             raw_results = data.get("results", [])
@@ -214,51 +213,63 @@ class GoogleMapsGeocodingAdapter(GeocodingPort):
     async def _search_places(
         self, client: httpx.AsyncClient, query: str, language: str
     ) -> List[GeocodingResult]:
-        """Search for Places (POIs) using Google Places Text Search API."""
+        """Search for Places (POIs) using Google Places API (New)."""
         try:
-            resp = await client.get(
-                "https://maps.googleapis.com/maps/api/place/textsearch/json",
-                params={
-                    "query": query,
-                    "key": self._api_key,
-                    "language": language,
-                },
+            headers = {
+                "X-Goog-Api-Key": self._api_key,
+                "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.location,places.addressComponents"
+            }
+            payload = {
+                "textQuery": query,
+                "languageCode": language
+            }
+            resp = await client.post(
+                "https://places.googleapis.com/v1/places:searchText",
+                headers=headers,
+                json=payload
             )
             data = resp.json()
-            if data.get("status") == "OK":
-                raw_results = data.get("results", [])
+            
+            if resp.status_code == 200:
+                raw_results = data.get("places", [])
                 results: List[GeocodingResult] = []
                 for i, raw in enumerate(raw_results):
-                    # Places API results don't always have address_components in textsearch.
-                    # We often need to do a Place Details call to get the structured components (city, province).
-                    # For performance, we'll try to extract what we can or return basic info.
-                    # Usually, 'formatted_address' is enough for the user to select.
                     result = self._extract_from_place_result(raw, i)
+                    self._normalize_spanish_region(result)
                     results.append(result)
                 return results
-            return []
+            
+            error_msg = data.get("error", {}).get("message", "Unknown error")
+            logger.error(f"{LOG_PREFIX} Places Text Search (New API) failed with status {resp.status_code}: {error_msg}")
+            raise Exception(f"Google Places API error ({resp.status_code}): {error_msg}")
         except Exception as e:
-            logger.error(f"{LOG_PREFIX} Places Text Search failed: {e}")
+            logger.error(f"{LOG_PREFIX} Places Text Search exception: {e}")
             return []
 
     def _extract_from_place_result(self, result: dict, index: int) -> GeocodingResult:
-        """Extract GeocodingResult from a Places API result (textsearch)."""
-        geometry = result.get("geometry", {})
-        location = geometry.get("location", {})
-        
-        # NOTE: Places textsearch doesn't provide address_components. 
-        # It provides formatted_address. 
-        # We return the formatted_address and coords. 
-        # The Obsidian plugin's EnrichmentService will later "Fix" this data via LLM if needed, 
-        # OR we could do another call for Place Details. 
-        # For selection modal, formatted_address is perfect.
-        
+        """Extract GeocodingResult from a Places API (New) result."""
+        location = result.get("location", {})
+        display_name = result.get("displayName", {}).get("text", "")
+        components = result.get("addressComponents", [])
+
+        def lookup(type_list: list[str]) -> str:
+            for comp in components:
+                comp_types = comp.get("types", [])
+                if any(t in comp_types for t in type_list):
+                    return (comp.get("longText") or "").strip()
+            return ""
+
         details = GeocodingResult(
-            name=result.get("name", ""),
-            google_place_id=result.get("place_id"),
-            lat=location.get("lat"),
-            lng=location.get("lng"),
-            formatted_address=result.get("formatted_address"),
+            name=display_name,
+            neighborhood=lookup(["postal_town", "sublocality"]),
+            city=lookup(["locality", "administrative_area_level_4", "administrative_area_level_3"]),
+            province=lookup(["administrative_area_level_2"]),
+            region=lookup(["administrative_area_level_1"]),
+            country=lookup(["country"]),
+            google_place_id=result.get("id"),
+            lat=location.get("latitude"),
+            lng=location.get("longitude"),
+            formatted_address=result.get("formattedAddress"),
         )
         logger.info(f"{LOG_PREFIX} Place Result #{index + 1}: {details.name} ({details.formatted_address})")
         return details
@@ -282,7 +293,7 @@ class GoogleMapsGeocodingAdapter(GeocodingPort):
         details = GeocodingResult(
             name=lookup(["locality"]),
             neighborhood=lookup(["postal_town", "sublocality"]),
-            city=lookup(["administrative_area_level_4", "administrative_area_level_3"]),
+            city=lookup(["locality", "administrative_area_level_4", "administrative_area_level_3"]),
             province=lookup(["administrative_area_level_2"]),
             region=lookup(["administrative_area_level_1"]),
             country=lookup(["country"]),
