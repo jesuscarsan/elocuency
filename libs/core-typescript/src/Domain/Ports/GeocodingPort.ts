@@ -6,7 +6,7 @@ export type GeocodingParams = {
 export type GeocodingResponse = {
   name?: string;
   neighborhood?: string;
-  city: string;
+  municipality: string;
   province: string;
   region: string;
   country: string;

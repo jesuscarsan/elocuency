@@ -16,7 +16,7 @@ export const MyWorldRegistry = new Proxy({} as MyWorldConfig, {
 
 export function setMyWorldConfig(config: Partial<MyWorldConfig>) {
     if (!config.placesTagsNameStart) {
-        throw new Error("placesTagsNameStart is strictly required in elo-config.json's myWorld");
+        throw new Error("placesTagsNameStart is strictly required in elo-config.json's myWorldPath");
     }
 
     if (!_config) {

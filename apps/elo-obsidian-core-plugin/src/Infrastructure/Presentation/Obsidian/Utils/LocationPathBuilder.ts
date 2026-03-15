@@ -15,10 +15,10 @@ export class LocationPathBuilder {
         metadata: PlaceMetadata,
         locationsFolder: string = 'Mi mundo'
     ): string {
-        const municipio = details.municipio?.trim();
-        const provincia = details.provincia?.trim();
+        const municipio = details.municipality?.trim();
+        const provincia = details.province?.trim();
         const region = details.region?.trim();
-        const pais = details.pais?.trim();
+        const pais = details.country?.trim();
 
         const placeNameTrimmed = placeName.trim();
 

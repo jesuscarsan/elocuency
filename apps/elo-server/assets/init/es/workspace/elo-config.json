@@ -1,5 +1,5 @@
 {
-    "myWorld": {
+    "myWorldPath": {
         "placesTagsNameStart": "Lugares/",
         "placeSuffixes": [
             "Restaurantes",
@@ -12,6 +12,7 @@
             "Bares",
             "Museos-Artes",
             "Museos-Ciencia",
+            "Monumentos",
             "Hoteles",
             "Tiendas",
             "Estadios",
@@ -113,26 +114,26 @@
             "description": "URL de contexto para el prompt",
             "type": "string"
         },
-        "Municipio": {
-            "key": "Municipio",
+        "municipality": {
+            "key": "municipality",
             "description": "Nombre del municipio, ciudad o pueblo",
             "type": "string",
             "asLink": true
         },
-        "Provincia": {
-            "key": "Provincia",
+        "province": {
+            "key": "province",
             "description": "Nombre de la provincia administrativa",
             "type": "string",
             "asLink": true
         },
-        "Región": {
-            "key": "Región",
+        "region": {
+            "key": "region",
             "description": "Comunidad autónoma o región",
             "type": "string",
             "asLink": true
         },
-        "País": {
-            "key": "País",
+        "country": {
+            "key": "country",
             "description": "País",
             "type": "string",
             "isRelocateField": true,
@@ -206,8 +207,8 @@
             "description": "URI de Spotify",
             "type": "string"
         },
-        "Capital": {
-            "key": "Capital",
+        "capital": {
+            "key": "capital",
             "description": "Capital del país (si aplica)",
             "type": "string",
             "asLink": true

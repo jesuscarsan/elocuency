@@ -187,7 +187,7 @@ export default class ObsidianExtension extends Plugin {
 
 	private applyConfig(config: any) {
 		console.log('[ObsidianExtension] Applying config:', config);
-		
+
 		// Sync mapping
 		if (config.tagFolderMapping) {
 			setTagFolderMapping(config.tagFolderMapping);
@@ -203,9 +203,9 @@ export default class ObsidianExtension extends Plugin {
 			setFrontmatterRegistry({});
 		}
 
-		if (config.myWorld) {
-			setMyWorldConfig(config.myWorld);
-			console.log('[ObsidianExtension] MyWorldConfig initialized:', config.myWorld);
+		if (config.myWorldPath) {
+			setMyWorldConfig(config.myWorldPath);
+			console.log('[ObsidianExtension] MyWorldConfig initialized:', config.myWorldPath);
 		} else {
 			setMyWorldConfig({});
 		}

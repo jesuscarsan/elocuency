@@ -4,20 +4,20 @@ import { FrontmatterKeys, FrontmatterRegistry, setFrontmatterRegistry } from './
 describe('FrontmatterRegistry', () => {
     it('should be initially empty', () => {
         expect(Object.keys(FrontmatterRegistry)).toHaveLength(0);
-        expect(FrontmatterKeys.Municipio).toBeUndefined();
+        expect(FrontmatterKeys.municipality).toBeUndefined();
     });
 
     it('should allow setting the registry', () => {
         setFrontmatterRegistry({
-            "Municipio": {
-                "key": "Municipio",
+            "municipality": {
+                "key": "municipality",
                 "description": "Nombre del municipio",
                 "type": "string"
             }
         });
 
-        expect(FrontmatterRegistry['Municipio']).toBeDefined();
-        expect(FrontmatterRegistry['Municipio'].key).toBe('Municipio');
-        expect(FrontmatterKeys.Municipio).toBe('Municipio');
+        expect(FrontmatterRegistry['municipality']).toBeDefined();
+        expect(FrontmatterRegistry['municipality'].key).toBe('municipality');
+        expect(FrontmatterKeys.municipality).toBe('municipality');
     });
 });

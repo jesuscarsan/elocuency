@@ -27,10 +27,10 @@ describe('LocationPathBuilder', () => {
 
     it('should build a standard path correctly with default "Mi mundo"', () => {
         const details: GeocodingResponse = {
-            municipio: 'MunicipioTest',
-            provincia: 'ProvinciaTest',
+            municipality: 'MunicipioTest',
+            province: 'ProvinciaTest',
             region: 'RegionTest',
-            pais: 'España',
+            country: 'España',
         };
 
         const path = builder.buildPath('NotaTest', details, mockMetadata);
@@ -40,10 +40,10 @@ describe('LocationPathBuilder', () => {
 
     it('should build path with custom locations folder', () => {
         const details: GeocodingResponse = {
-            municipio: 'MunicipioTest',
-            provincia: 'ProvinciaTest',
+            municipality: 'MunicipioTest',
+            province: 'ProvinciaTest',
             region: 'RegionTest',
-            pais: 'España',
+            country: 'España',
         };
 
         const path = builder.buildPath('NotaTest', details, mockMetadata, 'CustomPlaces');
@@ -52,10 +52,10 @@ describe('LocationPathBuilder', () => {
 
     it('should handle the "Municipality equals Province" case correctly by adding (Ciudad) to both folder and file', () => {
         const details: GeocodingResponse = {
-            municipio: 'Madrid',
-            provincia: 'Madrid',
+            municipality: 'Madrid',
+            province: 'Madrid',
             region: 'Comunidad de Madrid',
-            pais: 'España',
+            country: 'España',
         };
 
         const path = builder.buildPath('Madrid', details, mockMetadata);
@@ -65,10 +65,10 @@ describe('LocationPathBuilder', () => {
 
     it('should handle case insensitivity for "Municipality equals Province" check', () => {
         const details: GeocodingResponse = {
-            municipio: 'madrid',
-            provincia: 'Madrid',
+            municipality: 'madrid',
+            province: 'Madrid',
             region: 'Comunidad de Madrid',
-            pais: 'España',
+            country: 'España',
         };
 
         const path = builder.buildPath('Madrid', details, mockMetadata);
@@ -78,10 +78,10 @@ describe('LocationPathBuilder', () => {
 
     it('should correct "badly written" file names matching municipality', () => {
         const details: GeocodingResponse = {
-            municipio: 'San Sebastián',
-            provincia: 'Guipúzcoa',
+            municipality: 'San Sebastián',
+            province: 'Guipúzcoa',
             region: 'País Vasco',
-            pais: 'España',
+            country: 'España',
         };
 
         const path = builder.buildPath('san sebastian', details, mockMetadata);
@@ -91,10 +91,10 @@ describe('LocationPathBuilder', () => {
 
     it('should NOT correct completely different file names', () => {
         const details: GeocodingResponse = {
-            municipio: 'San Sebastián',
-            provincia: 'Guipúzcoa',
+            municipality: 'San Sebastián',
+            province: 'Guipúzcoa',
             region: 'País Vasco',
-            pais: 'España',
+            country: 'España',
         };
 
         const path = builder.buildPath('La playa de la concha', details, mockMetadata);
@@ -104,10 +104,10 @@ describe('LocationPathBuilder', () => {
 
     it('should include region even if not Spain, not famous, and folder does not exist', () => {
         const details: GeocodingResponse = {
-            municipio: 'Mun',
-            provincia: 'Prov',
+            municipality: 'Mun',
+            province: 'Prov',
             region: 'Reg',
-            pais: 'Francia',
+            country: 'Francia',
         };
 
         mockVault.getAbstractFileByPath.mockReturnValue(null); // Folder does not exist
@@ -119,10 +119,10 @@ describe('LocationPathBuilder', () => {
 
     it('should handle Belgian structure with Region correctly', () => {
         const details: GeocodingResponse = {
-            municipio: 'Waterloo',
-            provincia: 'Brabante Valón',
+            municipality: 'Waterloo',
+            province: 'Brabante Valón',
             region: 'Región Valona',
-            pais: 'Bélgica',
+            country: 'Bélgica',
         };
 
         const path = builder.buildPath('Waterloo', details, mockMetadata);
@@ -132,10 +132,10 @@ describe('LocationPathBuilder', () => {
 
     it('should include region if folder exists even if not Spain/Famous', () => {
         const details: GeocodingResponse = {
-            municipio: 'Mun',
-            provincia: 'Prov',
+            municipality: 'Mun',
+            province: 'Prov',
             region: 'Reg',
-            pais: 'Francia',
+            country: 'Francia',
         };
 
         // Mock that region folder exists
