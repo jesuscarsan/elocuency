@@ -253,4 +253,32 @@ describe('ApplyTemplateUseCase', () => {
 		// Should not crash
 		expect(noteRepository.saveNote).toHaveBeenCalled();
 	});
+
+	it('should add disambiguation suffix to the note name after applying template', async () => {
+		const note = NoteMother.create({ path: 'Texas.md', content: 'Original' });
+		
+		let savedContent = '---\n"año": 2013\n---\nOriginal';
+		noteRepository.getNote.mockImplementation(async (path: string) => {
+			return NoteMother.create({ path, content: savedContent });
+		});
+
+		templateRepository.getAllTemplates.mockResolvedValue([
+			{
+				template: {
+					basename: 'Pelicula',
+					config: { prompt: 'P', desambiguationSufix: 'película [año]' },
+					content: '---\n"!!desambiguationSufix": "película [año]"\n---\nTemplate',
+				},
+				score: 1,
+			} as any,
+		]);
+		llm.requestEnrichment.mockResolvedValue({
+			body: 'Enriched',
+			frontmatter: { 'año': 2013 },
+		});
+
+		await useCase.execute(note.path);
+		
+		expect(noteRepository.renameNote).toHaveBeenCalledWith('Texas.md', 'Texas (película 2013).md');
+	});
 });

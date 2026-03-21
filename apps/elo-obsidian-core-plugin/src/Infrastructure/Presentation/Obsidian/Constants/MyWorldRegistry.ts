@@ -1,6 +1,11 @@
+export interface PlaceTypeConfig {
+    geocodingSuffix?: string;
+}
+
 export interface MyWorldConfig {
     placesTagsNameStart: string;
     placeSuffixes: string[];
+    placeTypes?: Record<string, PlaceTypeConfig>;
 }
 
 let _config: MyWorldConfig | null = null;
@@ -29,5 +34,8 @@ export function setMyWorldConfig(config: Partial<MyWorldConfig>) {
     }
     if (config.placeSuffixes && Array.isArray(config.placeSuffixes)) {
         _config.placeSuffixes = config.placeSuffixes;
+    }
+    if (config.placeTypes && typeof config.placeTypes === 'object') {
+        _config.placeTypes = config.placeTypes;
     }
 }

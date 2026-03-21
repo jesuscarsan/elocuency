@@ -1,9 +1,9 @@
-version: '3.8'
-
+name: elocuency
 services:
   # 0. Entry Point (Caddy Reverse Proxy)
   caddy:
     image: caddy:alpine
+    profiles: ["n8n"]
     restart: unless-stopped
     ports:
       - "80:80"
@@ -14,17 +14,17 @@ services:
       - ${ELO_WORKSPACE_PATH:-../elo-workspace}/caddy_config:/config
       - ${ELO_WORKSPACE_PATH:-../elo-workspace}/logs/caddy:/var/log/caddy
 
-  # 1. AI Logic Server (Python/LangChain)
+  # 1. AI Logic Server (TypeScript/Fastify)
   elo-server:
     build:
       context: ../apps/elo-server
       dockerfile: ../../setup/Dockerfile
     environment:
       - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY}
       - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
-      - PYTHONPATH=/elo-workbench/apps/elo-server
       - N8N_HOST=http://n8n:5678
       - N8N_WORKFLOWS_DIR=/elo-workbench/elo-workspace/n8n/workflows
       - LOG_FILE=/elo-workbench/elo-workspace/logs/elo-server.log
@@ -44,6 +44,7 @@ services:
   # 2. Automation Engine (n8n)
   n8n:
     image: n8nio/n8n:latest
+    profiles: ["n8n"]
     environment:
       - N8N_PORT=5678
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Europe/Madrid}
@@ -59,6 +60,7 @@ services:
   # 3. Public Exposure (Ngrok)
   ngrok:
     image: ngrok/ngrok:latest
+    profiles: ["n8n"]
     restart: unless-stopped
     command:
       - "http"

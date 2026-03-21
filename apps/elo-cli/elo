@@ -1,7 +1,46 @@
 #!/usr/bin/env bash
 
 # elo
-# Wrapper para ejecutar el CLI de Elo Workbench mediante Docker sin requerir Node.js instalado.
+# Wrapper para ejecutar el CLI de Elo Workbench
+
+# Resolvemos el script real si se está ejecutando desde un symlink
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+# Calculamos la raíz del monorepo (2 niveles arriba de apps/elo-cli)
+DIR="$( cd "$SCRIPT_DIR/../.." && pwd )"
+
+RUNTIME_MODE="docker"
+if [ -f "$DIR/.env" ]; then
+    RUNTIME_MODE=$(grep "^ELO_RUNTIME_MODE=" "$DIR/.env" | cut -d '=' -f2- | tr -d '\r\n[:space:]')
+fi
+
+# Fallback default
+if [ -z "$RUNTIME_MODE" ]; then
+    RUNTIME_MODE="docker"
+fi
+
+if [ "$RUNTIME_MODE" == "native" ]; then
+    # Ejecución local (sin Docker)
+    if [ -f "$DIR/.env" ]; then
+        set -a
+        source "$DIR/.env"
+        set +a
+    fi
+    cd "$DIR"
+    # Execute locally via pnpm/tsx
+    if command -v pnpm &> /dev/null; then
+        pnpm run elo "$@"
+    else
+        npx tsx apps/elo-cli/src/index.ts "$@"
+    fi
+    exit $?
+fi
 
 # 1. Comprueba si docker está instalado
 if ! command -v docker &> /dev/null; then

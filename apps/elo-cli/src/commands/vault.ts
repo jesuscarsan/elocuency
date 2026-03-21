@@ -17,7 +17,6 @@ vaultCommand
         if (!authToken) {
             const rootDir = process.cwd();
             const potentialEnvPaths = [
-                path.join(rootDir, 'setup/.env'),
                 path.join(rootDir, 'apps/elo-server/.env'),
                 path.join(rootDir, 'elo-workspace/.env'),
                 path.join(rootDir, '.env')

@@ -3,6 +3,7 @@
     "private": true,
     "description": "Placeholder for shared Swift logic",
     "scripts": {
-        "build": "echo 'Building Swift Core... (Placeholder)'"
+        "build": "echo 'Building Swift Core... (Placeholder)'",
+        "preinstall": "npx only-allow pnpm"
     }
 }

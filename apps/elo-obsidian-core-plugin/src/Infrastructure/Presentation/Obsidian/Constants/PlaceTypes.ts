@@ -1,4 +1,4 @@
-import { MyWorldRegistry } from './MyWorldRegistry';
+import { MyWorldRegistry, PlaceTypeConfig } from './MyWorldRegistry';
 
 export function getPlaceTypes(): string[] {
     const prefix = MyWorldRegistry.placesTagsNameStart;
@@ -7,17 +7,25 @@ export function getPlaceTypes(): string[] {
     ];
 }
 
-export interface PlaceTypeConfig {
-    geocodingSuffix?: string;
-}
+export { PlaceTypeConfig };
 
 export function getPlaceTypeRegistry(): Partial<Record<string, PlaceTypeConfig>> {
     const prefix = MyWorldRegistry.placesTagsNameStart;
+    
+    if (MyWorldRegistry.placeTypes && Object.keys(MyWorldRegistry.placeTypes).length > 0) {
+        const registry: Partial<Record<string, PlaceTypeConfig>> = {};
+        for (const [suffix, config] of Object.entries(MyWorldRegistry.placeTypes)) {
+            registry[`${prefix}${suffix}`] = config;
+        }
+        return registry;
+    }
+
+    // Default Fallback
     return {
         [`${prefix}Provincias`]: { geocodingSuffix: "Provincia" },
         [`${prefix}Regiones`]: { geocodingSuffix: "Region" },
         [`${prefix}Países`]: { geocodingSuffix: "Pais" },
-        [`${prefix}Municipios`]: { geocodingSuffix: "Municipio" },
-        [`${prefix}Ciudades`]: { geocodingSuffix: "Ciudad" },
+        [`${prefix}Municipios`]: { },
+        [`${prefix}Ciudades`]: { },
     };
 }

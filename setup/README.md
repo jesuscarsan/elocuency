@@ -21,7 +21,7 @@ Please ensure you are running these commands inside **WSL2** (Windows Subsystem 
 2.  Run the setup script:
 
     ```bash
-    ./elo-setup.sh
+    ./setup.sh
     ```
 
 3.  Follow the interactive prompts to configure your API keys and Vault path.
@@ -56,7 +56,7 @@ To add new tools or modify agent settings, edit `elo.config.json` or add tool sc
 
 To update the server (if you pulled new code):
 
-1.  Run `./elo-setup.sh` again. It will rebuild the images.
+1.  Run `./setup.sh` again. It will rebuild the images.
 
 ## Troubleshooting
 

@@ -12,6 +12,7 @@ export interface TemplateConfig {
 	path?: string;
 	prompt?: string;
 	hasFrontmatter?: boolean; // New field
+	desambiguationSufix?: string;
 	[key: string]: any;
 }
 

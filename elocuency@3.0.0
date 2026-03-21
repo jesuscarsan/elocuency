@@ -1,0 +1,5 @@
+
+> elocuency@3.0.0 elo /Users/joshua/my-docs/code/elocuency
+> tsx apps/elo-cli/src/index.ts /Users/joshua/my-docs/code/elocuency
+
+ ELIFECYCLE  Command failed with exit code 1.

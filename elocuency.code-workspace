@@ -3,6 +3,9 @@
 		{
 			"path": ".",
 		},
+		{
+			"path": "../../KBs/JACS",
+		},
 	],
 	"settings": {
 		"java.configuration.updateBuildConfiguration": "disabled",

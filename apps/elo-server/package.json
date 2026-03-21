@@ -4,7 +4,10 @@
   "description": "This is the Python-based backend for Elocuency, responsible for handling AI interactions via **LangChain** and **FastAPI**.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ts-node src/index.ts",
+    "start": "ts-node src/index.ts",
+    "test": "vitest run",
+    "preinstall": "npx only-allow pnpm"
   },
   "repository": {
     "type": "git",
@@ -18,7 +21,28 @@
   },
   "homepage": "https://github.com/jesuscarsan/elo-server#readme",
   "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-prettier": "^5.5.5",
     "n8n": "^2.7.5",
-    "sqlite3": "^5.1.7"
+    "prettier": "^3.8.1",
+    "sqlite3": "^5.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.58",
+    "@ai-sdk/google": "^3.0.43",
+    "@ai-sdk/openai": "^3.0.41",
+    "@fastify/cors": "^11.2.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@orama/orama": "^3.1.18",
+    "ai": "^6.0.116",
+    "dotenv": "^17.3.1",
+    "fastify": "^5.8.2"
   }
 }

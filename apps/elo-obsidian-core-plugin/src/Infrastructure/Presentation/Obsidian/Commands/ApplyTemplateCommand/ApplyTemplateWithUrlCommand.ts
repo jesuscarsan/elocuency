@@ -4,10 +4,14 @@ import { InputModal } from '@/Infrastructure/Presentation/Obsidian/Views/Modals/
 import { UnresolvedLinkGeneratorSettings } from '@/Infrastructure/Presentation/Obsidian/settings';
 import type { LlmPort } from '@elo/core';
 import type { ImageEnricherService } from '@/Application/Services/ImageEnricherService';
-import { ApplyTemplateCommand } from './ApplyTemplateCommand';
 import { getActiveMarkdownView } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
-
-import { TranslationService } from '@elo/obsidian-plugin';
+import { TranslationService, ObsidianNoteManager, ObsidianUIServiceAdapter, ObsidianCommandExecutorAdapter } from '@elo/obsidian-plugin';
+import { ApplyTemplateWithUrlUseCase } from '@/Application/UseCases/ApplyTemplateWithUrlUseCase';
+import { ObsidianNoteRepositoryAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianNoteRepositoryAdapter';
+import { ObsidianTemplateRepositoryAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianTemplateRepositoryAdapter';
+import { ObsidianImageServiceAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianImageServiceAdapter';
+import { ObsidianNetworkAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianNetworkAdapter';
+import { PersonasNoteOrganizer } from '@/Application/Services/PersonasNoteOrganizer';
 
 export class ApplyTemplateWithUrlCommand {
 	constructor(
@@ -43,15 +47,30 @@ export class ApplyTemplateWithUrlCommand {
 					return;
 				}
 
-				const applyTemplateCommand = new ApplyTemplateCommand(
+				const noteRepository = new ObsidianNoteRepositoryAdapter(this.obsidian);
+				const templateRepository = new ObsidianTemplateRepositoryAdapter(this.obsidian);
+				const uiService = new ObsidianUIServiceAdapter(this.obsidian, this.translationService);
+				const commandExecutor = new ObsidianCommandExecutorAdapter(this.obsidian);
+				const imageService = new ObsidianImageServiceAdapter(this.imageEnricher);
+				const noteManager = new ObsidianNoteManager(this.obsidian);
+				const personasOrganizer = new PersonasNoteOrganizer(noteManager, uiService);
+				const networkAdapter = new ObsidianNetworkAdapter();
+		
+				const useCase = new ApplyTemplateWithUrlUseCase(
+					noteRepository,
+					templateRepository,
+					uiService,
 					this.llm,
-					this.imageEnricher,
-					this.obsidian,
-					this.settings,
+					imageService,
+					commandExecutor,
+					personasOrganizer,
+					networkAdapter,
 					this.translationService,
 				);
+		
+				await useCase.execute(file.path, url);
 
-				await applyTemplateCommand.execute(file, url);
+                console.log('[ApplyTemplateWithUrlCommand] End');
 			},
 		).open();
 	}

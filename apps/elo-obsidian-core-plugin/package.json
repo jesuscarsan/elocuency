@@ -1,6 +1,6 @@
 {
   "name": "elo-obsidian-core-plugin",
-  "version": "0.1.134",
+  "version": "0.1.137",
   "description": "Obsidian helper extension.",
   "main": "dist/main.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write .",
     "test": "vitest",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "preinstall": "npx only-allow pnpm"
   },
   "keywords": [
     "obsidian",

@@ -3,6 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "pnpm -r run build",
     "bridge:build": "pnpm --filter elo-mac-bridge run build",
     "bridge:start": "pnpm --filter elo-mac-bridge run start",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.0.18",
+    "tsx": "^4.21.0",
     "typescript": "^5.4.5",
     "vitest": "^4.0.18"
   },

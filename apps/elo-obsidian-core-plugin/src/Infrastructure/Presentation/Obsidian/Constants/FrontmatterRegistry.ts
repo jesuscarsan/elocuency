@@ -5,6 +5,7 @@ export const FrontmatterKeys: Record<string, string> = new Proxy({}, {
             if (prop === 'EloPrompt') return '!!prompt';
             if (prop === 'EloCommands') return '!!commands';
             if (prop === 'EloData') return '!!data';
+            if (prop === 'EloImages') return '!!images';
 
             for (const key of Object.keys(FrontmatterRegistry)) {
                 if (key === prop) return FrontmatterRegistry[key].key;
@@ -24,6 +25,7 @@ export interface FrontmatterFieldConfig {
     reciprocityField?: FrontmatterKey;
     amongField?: FrontmatterKey;
     isRelocateField?: boolean;
+    relocatePriority?: number;
     commands?: string[];
 }
 

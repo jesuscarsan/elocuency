@@ -20,6 +20,16 @@ export class RelocateNoteByLinkFieldCommand {
 
 	async execute(targetFile?: TFile): Promise<void> {
 		console.log('[RelocateNoteByLinkFieldCommand] Start');
+
+		// Defocus any active input to prevent "removeChild" errors in Obsidian's property view
+		// when the file is moved or mode is changed while it's still processing a suggestion/blur.
+		if (document.activeElement instanceof HTMLElement) {
+			document.activeElement.blur();
+		}
+
+		// Small delay to allow Obsidian's UI to react to the blur (e.g., save properties, clean up DOM)
+		await new Promise((resolve) => window.setTimeout(resolve, 50));
+
 		const view = getActiveMarkdownView(this.app, targetFile);
 		if (!view?.file) {
 			showMessage('relocate.noActiveFile', undefined, this.translationService);
@@ -47,6 +57,13 @@ export class RelocateNoteByLinkFieldCommand {
 				showMessage('relocate.noRelocateFieldConfigured', undefined, this.translationService);
 				return;
 			}
+
+            // Sort candidate fields so that those with lowest priority number (most specific) are checked first
+			candidateFields.sort((a, b) => {
+				const priorityA = typeof a.relocatePriority === 'number' ? a.relocatePriority : 999;
+				const priorityB = typeof b.relocatePriority === 'number' ? b.relocatePriority : 999;
+				return priorityA - priorityB;
+			});
 
 			let targetFieldInfo = undefined;
 			let rawValue = undefined;

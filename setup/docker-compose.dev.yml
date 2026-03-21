@@ -1,5 +1,4 @@
-version: '3.8'
-
+name: elocuency
 services:
   elo-server:
     volumes:
@@ -7,9 +6,12 @@ services:
       - ..:/elo-workbench
     command: >
       sh -c "mkdir -p /elo-workbench/elo-workspace/logs && 
-             uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload --reload-dir /elo-workbench/apps/elo-server/src 2>&1 | tee -a /elo-workbench/elo-workspace/logs/elo-server.log"
+             npm run dev 2>&1 | tee -a /elo-workbench/elo-workspace/logs/elo-server.log"
+    environment:
+      - NODE_ENV=development
 
   n8n:
+    profiles: ["n8n"]
     # Use the tunnel flag for development to get an HTTPS URL for Telegram
     entrypoint: /bin/sh
     command: >

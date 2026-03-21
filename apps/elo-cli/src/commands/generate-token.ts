@@ -13,7 +13,7 @@ export const generateTokenCommand = new Command('generate-token')
         console.log('\n');
         console.log(chalk.yellow('Instructions:'));
         console.log(`1. Copy this token.`);
-        console.log(`2. Paste it into your ${chalk.bold('setup/.env')} file like this:`);
+        console.log(`2. Paste it into your ${chalk.bold('.env')} file like this:`);
         console.log(chalk.dim(`   SERVER_AUTH_TOKEN=${token}`));
         console.log(`3. Restart your server for the changes to take effect: ${chalk.bold('elo server restart')}`);
         console.log(

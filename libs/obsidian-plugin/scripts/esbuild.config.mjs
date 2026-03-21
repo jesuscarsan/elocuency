@@ -110,6 +110,42 @@ export async function buildPlugin(options) {
 		const ctx = await esbuild.context(buildOptions);
 		await ctx.watch();
 		console.log('Watching for changes...');
+		
+		// Esbuild watch mode only tracks module graph files.
+		// We manually watch extra static files like manifest.json and styles.css
+		// and copy them directly to the target vaults when changed.
+		const extraFiles = copyFiles.map(f => typeof f === 'string' ? f : f.src).filter(Boolean);
+		if (cssEntry && typeof cssEntry === 'string') {
+			extraFiles.push(cssEntry);
+		}
+
+		let timeout;
+		fs.watch(process.cwd(), { recursive: true }, (eventType, filename) => {
+			if (!filename) return;
+			if (filename.includes('dist') || filename.includes('node_modules') || filename.includes('.git')) return;
+			
+			// Check if the modified file matches any of the extra files (e.g., manifest.json, styles.css)
+			const isExtraFile = extraFiles.some(ef => filename.endsWith(ef));
+			if (isExtraFile) {
+				if (timeout) clearTimeout(timeout);
+				timeout = setTimeout(() => {
+					console.log(`\nChange detected in ${filename}, updating vault...`);
+					targetDirs.forEach(dir => {
+						if (fs.existsSync(dir)) {
+							// Determine if we are copying styles.css or an extra file
+							const isCss = filename.endsWith(path.basename(cssEntry || 'styles.css'));
+							const destName = isCss ? 'styles.css' : path.basename(filename);
+							const dest = path.join(dir, destName);
+							
+							if (fs.existsSync(filename)) {
+								fs.copyFileSync(filename, dest);
+								console.log(`Copied ${filename} to ${dest}`);
+							}
+						}
+					});
+				}, 100);
+			}
+		});
 	} else {
 		buildOptions.sourcemap = false;
 		await esbuild.build(buildOptions);

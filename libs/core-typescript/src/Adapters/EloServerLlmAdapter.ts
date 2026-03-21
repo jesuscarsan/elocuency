@@ -14,6 +14,19 @@ export class EloServerLlmAdapter implements LlmPort {
         this.authToken = authToken;
     }
 
+    private cleanJsonString(input: string): string {
+        let cleaned = input.trim();
+        if (cleaned.startsWith('```json')) {
+            cleaned = cleaned.substring(7);
+        } else if (cleaned.startsWith('```')) {
+            cleaned = cleaned.substring(3);
+        }
+        if (cleaned.endsWith('```')) {
+            cleaned = cleaned.substring(0, cleaned.length - 3);
+        }
+        return cleaned.trim();
+    }
+
     private async fetchAi<T>(endpoint: string, body: any): Promise<T> {
         const response = await fetch(`${this.baseUrl}${endpoint}`, {
             method: "POST",
@@ -39,7 +52,8 @@ export class EloServerLlmAdapter implements LlmPort {
         });
 
         try {
-            return JSON.parse(data.response);
+            const cleaned = this.cleanJsonString(data.response);
+            return JSON.parse(cleaned);
         } catch (e) {
             return { body: data.response };
         }
@@ -67,7 +81,8 @@ export class EloServerLlmAdapter implements LlmPort {
             json_mode: true,
         });
         try {
-            return JSON.parse(data.response);
+            const cleaned = this.cleanJsonString(data.response);
+            return JSON.parse(cleaned);
         } catch (e) {
             console.error("Failed to parse JSON response from Elo Server", e);
             return null;

@@ -136,6 +136,42 @@ export class ApplyTemplateUseCase {
 			}
 			TemplateContext.activeConfig = null;
 		}
+
+		if (config.desambiguationSufix) {
+			await this.applyDisambiguationSuffix(currentNotePath, config.desambiguationSufix);
+		}
+	}
+
+	private async applyDisambiguationSuffix(currentNotePath: string, suffixTemplate: string) {
+		const finalNote = await this.noteRepository.getNote(currentNotePath);
+		if (!finalNote) return;
+
+		const split = splitFrontmatter(finalNote.content);
+		const finalFm = parseFrontmatter(split.frontmatterText) || {};
+
+		let suffix = suffixTemplate;
+		const matches = suffix.match(/\[(.*?)\]/g);
+		if (matches) {
+			for (const match of matches) {
+				const field = match.slice(1, -1);
+				const value = finalFm[field] === undefined || finalFm[field] === null ? '' : finalFm[field];
+				suffix = suffix.replace(match, String(value));
+			}
+		}
+
+		suffix = suffix.trim();
+		if (suffix) {
+			const folderPath = currentNotePath.includes('/') ? currentNotePath.substring(0, currentNotePath.lastIndexOf('/')) : '';
+			const filename = currentNotePath.split('/').pop() || '';
+			const baseName = filename.endsWith('.md') ? filename.slice(0, -3) : filename;
+
+			const newBaseName = `${baseName} (${suffix})`;
+			const newPath = folderPath ? `${folderPath}/${newBaseName}.md` : `${newBaseName}.md`;
+
+			if (newPath !== currentNotePath) {
+				await this.noteRepository.renameNote(currentNotePath, newPath);
+			}
+		}
 	}
 
 	private async executePromptLogic(
