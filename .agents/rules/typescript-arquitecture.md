@@ -5,6 +5,9 @@ description: Enforce SOLID principles and Hexagonal Architecture (Ports & Adapte
 
 # Architecture for Typescript projects
 
+> [!WARNING]
+> **PYTHON DEPRECATION**: All Python code in this project is strictly **informative and temporary** until the TypeScript migration is fully assured. **DO NOT** modify, update, or spend effort fixing any Python files. The system runs entirely on TypeScript, and Python code is not necessary for it to work.
+
 All code development must strictly adhere to **SOLID principles** and **Hexagonal Architecture**.
 
 ## 1. Hexagonal Architecture Layers

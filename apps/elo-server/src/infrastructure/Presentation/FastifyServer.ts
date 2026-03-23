@@ -16,8 +16,8 @@ export class FastifyServer {
     });
 
     this.app.addHook('preHandler', async (request, reply) => {
-      // Allow unrestricted access to health check or OPTIONS requests
-      if (request.url === '/health' || request.method === 'OPTIONS') {
+      // Allow unrestricted access to health check or OPTIONS requests AND playground UI
+      if (request.url === '/health' || request.method === 'OPTIONS' || request.url.startsWith('/agent/playground')) {
         return;
       }
       
@@ -50,6 +50,22 @@ export class FastifyServer {
     this.app.get('/health', async (request, reply) => {
       return { status: 'ok', timestamp: new Date().toISOString() };
     });
+
+    const servePlayground = async (request: any, reply: any) => {
+      const fs = await import('fs');
+      const path = await import('path');
+      const htmlPath = path.join(__dirname, 'playground.html');
+      
+      try {
+        const html = fs.readFileSync(htmlPath, 'utf8');
+        reply.type('text/html; charset=utf-8').send(html);
+      } catch (e: any) {
+        reply.status(500).send({ detail: "Playground HTML file not found: " + e.message });
+      }
+    };
+
+    this.app.get('/agent/playground', servePlayground);
+    this.app.get('/agent/playground/', servePlayground);
 
     this.app.post('/api/ai/generate', async (request, reply) => {
       const body = request.body as any;
@@ -159,41 +175,37 @@ export class FastifyServer {
     this.app.post('/ask', async (request, reply) => {
       const body = request.body as any;
       try {
-        let modelName = body.model_name;
-        if (!modelName) {
-          modelName = process.env.BASIC_AI_MODEL;
+        const { LangChainIntentAnalyzerAdapter } = await import('../OutAdapters/LangChainIntentAnalyzerAdapter');
+        const { LangChainSpecialistProcessorAdapter } = await import('../OutAdapters/LangChainSpecialistProcessorAdapter');
+        const { RouteChatMessageUseCase } = await import('../../application/UseCases/RouteChatMessageUseCase');
+        const { FileSystemNoteRepositoryAdapter } = await import('../OutAdapters/Vault/FileSystemNoteRepositoryAdapter');
+        const { PgVectorDbAdapter } = await import('../OutAdapters/Database/PgVectorDbAdapter');
+        const { SyncVaultUseCase } = await import('../../application/UseCases/SyncVaultUseCase');
+
+        const vaultPath = process.env.VAULT_PATH;
+        if (!vaultPath) {
+          reply.status(500).send({ detail: 'VAULT_PATH environment variable is not configured.' });
+          return;
         }
 
-        if (!modelName) {
-          try {
-            const fs = await import('fs');
-            const path = await import('path');
-            const configPath = process.env.ELO_WORKSPACE_PATH 
-              ? path.join(process.env.ELO_WORKSPACE_PATH, 'elo-config.json')
-              : path.join(process.cwd(), '../../elo-workspace/elo-config.json');
-            if (fs.existsSync(configPath)) {
-              const configStr = fs.readFileSync(configPath, 'utf8');
-              const sanitizedStr = configStr.replace(/,\s*([\]}])/g, '$1');
-              const configJson = JSON.parse(sanitizedStr);
-              if (configJson?.ai?.model) modelName = configJson.ai.model;
-            }
-          } catch(e) {}
-        }
-        
-        const { AskAIUseCase } = await import('../../application/UseCases/AskAIUseCase');
-        const { VercelAIAdapter } = await import('../OutAdapters/VercelAI/VercelAIAdapter');
-        const { ChatSession } = await import('../../domain/Entities/ChatSession');
-        
-        const adapter = new VercelAIAdapter(modelName || 'gpt-4o');
-        const useCase = new AskAIUseCase(adapter);
-        const session = new ChatSession(body.user_id || 'default', 'user');
-        
-        const response = await useCase.execute(session, {
-          messages: [{ role: 'user', content: body.prompt }],
-          systemPrompt: 'You are a helpful assistant.'
+        const noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath);
+
+        const vectorDb = new PgVectorDbAdapter({
+          connectionString: process.env.DATABASE_URL || '',
+          apiKey: process.env.GOOGLE_AI_API_KEY || '',
         });
+
+        const syncVault = new SyncVaultUseCase(noteRepo, vectorDb);
+
+        const intentAnalyzer = new LangChainIntentAnalyzerAdapter();
+        const specialistProcessor = new LangChainSpecialistProcessorAdapter(syncVault, vectorDb);
+        const useCase = new RouteChatMessageUseCase(intentAnalyzer, specialistProcessor);
         
-        return { response: response.content };
+        const result = await useCase.execute({ message: body.prompt });
+
+        await vectorDb.close();
+        
+        return { response: result.response, intent: result.intent };
       } catch (e: any) {
         reply.status(500).send({ detail: e.message });
       }

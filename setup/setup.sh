@@ -102,6 +102,7 @@ if [ "$runtime_choice" == "2" ]; then
     prompt_var "OPENAI_API_KEY" "Enter OpenAI API Key" "" "true"
     prompt_var "OBSIDIAN_API_KEY" "Enter Obsidian API Key" "obsidian-secret-key" "true"
     prompt_var "OBSIDIAN_URL" "Enter Obsidian URL" "http://localhost:27124"
+    prompt_var "DATABASE_URL" "Enter PostgreSQL Vector DB URL" "postgresql://elo_user:elo_password@localhost:5432/elo_db" "true"
     
     prompt_var "LOCAL_N8N_ENABLED" "Do you want to enable n8n locally? (true/false)" "false" "false"
     
@@ -125,6 +126,7 @@ else
     prompt_var "OPENAI_API_KEY" "Enter OpenAI API Key" "" "true"
     prompt_var "OBSIDIAN_API_KEY" "Enter Obsidian API Key" "obsidian-secret-key" "true"
     prompt_var "OBSIDIAN_URL" "Enter Obsidian URL" "http://host.docker.internal:27124"
+    prompt_var "DATABASE_URL" "Enter PostgreSQL Vector DB URL" "postgresql://elo_user:elo_password@pgvector:5432/elo_db" "true"
     
     prompt_var "LOCAL_N8N_ENABLED" "Do you want to enable n8n, caddy, and ngrok locally (via Docker)? (true/false)" "false" "false"
     
@@ -167,6 +169,13 @@ if [ "$runtime_choice" == "2" ]; then
         exit 1
     fi
 
+    echo "Starting PostgreSQL Vector DB..."
+    if command -v docker &> /dev/null; then
+        docker-compose -f "$MONOREPO_ROOT/docker-compose.yml" up -d pgvector
+    else
+        echo -e "${YELLOW}Warning: Docker not installed. You will need to start your Postgres DB manually.${NC}"
+    fi
+
     echo -e "\n${GREEN}Setup complete! Run 'elo server start' to start native services.${NC}"
 else
     if ! command -v docker &> /dev/null; then
@@ -191,7 +200,7 @@ else
     echo -ne "Choose [1/2]: "
     read -r env_choice || env_choice="1"
 
-    COMPOSE_ARGS=("--env-file" "$ENV_FILE" "-f" "$MONOREPO_ROOT/setup/docker-compose.yml")
+    COMPOSE_ARGS=("--env-file" "$ENV_FILE" "-f" "$MONOREPO_ROOT/setup/docker-compose.yml" "-f" "$MONOREPO_ROOT/docker-compose.yml")
     if [ "$env_choice" == "1" ]; then
         COMPOSE_ARGS+=("-f" "$MONOREPO_ROOT/setup/docker-compose.dev.yml")
     else

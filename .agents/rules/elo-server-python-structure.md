@@ -1,12 +1,15 @@
 # Agent Rules: Hexagonal Architecture & Best Practices
 
-This document defines the coding standards, architectural patterns, and best practices for the `elo-server` project located in `apps/elo-server`.
+> [!WARNING]
+> **PYTHON DEPRECATION**: All Python code in this project is strictly **informative and temporary** until the TypeScript migration is fully assured. **DO NOT** modify, update, or spend effort fixing any Python files. The system runs entirely on TypeScript, and Python code is not necessary for it to work. These Python guidelines are retained for reference only.
+
+This document defines the coding standards, architectural patterns, and best practices for the `elo-server` project located in `apps/elo-server` (Legacy Python Version).
 
 ## Scope
 
 - **Language**: **Python ONLY**.
 - **Directory**: `apps/elo-server` **ONLY**.
-- **Applicability**: All AI agents and human developers working within this scope must adhere to these guidelines.
+- **Applicability**: This applies only when reading legacy Python code for reference during the migration. DO NOT write new Python code.
 
 This ensures code quality, maintainability, and scalability within the server application.
 

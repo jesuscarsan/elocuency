@@ -3,10 +3,10 @@ services:
   elo-server:
     volumes:
       # Mount source code for hot-reloading
-      - ..:/elo-workbench
+      - ..:/app
     command: >
-      sh -c "mkdir -p /elo-workbench/elo-workspace/logs && 
-             npm run dev 2>&1 | tee -a /elo-workbench/elo-workspace/logs/elo-server.log"
+      sh -c "mkdir -p /app/elo-workspace/logs && 
+             npm run dev 2>&1 | tee -a /app/elo-workspace/logs/elo-server.log"
     environment:
       - NODE_ENV=development
 

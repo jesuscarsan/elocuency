@@ -17,6 +17,7 @@ import { OpenLinkedPhotoCommand } from '@/Infrastructure/Presentation/Obsidian/C
 import { NaturalLanguageSearchCommand } from '@/Infrastructure/Presentation/Obsidian/Commands/Search/NaturalLanguageSearchCommand';
 import { TokenizeAndCreateDictionaryNotesCommand } from '@/Infrastructure/Presentation/Obsidian/Commands/Dictionary/TokenizeAndCreateDictionaryNotesCommand';
 import { ImportKeepTakeoutCommand } from '@/Infrastructure/Presentation/Obsidian/Commands/GoogleKeep/ImportKeepTakeoutCommand';
+import { CheckFrontmatterErrorsCommand } from '@/Infrastructure/Presentation/Obsidian/Commands/Maintenance/CheckFrontmatterErrorsCommand';
 
 import { showMessage } from '@/Infrastructure/Presentation/Obsidian/Utils/Messages';
 import { DependencyContainer } from './DependencyContainer';
@@ -208,6 +209,13 @@ export function buildNoteCommands(
 					? 'properties.hiddenMessage'
 					: 'properties.visibleMessage';
 				showMessage(messageKey, undefined, plugin.translationService);
+			},
+		},
+		{
+			id: 'CheckFrontmatterErrorsCommand',
+			name: 'Elo: Check YAML Frontmatter Errors',
+			callback: async () => {
+				await new CheckFrontmatterErrorsCommand(plugin.app, plugin.translationService).execute();
 			},
 		},
 	];

@@ -112,3 +112,59 @@ vaultCommand
             process.exit(1);
         }
     });
+
+vaultCommand
+    .command('index')
+    .description('Index the Obsidian vault into the vector database for semantic search')
+    .option('-f, --force', 'Force a full re-index of the entire vault')
+    .action(async (options) => {
+        const monorepoRoot = process.cwd();
+        const serverDir = path.join(monorepoRoot, 'apps', 'elo-server');
+        const syncScript = path.join(serverDir, 'src', 'scripts', 'sync-vault.ts');
+
+        if (!fs.existsSync(syncScript)) {
+            console.error(chalk.red(`\n❌ sync-vault.ts not found at: ${syncScript}`));
+            console.error(chalk.dim('Make sure you run this command from the monorepo root.'));
+            process.exit(1);
+        }
+
+        console.log(chalk.cyan('\n🔍 Indexing Obsidian vault into vector database...'));
+        if (options.force) {
+            console.log(chalk.yellow('⚡ Force mode: re-indexing all notes.'));
+        }
+
+        const { spawnSync } = await import('node:child_process');
+
+        // Load .env from monorepo root
+        const envPath = path.join(monorepoRoot, '.env');
+        const envVars = { ...process.env };
+        if (fs.existsSync(envPath)) {
+            const content = fs.readFileSync(envPath, 'utf8');
+            content.split('\n').forEach(line => {
+                if (line.trim().startsWith('#')) return;
+                const match = line.match(/^([^=]+)=(.*)$/);
+                if (match) {
+                    const key = match[1].trim();
+                    let val = match[2].trim();
+                    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                        val = val.slice(1, -1);
+                    }
+                    envVars[key] = val;
+                }
+            });
+            console.log(chalk.dim('🔑 Loaded environment from .env'));
+        }
+
+        const result = spawnSync('npx', ['ts-node', syncScript], {
+            cwd: serverDir,
+            stdio: 'inherit',
+            env: envVars,
+        });
+
+        if (result.status === 0) {
+            console.log(chalk.green('\n✅ Vault indexed successfully!'));
+        } else {
+            console.error(chalk.red(`\n❌ Indexing failed with exit code ${result.status}`));
+            process.exit(result.status || 1);
+        }
+    });

@@ -9,9 +9,18 @@ const parseEnvFile = (filePath: string): Record<string, string> => {
     const content = readFileSync(filePath, 'utf-8');
     const env: Record<string, string> = {};
     content.split('\n').forEach(line => {
+        // Ignore lines that are comments or don't have '='
+        if (line.trim().startsWith('#')) return;
         const match = line.match(/^([^=]+)=(.*)$/);
         if (match) {
-            env[match[1]] = match[2];
+            const key = match[1].trim();
+            let val = match[2].trim();
+            if (val.startsWith('"') && val.endsWith('"')) {
+                val = val.slice(1, -1);
+            } else if (val.startsWith("'") && val.endsWith("'")) {
+                val = val.slice(1, -1);
+            }
+            env[key] = val;
         }
     });
     return env;
@@ -75,7 +84,7 @@ export const startCommand = new Command("start")
         } else {
             console.log(chalk.blue("🐳 Starting Elo in DOCKER mode..."));
             try {
-                const composeArgs = ["compose", "-f", "setup/docker-compose.yml"];
+                const composeArgs = ["compose", "--env-file", ".env", "-f", "setup/docker-compose.yml", "-f", "docker-compose.yml"];
                 if (combinedEnv.LOCAL_N8N_ENABLED === 'true') {
                     composeArgs.push("--profile", "n8n");
                 }

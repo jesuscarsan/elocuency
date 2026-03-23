@@ -131,4 +131,35 @@ export class ObsidianNoteRepositoryAdapter implements NoteRepositoryPort {
       return [];
     }
   }
+
+  public async getNotesModifiedSince(since: Date): Promise<Note[]> {
+    try {
+      const isoDate = since.toISOString().replace('Z', '').split('.')[0];
+      const dql = `TABLE file.mtime WHERE file.mtime > date("${isoDate}")`;
+
+      const resp = await fetch(`${this.config.url}/search/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/vnd.olrapi.dataview.dql+txt'
+        },
+        body: dql
+      });
+      if (!resp.ok) throw new Error(`Get modified notes failed: ${resp.status}`);
+
+      const changes = await resp.json();
+      const notes: Note[] = [];
+      for (const item of changes) {
+        if (item.filename) {
+          const note = await this.getNoteById(item.filename);
+          if (note) notes.push(note);
+        }
+      }
+      return notes;
+    } catch (e) {
+      console.error('Error getting modified notes:', e);
+      return [];
+    }
+  }
 }
+

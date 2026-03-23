@@ -1,0 +1,12 @@
+services:
+  pgvector:
+    image: ankane/pgvector:v0.5.1
+    environment:
+      POSTGRES_USER: elo_user
+      POSTGRES_PASSWORD: elo_password
+      POSTGRES_DB: elo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${ELO_WORKSPACE_PATH:-./elo-workspace}/pgvector-data:/var/lib/postgresql/data
+    restart: unless-stopped

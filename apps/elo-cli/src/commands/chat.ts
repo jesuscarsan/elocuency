@@ -40,6 +40,7 @@ export const chatCommand = new Command('chat')
 
         // Attempt to find the correct host (localhost vs host.docker.internal for Mac)
         let agentUrl = 'http://localhost:8001/agent/stream';
+        let isTsServer = false;
         let hostChecked = false;
 
         const checkHost = async () => {
@@ -54,19 +55,34 @@ export const chatCommand = new Command('chat')
                     const controller = new AbortController();
                     const timeout = setTimeout(() => controller.abort(), 1200);
 
-                    console.log(chalk.dim(`   - Trying ${baseUrl}...`));
-                    const res = await fetch(baseUrl, {
+                    console.log(chalk.dim(`   - Trying ${baseUrl}/health (TS Server check)...`));
+                    const healthRes = await fetch(`${baseUrl}/health`, {
+                        method: 'GET',
+                        signal: controller.signal
+                    }).catch(() => null);
+
+                    if (healthRes && healthRes.status === 200) {
+                        clearTimeout(timeout);
+                        agentUrl = `${baseUrl}/ask`;
+                        isTsServer = true;
+                        console.log(chalk.green(`📡 Connection established via: ${baseUrl} (TS Server)\n`));
+                        return;
+                    }
+
+                    console.log(chalk.dim(`   - Trying ${baseUrl}/agent/playground/ (Python Server check)...`));
+                    const pyRes = await fetch(`${baseUrl}/agent/playground/`, {
                         method: 'GET',
                         signal: controller.signal
                     });
 
                     clearTimeout(timeout);
-                    if (res.status === 200 || res.status === 404) {
+                    if (pyRes.status === 200 || pyRes.status === 404) {
                         agentUrl = `${baseUrl}/agent/stream`;
-                        console.log(chalk.green(`📡 Connection established via: ${baseUrl}\n`));
+                        isTsServer = false;
+                        console.log(chalk.green(`📡 Connection established via: ${baseUrl} (Python Server)\n`));
                         return;
                     } else {
-                        console.log(chalk.dim(`   - ${baseUrl} responded with status: ${res.status}`));
+                        console.log(chalk.dim(`   - ${baseUrl} responded with status: ${pyRes.status}`));
                     }
                 } catch (e) {
                     const error = e as Error;
@@ -74,7 +90,9 @@ export const chatCommand = new Command('chat')
                 }
             }
             console.log(chalk.yellow(`⚠️  Server not reached at localhost:8001 or host.docker.internal:8001.`));
-            console.log(chalk.dim(`Defaulting to: ${agentUrl}\n`));
+            console.log(chalk.dim(`Defaulting to TS Server at: http://localhost:8001/ask\n`));
+            agentUrl = 'http://localhost:8001/ask';
+            isTsServer = true;
         };
 
         console.log(chalk.cyan(`\n💬 Connecting to Elo Server...`));
@@ -128,18 +146,18 @@ export const chatCommand = new Command('chat')
                     headers['Authorization'] = `Bearer ${authToken}`;
                 }
 
+                const payload = isTsServer 
+                    ? { prompt: prompt, user_id: userId }
+                    : {
+                        input: { messages: [{ type: 'human', content: prompt }] },
+                        config: { configurable: { thread_id: userId } },
+                    };
+
                 console.log(chalk.dim(`📤 Sending prompt to: ${agentUrl}`));
                 const response = await fetch(agentUrl, {
                     method: 'POST',
                     headers,
-                    body: JSON.stringify({
-                        input: {
-                            messages: [{ type: 'human', content: prompt }],
-                        },
-                        config: {
-                            configurable: { thread_id: userId },
-                        },
-                    }),
+                    body: JSON.stringify(payload),
                 });
 
                 if (!response.ok) {
@@ -151,68 +169,72 @@ export const chatCommand = new Command('chat')
 
                 process.stdout.write(chalk.bold.green('AI: '));
 
-                const reader = response.body?.getReader();
-                if (!reader) throw new Error('Response body is null');
+                if (isTsServer) {
+                    const data = await response.json();
+                    process.stdout.write(data.response || '');
+                } else {
+                    const reader = response.body?.getReader();
+                    if (!reader) throw new Error('Response body is null');
 
-                const decoder = new TextDecoder();
-                let aiMessage = '';
+                    const decoder = new TextDecoder();
+                    let aiMessage = '';
+                    let partialLine = '';
 
-                let partialLine = '';
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
+                        const chunk = decoder.decode(value, { stream: true });
+                        const lines = (partialLine + chunk).split('\n');
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = (partialLine + chunk).split('\n');
+                        // The last element is a partial line (or empty string if chunk ended with \n)
+                        partialLine = lines.pop() || '';
 
-                    // The last element is a partial line (or empty string if chunk ended with \n)
-                    partialLine = lines.pop() || '';
+                        for (const line of lines) {
+                            if (!line.trim()) continue;
 
-                    for (const line of lines) {
-                        if (!line.trim()) continue;
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const dataStr = line.slice(6);
+                                    const data = JSON.parse(dataStr);
 
-                        if (line.startsWith('data: ')) {
-                            try {
-                                const dataStr = line.slice(6);
-                                const data = JSON.parse(dataStr);
+                                    // Handle various LangServe/LangGraph stream formats
+                                    let content = '';
 
-                                // Handle various LangServe/LangGraph stream formats
-                                let content = '';
+                                    if (typeof data === 'string') {
+                                        content = data;
+                                    } else if (data.content && typeof data.content === 'string') {
+                                        content = data.content;
+                                    } else if (data.agent && data.agent.messages) {
+                                        const lastMsg = data.agent.messages[data.agent.messages.length - 1];
+                                        if (lastMsg.type === 'ai') content = lastMsg.content;
+                                    } else if (data.messages) {
+                                        const lastMsg = data.messages[data.messages.length - 1];
+                                        if (lastMsg.type === 'ai') content = lastMsg.content;
+                                    }
 
-                                if (typeof data === 'string') {
-                                    content = data;
-                                } else if (data.content && typeof data.content === 'string') {
-                                    content = data.content;
-                                } else if (data.agent && data.agent.messages) {
-                                    const lastMsg = data.agent.messages[data.agent.messages.length - 1];
-                                    if (lastMsg.type === 'ai') content = lastMsg.content;
-                                } else if (data.messages) {
-                                    const lastMsg = data.messages[data.messages.length - 1];
-                                    if (lastMsg.type === 'ai') content = lastMsg.content;
+                                    if (content && !aiMessage.includes(content)) {
+                                        process.stdout.write(content);
+                                        aiMessage += content;
+                                    }
+                                } catch (e) {
+                                    // Ignore incomplete JSON
                                 }
-
-                                if (content && !aiMessage.includes(content)) {
-                                    process.stdout.write(content);
-                                    aiMessage += content;
-                                }
-                            } catch (e) {
-                                // Ignore incomplete JSON
                             }
                         }
                     }
-                }
 
-                // Final check for any remaining data
-                if (partialLine.startsWith('data: ')) {
-                    try {
-                        const data = JSON.parse(partialLine.slice(6));
-                        const content = typeof data === 'string' ? data : data.content;
-                        if (content && !aiMessage.includes(content)) {
-                            process.stdout.write(content);
-                            aiMessage += content;
-                        }
-                    } catch (e) { }
+                    // Final check for any remaining data
+                    if (partialLine.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(partialLine.slice(6));
+                            const content = typeof data === 'string' ? data : data.content;
+                            if (content && !aiMessage.includes(content)) {
+                                process.stdout.write(content);
+                                aiMessage += content;
+                            }
+                        } catch (e) { }
+                    }
                 }
                 process.stdout.write('\n\n');
             } catch (error) {

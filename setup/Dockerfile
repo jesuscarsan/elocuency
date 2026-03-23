@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-WORKDIR /elo-workbench/apps/elo-server
+WORKDIR /app/apps/elo-server
 
 RUN corepack enable pnpm
 

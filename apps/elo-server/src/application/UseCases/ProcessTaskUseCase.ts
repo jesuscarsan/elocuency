@@ -1,4 +1,5 @@
 import { LLMServicePort } from '../../domain/ports/LLMServicePort';
+import { PROCESS_TASK_SYSTEM_PROMPT } from '../../infrastructure/Prompts/TaskExecutionPrompts';
 
 export interface TaskInput {
   description: string;
@@ -18,7 +19,7 @@ export class ProcessTaskUseCase {
     try {
       const response = await this.llmService.ask({
         messages: [{ role: 'user', content: input.description }],
-        systemPrompt: 'You are an AI assistant designed to execute the specified task. Explain your steps and output the result.',
+        systemPrompt: PROCESS_TASK_SYSTEM_PROMPT,
       });
 
       return {

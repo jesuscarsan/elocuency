@@ -1,5 +1,8 @@
 # Project Structure & Architecture Rules
 
+> [!WARNING]
+> **PYTHON DEPRECATION**: All Python code in this project is strictly **informative and temporary** until the TypeScript migration is fully assured. **DO NOT** modify, update, or spend effort fixing any Python files. The system runs entirely on TypeScript, and Python code is not necessary for it to work.
+
 This project follows **Hexagonal Architecture (Ports & Adapters)** and **Domain-Driven Design (DDD)**.
 These rules apply to all applications within the `apps/` directory.
 

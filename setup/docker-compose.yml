@@ -20,22 +20,23 @@ services:
       context: ../apps/elo-server
       dockerfile: ../../setup/Dockerfile
     environment:
-      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY}
-      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID}
-      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY:-}
+      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID:-}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
       - N8N_HOST=http://n8n:5678
-      - N8N_WORKFLOWS_DIR=/elo-workbench/elo-workspace/n8n/workflows
-      - LOG_FILE=/elo-workbench/elo-workspace/logs/elo-server.log
-      - OBSIDIAN_API_KEY=${OBSIDIAN_API_KEY}
-      - OBSIDIAN_URL=${OBSIDIAN_URL}
-      - SERVER_AUTH_TOKEN=${SERVER_AUTH_TOKEN}
-    working_dir: /elo-workbench/apps/elo-server
+      - N8N_WORKFLOWS_DIR=/app/elo-workspace/n8n/workflows
+      - LOG_FILE=/app/elo-workspace/logs/elo-server.log
+      - OBSIDIAN_API_KEY=${OBSIDIAN_API_KEY:-}
+      - OBSIDIAN_URL=${OBSIDIAN_URL:-}
+      - SERVER_AUTH_TOKEN=${SERVER_AUTH_TOKEN:-}
+      - VAULT_PATH=/data/vault
+    working_dir: /app/apps/elo-server
     ports:
       - "8001:8001"
     volumes:
-      - ..:/elo-workbench
+      - ..:/app
       - ${VAULT_PATH}:/data/vault:ro
     restart: unless-stopped
     extra_hosts:
