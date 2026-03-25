@@ -1,6 +1,7 @@
 import { NoteRepositoryPort } from '../../domain/ports/NoteRepositoryPort';
 import { VectorDbPort, VectorDocument } from '../../domain/ports/VectorDbPort';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { LoggerPort } from '../../domain/ports/LoggerPort';
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 
 export class SyncVaultUseCase {
   private lastSyncDate: Date | null = null;
@@ -11,6 +12,7 @@ export class SyncVaultUseCase {
   constructor(
     private readonly noteRepository: NoteRepositoryPort,
     private readonly vectorDb: VectorDbPort,
+    private readonly logger: LoggerPort,
     options?: { cooldownMinutes?: number; chunkSize?: number; chunkOverlap?: number }
   ) {
     this.cooldownMs = (options?.cooldownMinutes ?? 5) * 60 * 1000;

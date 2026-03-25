@@ -1,12 +1,15 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
+import { LoggerPort } from '../../domain/ports/LoggerPort';
 
 export class FastifyServer {
   private app: FastifyInstance;
+  private logger: LoggerPort;
 
-  constructor() {
+  constructor(logger: LoggerPort) {
+    this.logger = logger;
     this.app = Fastify({
-      logger: true,
+      logger: false, // We'll handle logging via our adapter and hooks if needed
     });
 
     this.app.register(cors, {
@@ -20,9 +23,9 @@ export class FastifyServer {
       if (request.url === '/health' || request.method === 'OPTIONS' || request.url.startsWith('/agent/playground')) {
         return;
       }
-      
+
       const expectedToken = process.env.SERVER_AUTH_TOKEN || process.env.ELO_API_KEY;
-      
+
       // If no token is configured on the server, we might want to warn or deny.
       // Assuming a token is REQUIRED for it to be secure:
       if (!expectedToken) {
@@ -55,7 +58,7 @@ export class FastifyServer {
       const fs = await import('fs');
       const path = await import('path');
       const htmlPath = path.join(__dirname, 'playground.html');
-      
+
       try {
         const html = fs.readFileSync(htmlPath, 'utf8');
         reply.type('text/html; charset=utf-8').send(html);
@@ -73,7 +76,7 @@ export class FastifyServer {
       let modelName = body.model_name;
       const jsonMode = body.json_mode || false;
       const temperature = body.temperature ?? 0.4;
-      
+
       if (!modelName) {
         modelName = process.env.BASIC_AI_MODEL;
       }
@@ -82,9 +85,7 @@ export class FastifyServer {
         try {
           const fs = await import('fs');
           const path = await import('path');
-          const configPath = process.env.ELO_WORKSPACE_PATH 
-            ? path.join(process.env.ELO_WORKSPACE_PATH, 'elo-config.json')
-            : path.join(process.cwd(), '../../elo-workspace/elo-config.json');
+          const configPath = path.join(process.env.ELO_WORKSPACE_PATH!, 'elo-config.json');
           if (fs.existsSync(configPath)) {
             const configStr = fs.readFileSync(configPath, 'utf8');
             const sanitizedStr = configStr.replace(/,\s*([\]}])/g, '$1');
@@ -98,23 +99,90 @@ export class FastifyServer {
         }
         if (!modelName) modelName = 'gpt-4o';
       }
-      
+
       try {
         const { VercelAIAdapter } = await import('../OutAdapters/VercelAI/VercelAIAdapter');
         const adapter = new VercelAIAdapter(modelName);
-        
+
         let systemPrompt = '';
         if (jsonMode) {
           systemPrompt = 'You must respond in valid JSON format.';
         }
-        
+
         const response = await adapter.ask({
           messages: [{ role: 'user', content: prompt }],
           systemPrompt: systemPrompt
         });
-        
+
         return { response: response.content };
       } catch (e: any) {
+        reply.status(500).send({ detail: e.message });
+      }
+    });
+
+    this.app.post('/api/templates/apply', async (request, reply) => {
+      const body = request.body as any;
+      const targetNotePath = body.targetNotePath;
+      const templateId = body.templateId;
+      const promptUrl = body.promptUrl;
+
+      if (!targetNotePath) {
+        reply.status(400).send({ detail: "targetNotePath is required" });
+        return;
+      }
+      
+      try {
+        const vaultPath = process.env.VAULT_PATH;
+        const workspacePath = process.env.ELO_WORKSPACE_PATH;
+        if (!vaultPath || !workspacePath) {
+          reply.status(500).send({ detail: "Missing VAULT_PATH or ELO_WORKSPACE_PATH" });
+          return;
+        }
+
+        const { FileSystemNoteRepositoryAdapter } = await import('../OutAdapters/Vault/FileSystemNoteRepositoryAdapter');
+        const { TemplateCacheAdapter } = await import('../OutAdapters/Vault/TemplateCacheAdapter');
+        const { VercelAIAdapter } = await import('../OutAdapters/VercelAI/VercelAIAdapter');
+        const { PersonasNoteOrganizer } = await import('../../application/services/PersonasNoteOrganizer');
+        const { ApplyTemplateUseCase } = await import('../../application/UseCases/ApplyTemplateUseCase');
+        const { GoogleImageSearchAdapter } = await import('../OutAdapters/Google/GoogleImageSearchAdapter');
+        
+        let modelName = process.env.BASIC_AI_MODEL || 'gpt-4o';
+        try {
+          const fs = await import('fs');
+          const path = await import('path');
+          const configPath = path.join(workspacePath, 'elo-config.json');
+          if (fs.existsSync(configPath)) {
+            const configStr = fs.readFileSync(configPath, 'utf8');
+            const sanitizedStr = configStr.replace(/,\s*([\]}])/g, '$1');
+            const configJson = JSON.parse(sanitizedStr);
+            if (configJson?.ai?.model) {
+              modelName = configJson.ai.model;
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        const noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath, this.logger);
+        const templateCache = new TemplateCacheAdapter(vaultPath, workspacePath, this.logger);
+        const llm = new VercelAIAdapter(modelName);
+        const organizer = new PersonasNoteOrganizer(noteRepo);
+        const imageSearch = new GoogleImageSearchAdapter(
+          process.env.GOOGLE_SEARCH_API_KEY || '',
+          process.env.GOOGLE_SEARCH_ENGINE_ID || ''
+        );
+
+        const useCase = new ApplyTemplateUseCase(noteRepo, templateCache, llm, imageSearch, organizer, this.logger);
+
+        const result = await useCase.execute({
+          targetNotePath,
+          templateId,
+          promptUrl
+        });
+
+        reply.send(result);
+      } catch (e: any) {
+        this.logger.error(`Error in /api/templates/apply: ${e.message}`);
         reply.status(500).send({ detail: e.message });
       }
     });
@@ -126,16 +194,14 @@ export class FastifyServer {
     this.app.get('/api/config/json', async (request, reply) => {
       const fs = await import('fs');
       const path = await import('path');
-      const configPath = process.env.ELO_WORKSPACE_PATH 
-        ? path.join(process.env.ELO_WORKSPACE_PATH, 'elo-config.json')
-        : path.join(process.cwd(), '../../elo-workspace/elo-config.json');
+      const configPath = path.join(process.env.ELO_WORKSPACE_PATH!, 'elo-config.json');
       if (fs.existsSync(configPath)) {
         try {
           const configStr = fs.readFileSync(configPath, 'utf8');
           // Sanitize trailing commas before parsing
           const sanitizedStr = configStr.replace(/,\s*([\]}])/g, '$1');
           const configJson = JSON.parse(sanitizedStr);
-          
+
           if (!configJson.myWorldPath) {
             configJson.myWorldPath = {
               placesTagsNameStart: "Lugares/"
@@ -143,8 +209,8 @@ export class FastifyServer {
           }
           return configJson;
         } catch (e: any) {
-           reply.status(500).send({ detail: "Error parsing elo-config.json: " + e.message });
-           return;
+          reply.status(500).send({ detail: "Error parsing elo-config.json: " + e.message });
+          return;
         }
       }
       reply.status(404).send({ detail: "Config file not found" });
@@ -155,20 +221,20 @@ export class FastifyServer {
       const lang = body.language === 'en' ? 'en' : 'es';
       const fs = await import('fs');
       const path = await import('path');
-      
+
       const sourceDir = path.join(process.cwd(), '../../setup/vault-init', `${lang}-metadata`);
       const targetDir = path.join(process.env.VAULT_PATH || '', '!!metadata');
-      
+
       if (!fs.existsSync(sourceDir)) {
         reply.status(404).send({ detail: `Vault templates for language '${lang}' not found` });
         return;
       }
-      
+
       if (process.env.VAULT_PATH) {
         fs.cpSync(sourceDir, targetDir, { recursive: true });
         return { message: `Vault successfully initialized with '${lang}' templates.`, target_path: targetDir };
       }
-      
+
       reply.status(400).send({ detail: "VAULT_PATH is not configured." });
     });
 
@@ -188,23 +254,23 @@ export class FastifyServer {
           return;
         }
 
-        const noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath);
+        const noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath, this.logger);
 
         const vectorDb = new PgVectorDbAdapter({
           connectionString: process.env.DATABASE_URL || '',
           apiKey: process.env.GOOGLE_AI_API_KEY || '',
         });
 
-        const syncVault = new SyncVaultUseCase(noteRepo, vectorDb);
+        const syncVault = new SyncVaultUseCase(noteRepo, vectorDb, this.logger);
 
-        const intentAnalyzer = new LangChainIntentAnalyzerAdapter();
-        const specialistProcessor = new LangChainSpecialistProcessorAdapter(syncVault, vectorDb);
-        const useCase = new RouteChatMessageUseCase(intentAnalyzer, specialistProcessor);
-        
+        const intentAnalyzer = new LangChainIntentAnalyzerAdapter(this.logger);
+        const specialistProcessor = new LangChainSpecialistProcessorAdapter(syncVault, vectorDb, this.logger);
+        const useCase = new RouteChatMessageUseCase(intentAnalyzer, specialistProcessor, this.logger);
+
         const result = await useCase.execute({ message: body.prompt });
 
         await vectorDb.close();
-        
+
         return { response: result.response, intent: result.intent };
       } catch (e: any) {
         reply.status(500).send({ detail: e.message });
@@ -241,10 +307,28 @@ export class FastifyServer {
       this.app.log.error("FATAL ERROR: BASIC_AI_MODEL environment variable is required but not configured.");
       process.exit(1);
     }
-    
+
+    if (!process.env.ELO_WORKSPACE_PATH) {
+      this.app.log.error("FATAL ERROR: ELO_WORKSPACE_PATH environment variable is required but not configured.");
+      process.exit(1);
+    }
+
     try {
+      // Run template caching on startup
+      if (process.env.VAULT_PATH) {
+        try {
+          const { TemplateCacheAdapter } = await import('../OutAdapters/Vault/TemplateCacheAdapter');
+          const { CacheTemplatesUseCase } = await import('../../application/UseCases/CacheTemplatesUseCase');
+          const templateCacheAdapter = new TemplateCacheAdapter(process.env.VAULT_PATH, process.env.ELO_WORKSPACE_PATH, this.logger);
+          const cacheUseCase = new CacheTemplatesUseCase(templateCacheAdapter, this.logger);
+          await cacheUseCase.execute();
+        } catch (cacheErr) {
+          this.logger.warn(`Failed to build template cache on startup: ${cacheErr}`);
+        }
+      }
+
       await this.app.listen({ port, host: '0.0.0.0' });
-      console.log(`Server listening at http://localhost:${port}`);
+      this.logger.info(`Server listening at http://localhost:${port}`);
     } catch (err) {
       this.app.log.error(err);
       process.exit(1);

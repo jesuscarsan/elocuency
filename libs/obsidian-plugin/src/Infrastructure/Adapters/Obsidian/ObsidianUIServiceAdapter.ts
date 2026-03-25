@@ -1,4 +1,4 @@
-import { App, Notice } from 'obsidian';
+import { App, Notice, TFile } from 'obsidian';
 import { UIServicePort } from '../../../Domain/Ports/UIServicePort';
 import { TranslationService } from '../../../Domain/Interfaces/TranslationService';
 import { GenericFuzzySuggestModal } from '../../Presentation/Obsidian/Views/Modals/GenericFuzzySuggestModal';
@@ -29,5 +29,25 @@ export class ObsidianUIServiceAdapter implements UIServicePort {
 				placeholder,
 			).open();
 		});
+	}
+
+	async openFile(pathOrAbsolute: string): Promise<void> {
+		let path = pathOrAbsolute;
+		// @ts-ignore - access to internal adapter
+		if (this.app.vault.adapter.getBasePath) {
+			// @ts-ignore
+			const basePath = this.app.vault.adapter.getBasePath();
+			if (path.startsWith(basePath)) {
+				path = path.slice(basePath.length).replace(/^\/+/, '');
+			}
+		}
+
+		const file = this.app.vault.getAbstractFileByPath(path);
+		if (file instanceof TFile) {
+			const leaf = this.app.workspace.getLeaf(false);
+			await leaf.openFile(file);
+		} else {
+			console.warn(`[UIService] File not found for opening: ${path}`);
+		}
 	}
 }

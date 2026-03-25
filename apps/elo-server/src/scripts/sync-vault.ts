@@ -2,13 +2,21 @@ import { config } from 'dotenv';
 import { FileSystemNoteRepositoryAdapter } from '../infrastructure/OutAdapters/Vault/FileSystemNoteRepositoryAdapter';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { PoolConfig } from 'pg';
+import { WinstonLoggerAdapter } from '../infrastructure/logging/WinstonLoggerAdapter';
+import path from 'path';
+import fs from 'fs';
 
 config({ path: '../../.env' }); // Load repo root
 
 async function syncVault() {
-  console.log('--- Starting Vault -> Postgres Synchronization ---');
+  const logFile = process.env.ELO_WORKSPACE_PATH 
+    ? path.join(process.env.ELO_WORKSPACE_PATH, 'logs', 'sync-vault.log')
+    : undefined;
+  const logger = new WinstonLoggerAdapter('sync-vault', logFile);
+
+  logger.info('--- Starting Vault -> Postgres Synchronization ---');
   
   const vaultPath = process.env.VAULT_PATH;
   if (!vaultPath) {
@@ -21,25 +29,25 @@ async function syncVault() {
 
   let noteRepo: FileSystemNoteRepositoryAdapter;
   try {
-    noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath);
+    noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath, logger);
   } catch (e: any) {
-    console.error(`\n❌ ${e.message}`);
+    logger.error(`\n❌ ${e.message}`);
     process.exit(1);
   }
   
-  console.log("Scanning vault for markdown files...");
+  logger.info("Scanning vault for markdown files...");
   const notes = await noteRepo.getAllNotes();
   
   if (!notes || notes.length === 0) {
-    console.error("❌ No notes found in the vault.");
+    logger.error("❌ No notes found in the vault.");
     process.exit(1);
   }
   
-  console.log(`Found ${notes.length} notes. Processing...`);
+  logger.info(`Found ${notes.length} notes. Processing...`);
 
   const dbUrl = process.env.DATABASE_URL;
   if (!dbUrl) {
-    console.error('\n❌ DATABASE_URL environment variable is not set.');
+    logger.error('\n❌ DATABASE_URL environment variable is not set.');
     process.exit(1);
   }
 
@@ -100,7 +108,7 @@ async function syncVault() {
             safeVectors.push(vectors[i]);
             safeDocs.push(validDocs[i]);
           } else {
-            console.warn(`⚠️ Warning: Empty vector generated for chunk of note ${note.id}`);
+            logger.warn(`⚠️ Warning: Empty vector generated for chunk of note ${note.id}`);
           }
         }
         
@@ -109,8 +117,8 @@ async function syncVault() {
           processed += safeVectors.length;
         }
       } catch (err) {
-        console.error(`❌ Error adding documents for note: ${note.id}`);
-        docs.forEach((d, i) => console.error(`Doc ${i}:`, JSON.stringify(d.pageContent)));
+        logger.error(`❌ Error adding documents for note: ${note.id}`);
+        docs.forEach((d, i) => logger.error(`Doc ${i}: ${JSON.stringify(d.pageContent)}`));
         throw err;
       }
     }
@@ -118,7 +126,7 @@ async function syncVault() {
 
   await vectorStore.end();
 
-  console.log(`\n✅ Successfully synchronized ${processed} chunks to PostgreSQL!`);
+  logger.info(`\n✅ Successfully synchronized ${processed} chunks to PostgreSQL!`);
   process.exit(0);
 }
 

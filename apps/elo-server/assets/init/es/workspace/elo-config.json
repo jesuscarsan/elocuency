@@ -139,7 +139,7 @@
             "isRelocateField": true,
             "asLink": true,
             "commands": [
-                "elocuency:relocate-note-by-link-field"
+                "relocate-note-by-link-field"
             ]
         },
         "Países": {
@@ -225,7 +225,7 @@
             "reciprocityField": "Conocidos",
             "asLink": true,
             "commands": [
-                "elocuency:create-reciprocity-links"
+                "create-reciprocity-links"
             ]
         },
         "Hijos": {

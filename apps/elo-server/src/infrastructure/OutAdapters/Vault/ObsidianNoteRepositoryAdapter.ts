@@ -56,6 +56,10 @@ export class ObsidianNoteRepositoryAdapter implements NoteRepositoryPort {
     }
   }
 
+  public async renameNote(oldId: string, newId: string): Promise<void> {
+    throw new Error('renameNote not implemented. The external API does not support renaming yet.');
+  }
+
   public async deleteNote(id: string): Promise<void> {
     try {
       const resp = await fetch(`${this.config.url}/vault/${encodeURIComponent(id)}`, {

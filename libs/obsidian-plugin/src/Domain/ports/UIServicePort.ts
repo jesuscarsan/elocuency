@@ -10,4 +10,5 @@ export interface UIServicePort {
 		items: T[],
 		labelFn: (item: T) => string,
 	): Promise<T | null>;
+	openFile(path: string): Promise<void>;
 }

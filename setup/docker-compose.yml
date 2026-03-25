@@ -10,9 +10,9 @@ services:
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/caddy_data:/data
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/caddy_config:/config
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/logs/caddy:/var/log/caddy
+      - ${ELO_WORKSPACE_PATH}/caddy_data:/data
+      - ${ELO_WORKSPACE_PATH}/caddy_config:/config
+      - ${ELO_WORKSPACE_PATH}/logs/caddy:/var/log/caddy
 
   # 1. AI Logic Server (TypeScript/Fastify)
   elo-server:
@@ -32,12 +32,13 @@ services:
       - OBSIDIAN_URL=${OBSIDIAN_URL:-}
       - SERVER_AUTH_TOKEN=${SERVER_AUTH_TOKEN:-}
       - VAULT_PATH=/data/vault
+      - ELO_WORKSPACE_PATH=/app/elo-workspace
     working_dir: /app/apps/elo-server
     ports:
       - "8001:8001"
     volumes:
       - ..:/app
-      - ${VAULT_PATH}:/data/vault:ro
+      - ${VAULT_PATH}:/data/vault
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -52,10 +53,10 @@ services:
       - N8N_LOG_LEVEL=info
       - N8N_PATH=/n8n/
     volumes:
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/n8n/data:/home/node/.n8n
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/n8n/workflows:/home/node/n8n/workflows
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/logs:/home/node/.n8n/logs
-      - ${ELO_WORKSPACE_PATH:-../elo-workspace}/n8n:/home/node/n8n-root
+      - ${ELO_WORKSPACE_PATH}/n8n/data:/home/node/.n8n
+      - ${ELO_WORKSPACE_PATH}/n8n/workflows:/home/node/n8n/workflows
+      - ${ELO_WORKSPACE_PATH}/logs:/home/node/.n8n/logs
+      - ${ELO_WORKSPACE_PATH}/n8n:/home/node/n8n-root
     restart: unless-stopped
 
   # 3. Public Exposure (Ngrok)

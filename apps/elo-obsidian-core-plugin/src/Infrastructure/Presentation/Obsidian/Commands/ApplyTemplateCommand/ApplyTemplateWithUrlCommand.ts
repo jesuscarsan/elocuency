@@ -5,13 +5,10 @@ import { UnresolvedLinkGeneratorSettings } from '@/Infrastructure/Presentation/O
 import type { LlmPort } from '@elo/core';
 import type { ImageEnricherService } from '@/Application/Services/ImageEnricherService';
 import { getActiveMarkdownView } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
-import { TranslationService, ObsidianNoteManager, ObsidianUIServiceAdapter, ObsidianCommandExecutorAdapter } from '@elo/obsidian-plugin';
-import { ApplyTemplateWithUrlUseCase } from '@/Application/UseCases/ApplyTemplateWithUrlUseCase';
+import { TranslationService, ObsidianUIServiceAdapter, ObsidianCommandExecutorAdapter } from '@elo/obsidian-plugin';
+import { ApplyTemplateUseCase } from '@/Application/UseCases/ApplyTemplateUseCase';
 import { ObsidianNoteRepositoryAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianNoteRepositoryAdapter';
-import { ObsidianTemplateRepositoryAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianTemplateRepositoryAdapter';
-import { ObsidianImageServiceAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianImageServiceAdapter';
 import { ObsidianNetworkAdapter } from '@/Infrastructure/Adapters/Obsidian/ObsidianNetworkAdapter';
-import { PersonasNoteOrganizer } from '@/Application/Services/PersonasNoteOrganizer';
 
 export class ApplyTemplateWithUrlCommand {
 	constructor(
@@ -48,24 +45,20 @@ export class ApplyTemplateWithUrlCommand {
 				}
 
 				const noteRepository = new ObsidianNoteRepositoryAdapter(this.obsidian);
-				const templateRepository = new ObsidianTemplateRepositoryAdapter(this.obsidian);
 				const uiService = new ObsidianUIServiceAdapter(this.obsidian, this.translationService);
 				const commandExecutor = new ObsidianCommandExecutorAdapter(this.obsidian);
-				const imageService = new ObsidianImageServiceAdapter(this.imageEnricher);
-				const noteManager = new ObsidianNoteManager(this.obsidian);
-				const personasOrganizer = new PersonasNoteOrganizer(noteManager, uiService);
 				const networkAdapter = new ObsidianNetworkAdapter();
-		
-				const useCase = new ApplyTemplateWithUrlUseCase(
-					noteRepository,
-					templateRepository,
-					uiService,
-					this.llm,
-					imageService,
-					commandExecutor,
-					personasOrganizer,
+				
+				const serverUrl = this.settings.eloServerUrl || 'http://localhost:8001';
+				const serverToken = this.settings.eloServerToken || '';
+
+				const useCase = new ApplyTemplateUseCase(
+					serverUrl,
 					networkAdapter,
+					uiService,
+					commandExecutor,
 					this.translationService,
+					serverToken
 				);
 		
 				await useCase.execute(file.path, url);

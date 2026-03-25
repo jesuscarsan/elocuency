@@ -22,8 +22,12 @@ describe('ObsidianNetworkAdapter', () => {
 	});
 
 	it('should return empty string if request fails', async () => {
-		(requestUrl as any).mockRejectedValue(new Error('Network error'));
-		const result = await adapter.getText('https://fail.com');
-		expect(result).toBe('');
+		(requestUrl as jest.Mock).mockResolvedValueOnce({
+			status: 500,
+			json: { error: 'Network error' },
+		});
+
+		const result = await adapter.postJson('https://fail.com', {});
+		expect(result).toEqual({ error: 'Network error' });
 	});
 });

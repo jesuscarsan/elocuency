@@ -170,15 +170,13 @@ export class GenerateMissingNotesFromListFieldCommand {
 		const personasOrganizer = new PersonasNoteOrganizer(noteManager, uiService);
 		const networkAdapter = new ObsidianNetworkAdapter();
 
+		const serverUrl = this.settings.eloServerUrl || 'http://localhost:8001';
+
 		const useCase = new ApplyTemplateUseCase(
-			noteRepository,
-			templateRepository,
-			uiService,
-			this.llm,
-			imageService,
-			commandExecutor,
-			personasOrganizer,
+			serverUrl,
 			networkAdapter,
+			uiService,
+			commandExecutor,
 			this.translationService,
 		);
 

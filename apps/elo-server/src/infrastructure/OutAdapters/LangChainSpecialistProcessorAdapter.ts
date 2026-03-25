@@ -5,6 +5,7 @@ import { SpecialistProcessorPort } from '../../domain/ports/SpecialistProcessorP
 import { ChatIntent, ChatCategory } from '../../domain/Entities/ChatIntent';
 import { VectorDbPort } from '../../domain/ports/VectorDbPort';
 import { SyncVaultUseCase } from '../../application/UseCases/SyncVaultUseCase';
+import { LoggerPort } from '../../domain/ports/LoggerPort';
 import { ASK_OBSIDIAN_PROMPT, MODIFY_OBSIDIAN_PROMPT, WEB_SEARCH_PROMPT, ACTION_SCRIPT_PROMPT } from '../Prompts/SpecialistProcessorPrompts';
 
 export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorPort {
@@ -13,6 +14,7 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
   constructor(
     private readonly syncVaultUseCase?: SyncVaultUseCase,
     private readonly vectorDb?: VectorDbPort,
+    private readonly logger?: LoggerPort,
     apiKey?: string
   ) {
     const modelName = process.env.BASIC_AI_MODEL || 'gemini-2.0-flash';
@@ -41,9 +43,9 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
         if (syncUseCase) {
           const synced = await syncUseCase.execute();
           if (synced > 0) {
-            console.log(`[Vault Sync] Synced ${synced} chunks before query.`);
+            this.logger?.info(`[Vault Sync] Synced ${synced} chunks before query.`);
           } else if (synced === -1) {
-            console.log('[Vault Sync] Skipped (cooldown active).');
+            this.logger?.info('[Vault Sync] Skipped (cooldown active).');
           }
         }
 

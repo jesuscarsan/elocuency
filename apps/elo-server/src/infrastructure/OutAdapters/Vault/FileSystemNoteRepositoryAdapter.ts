@@ -3,9 +3,13 @@ import * as path from 'node:path';
 import matter from 'gray-matter';
 import { NoteRepositoryPort } from '../../../domain/ports/NoteRepositoryPort';
 import { Note } from '../../../domain/Entities/Note';
+import { LoggerPort } from '../../../domain/ports/LoggerPort';
 
 export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
-  constructor(private readonly vaultPath: string) {
+  constructor(
+    private readonly vaultPath: string,
+    private readonly logger: LoggerPort
+  ) {
     if (!fs.existsSync(vaultPath)) {
       throw new Error(`Vault path does not exist: ${vaultPath}`);
     }
@@ -19,7 +23,7 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
       const raw = fs.readFileSync(fullPath, 'utf-8');
       return this.parseNote(id, raw, fullPath);
     } catch (e) {
-      console.error(`Error reading note ${id}:`, e);
+      this.logger.error(`Error reading note ${id}: ${e}`);
       return null;
     }
   }
@@ -31,6 +35,19 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(fullPath, note.content, 'utf-8');
+  }
+
+  public async renameNote(oldId: string, newId: string): Promise<void> {
+    const oldPath = path.join(this.vaultPath, oldId);
+    const newPath = path.join(this.vaultPath, newId);
+    if (!fs.existsSync(oldPath)) {
+      throw new Error(`Note not found: ${oldId}`);
+    }
+    const newDir = path.dirname(newPath);
+    if (!fs.existsSync(newDir)) {
+      fs.mkdirSync(newDir, { recursive: true });
+    }
+    fs.renameSync(oldPath, newPath);
   }
 
   public async deleteNote(id: string): Promise<void> {
@@ -57,7 +74,7 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
         const note = this.parseNote(relativePath, raw, filePath);
         notes.push(note);
       } catch (e) {
-        console.error(`Error reading ${relativePath}:`, e);
+        this.logger.error(`Error reading ${relativePath}: ${e}`);
       }
     }
 
@@ -106,7 +123,7 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
       }
     } catch (e: any) {
       // Fallback for messy YAML (duplicate keys, unclosed quotes, etc)
-      console.warn(`⚠️  Warning: Could not parse YAML frontmatter in ${relativePath}: ${e.message.split('\n')[0]}`);
+      this.logger.warn(`⚠️ Warning: Could not parse YAML frontmatter in ${relativePath}: ${e.message.split('\n')[0]}`);
       
       // We still want to index the file, so we strip frontmatter manually using regex as a best-effort fallback
       const match = raw.match(/---[\s\S]*?---\n([\s\S]*)/);

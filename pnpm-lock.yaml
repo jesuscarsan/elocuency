@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.0.18
-        version: 4.0.18(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.0.18(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.3))
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -19,7 +19,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.18
-        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.3)
 
   apps/elo-cli:
     dependencies:
@@ -35,7 +35,7 @@ importers:
         version: 20.19.31
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+        version: 8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3)
       tsx:
         specifier: ^4.0.0
         version: 4.21.0
@@ -529,6 +529,9 @@ importers:
       '@langchain/openai':
         specifier: ^1.3.0
         version: 1.3.0(@langchain/core@1.1.35(@opentelemetry/api@1.9.0)(@opentelemetry/exporter-trace-otlp-proto@0.204.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(openai@6.32.0(ws@8.19.0)(zod@4.3.6)))(ws@8.19.0)
+      '@langchain/textsplitters':
+        specifier: ^1.0.1
+        version: 1.0.1(@langchain/core@1.1.35(@opentelemetry/api@1.9.0)(@opentelemetry/exporter-trace-otlp-proto@0.204.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(openai@6.32.0(ws@8.19.0)(zod@4.3.6)))
       '@modelcontextprotocol/sdk':
         specifier: ^1.27.1
         version: 1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6)
@@ -550,6 +553,15 @@ importers:
       pg:
         specifier: ^8.20.0
         version: 8.20.0
+      winston:
+        specifier: ^3.19.0
+        version: 3.19.0
+      winston-daily-rotate-file:
+        specifier: ^5.0.0
+        version: 5.0.0(winston@3.19.0)
+      yaml:
+        specifier: ^2.8.3
+        version: 2.8.3
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -586,7 +598,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.1.0
-        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.1.0(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3))
 
   libs/core-swift: {}
 
@@ -3892,6 +3904,9 @@ packages:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
 
+  file-stream-rotator@0.6.1:
+    resolution: {integrity: sha512-u+dBid4PvZw17PmDeRcNOtCP9CCK/9lRN2w+r1xIS7yOL9JFrIBKTvrYsxT4P0pGtThYTn++QS5ChHaUov3+zQ==}
+
   file-type@16.5.4:
     resolution: {integrity: sha512-/yFHK0aGjFEgDJjEKP0pWCplsPFPhwyfwevf/pVxiN0tmE4L9LmwWxWukdJSHdoCli4VgQLehjJtwQBnqmsKcw==}
     engines: {node: '>=10'}
@@ -4851,6 +4866,10 @@ packages:
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
+
+  object-hash@3.0.0:
+    resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
+    engines: {node: '>= 6'}
 
   object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
@@ -6084,6 +6103,12 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
+  winston-daily-rotate-file@5.0.0:
+    resolution: {integrity: sha512-JDjiXXkM5qvwY06733vf09I2wnMXpZEhxEVOSPenZMii+g7pcDcTBt2MRugnoi8BwVSuCT2jfRXBUy+n1Zz/Yw==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      winston: ^3
+
   winston-transport@4.9.0:
     resolution: {integrity: sha512-8drMJ4rkgaPo1Me4zD/3WLfI/zPdA9o2IipKODunnGDcuqbHwjsbB79ylv04LCGGzU0xQ6vTznOMpQGaLhhm6A==}
     engines: {node: '>= 12.0.0'}
@@ -6156,8 +6181,8 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
-  yaml@2.8.2:
-    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
+  yaml@2.8.3:
+    resolution: {integrity: sha512-AvbaCLOO2Otw/lW5bmh9d/WEdcDFdQp2Z2ZUH3pX9U2ihyUY0nvLv7J6TrWowklRGPYbB/IuIMfYgxaCPg5Bpg==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -6825,8 +6850,7 @@ snapshots:
       style-mod: 4.1.3
       w3c-keyname: 2.2.8
 
-  '@colors/colors@1.6.0':
-    optional: true
+  '@colors/colors@1.6.0': {}
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -6837,7 +6861,6 @@ snapshots:
       '@so-ric/colorspace': 1.1.6
       enabled: 2.0.0
       kuler: 2.0.0
-    optional: true
 
   '@danielxceron/youtube-transcript@1.2.6': {}
 
@@ -7464,7 +7487,7 @@ snapshots:
       jsonpointer: 5.0.1
       openapi-types: 12.1.3
       uuid: 10.0.0
-      yaml: 2.8.2
+      yaml: 2.8.3
       zod: 4.3.6
     optionalDependencies:
       langsmith: 0.5.4(@opentelemetry/api@1.9.0)(@opentelemetry/exporter-trace-otlp-proto@0.204.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(openai@6.32.0(ws@8.19.0)(zod@4.3.6))
@@ -8208,7 +8231,6 @@ snapshots:
     dependencies:
       color: 5.0.3
       text-hex: 1.0.0
-    optional: true
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -8393,8 +8415,7 @@ snapshots:
 
   '@types/tough-cookie@4.0.5': {}
 
-  '@types/triple-beam@1.3.5':
-    optional: true
+  '@types/triple-beam@1.3.5': {}
 
   '@types/uuid@10.0.0': {}
 
@@ -8559,7 +8580,7 @@ snapshots:
 
   '@vercel/oidc@3.1.0': {}
 
-  '@vitest/coverage-v8@4.0.18(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.2))':
+  '@vitest/coverage-v8@4.0.18(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.0.18
@@ -8571,7 +8592,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.3)
 
   '@vitest/expect@1.6.1':
     dependencies:
@@ -8597,21 +8618,21 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.18(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2))':
+  '@vitest/mocker@4.0.18(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@vitest/spy': 4.0.18
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3)
 
-  '@vitest/mocker@4.1.0(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2))':
+  '@vitest/mocker@4.1.0(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@vitest/spy': 4.1.0
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3)
 
   '@vitest/pretty-format@4.0.18':
     dependencies:
@@ -8818,8 +8839,7 @@ snapshots:
       retry: 0.13.1
     optional: true
 
-  async@3.2.6:
-    optional: true
+  async@3.2.6: {}
 
   asynckit@0.4.0: {}
 
@@ -9067,23 +9087,19 @@ snapshots:
   color-convert@3.1.3:
     dependencies:
       color-name: 2.1.0
-    optional: true
 
   color-name@1.1.4: {}
 
-  color-name@2.1.0:
-    optional: true
+  color-name@2.1.0: {}
 
   color-string@2.1.4:
     dependencies:
       color-name: 2.1.0
-    optional: true
 
   color@5.0.3:
     dependencies:
       color-convert: 3.1.3
       color-string: 2.1.4
-    optional: true
 
   combined-stream@1.0.8:
     dependencies:
@@ -9270,8 +9286,7 @@ snapshots:
 
   emoji-regex@9.2.2: {}
 
-  enabled@2.0.0:
-    optional: true
+  enabled@2.0.0: {}
 
   encodeurl@2.0.0: {}
 
@@ -9673,8 +9688,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
-  fecha@4.2.3:
-    optional: true
+  fecha@4.2.3: {}
 
   fetch-blob@3.2.0:
     dependencies:
@@ -9684,6 +9698,10 @@ snapshots:
   file-entry-cache@6.0.1:
     dependencies:
       flat-cache: 3.2.0
+
+  file-stream-rotator@0.6.1:
+    dependencies:
+      moment: 2.29.4
 
   file-type@16.5.4:
     dependencies:
@@ -9738,8 +9756,7 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  fn.name@1.1.0:
-    optional: true
+  fn.name@1.1.0: {}
 
   follow-redirects@1.15.11(debug@4.4.3):
     optionalDependencies:
@@ -10663,8 +10680,7 @@ snapshots:
 
   kind-of@6.0.3: {}
 
-  kuler@2.0.0:
-    optional: true
+  kuler@2.0.0: {}
 
   langchain@1.2.36(@langchain/core@1.1.35(@opentelemetry/api@1.9.0)(@opentelemetry/exporter-trace-otlp-proto@0.204.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(openai@6.32.0(ws@8.19.0)(zod@4.3.6)))(@opentelemetry/api@1.9.0)(@opentelemetry/exporter-trace-otlp-proto@0.204.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.5.1(@opentelemetry/api@1.9.0))(openai@6.32.0(ws@8.19.0)(zod@4.3.6))(zod-to-json-schema@3.25.1(zod@4.3.6)):
     dependencies:
@@ -10777,7 +10793,6 @@ snapshots:
       ms: 2.1.3
       safe-stable-stringify: 2.5.0
       triple-beam: 1.4.1
-    optional: true
 
   long@5.3.2: {}
 
@@ -10949,6 +10964,8 @@ snapshots:
 
   object-assign@4.1.1: {}
 
+  object-hash@3.0.0: {}
+
   object-inspect@1.13.4: {}
 
   obsidian@1.12.0(@codemirror/state@6.5.0)(@codemirror/view@6.38.6):
@@ -10973,7 +10990,6 @@ snapshots:
   one-time@1.0.0:
     dependencies:
       fn.name: 1.1.0
-    optional: true
 
   onetime@5.1.2:
     dependencies:
@@ -11186,13 +11202,13 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  postcss-load-config@6.0.1(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.2):
+  postcss-load-config@6.0.1(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       postcss: 8.5.6
       tsx: 4.21.0
-      yaml: 2.8.2
+      yaml: 2.8.3
 
   postcss@8.5.6:
     dependencies:
@@ -11309,7 +11325,6 @@ snapshots:
       inherits: 2.0.4
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
-    optional: true
 
   readable-stream@4.7.0:
     dependencies:
@@ -11562,8 +11577,7 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
-  stack-trace@0.0.10:
-    optional: true
+  stack-trace@0.0.10: {}
 
   stack-utils@2.0.6:
     dependencies:
@@ -11692,8 +11706,7 @@ snapshots:
       glob: 7.2.3
       minimatch: 3.1.2
 
-  text-hex@1.0.0:
-    optional: true
+  text-hex@1.0.0: {}
 
   text-table@0.2.0: {}
 
@@ -11757,8 +11770,7 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  triple-beam@1.4.1:
-    optional: true
+  triple-beam@1.4.1: {}
 
   ts-api-utils@1.4.3(typescript@5.9.3):
     dependencies:
@@ -11836,7 +11848,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2):
+  tsup@8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.3)
       cac: 6.7.14
@@ -11847,7 +11859,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.2)
+      postcss-load-config: 6.0.1(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.3)
       resolve-from: 5.0.0
       rollup: 4.57.1
       source-map: 0.7.6
@@ -11956,8 +11968,7 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
-  util-deprecate@1.0.2:
-    optional: true
+  util-deprecate@1.0.2: {}
 
   uuid@10.0.0: {}
 
@@ -12008,7 +12019,7 @@ snapshots:
       '@types/node': 20.19.31
       fsevents: 2.3.3
 
-  vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2):
+  vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       esbuild: 0.27.3
       fdir: 6.5.0(picomatch@4.0.3)
@@ -12020,7 +12031,7 @@ snapshots:
       '@types/node': 25.5.0
       fsevents: 2.3.3
       tsx: 4.21.0
-      yaml: 2.8.2
+      yaml: 2.8.3
 
   vitest@1.6.1(@types/node@20.19.31)(happy-dom@20.6.1)(jsdom@23.0.1):
     dependencies:
@@ -12058,10 +12069,10 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       '@vitest/expect': 4.0.18
-      '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3))
       '@vitest/pretty-format': 4.0.18
       '@vitest/runner': 4.0.18
       '@vitest/snapshot': 4.0.18
@@ -12078,7 +12089,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
@@ -12098,10 +12109,10 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.1.0(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2)):
+  vitest@4.1.0(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(happy-dom@20.6.1)(jsdom@23.0.1)(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.0
-      '@vitest/mocker': 4.1.0(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitest/mocker': 4.1.0(vite@7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3))
       '@vitest/pretty-format': 4.1.0
       '@vitest/runner': 4.1.0
       '@vitest/snapshot': 4.1.0
@@ -12118,7 +12129,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 7.3.1(@types/node@25.5.0)(tsx@4.21.0)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
@@ -12178,12 +12189,19 @@ snapshots:
       siginfo: 2.0.0
       stackback: 0.0.2
 
+  winston-daily-rotate-file@5.0.0(winston@3.19.0):
+    dependencies:
+      file-stream-rotator: 0.6.1
+      object-hash: 3.0.0
+      triple-beam: 1.4.1
+      winston: 3.19.0
+      winston-transport: 4.9.0
+
   winston-transport@4.9.0:
     dependencies:
       logform: 2.7.0
       readable-stream: 3.6.2
       triple-beam: 1.4.1
-    optional: true
 
   winston@3.19.0:
     dependencies:
@@ -12198,7 +12216,6 @@ snapshots:
       stack-trace: 0.0.10
       triple-beam: 1.4.1
       winston-transport: 4.9.0
-    optional: true
 
   word-wrap@1.2.5: {}
 
@@ -12249,7 +12266,7 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.8.2: {}
+  yaml@2.8.3: {}
 
   yargs-parser@21.1.1: {}
 

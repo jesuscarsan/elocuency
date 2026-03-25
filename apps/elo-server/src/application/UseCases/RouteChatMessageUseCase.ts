@@ -1,5 +1,6 @@
 import { IntentAnalyzerPort } from '../../domain/ports/IntentAnalyzerPort';
 import { SpecialistProcessorPort } from '../../domain/ports/SpecialistProcessorPort';
+import { LoggerPort } from '../../domain/ports/LoggerPort';
 
 export interface RouteChatMessageRequest {
   message: string;
@@ -13,8 +14,10 @@ export interface RouteChatMessageResponse {
 export class RouteChatMessageUseCase {
   constructor(
     private readonly intentAnalyzer: IntentAnalyzerPort,
-    private readonly specialistProcessor: SpecialistProcessorPort
+    private readonly specialistProcessor: SpecialistProcessorPort,
+    private readonly logger: LoggerPort
   ) {}
+
 
   public async execute(request: RouteChatMessageRequest): Promise<RouteChatMessageResponse> {
     // 1. Analyze the core intent of the message

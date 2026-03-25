@@ -28,6 +28,7 @@ export function createMockUIServicePort(): jest.Mocked<UIServicePort> {
 	return {
 		showMessage: jest.fn(),
 		showSelectionModal: jest.fn(),
+		openFile: jest.fn(),
 	};
 }
 
@@ -89,6 +90,7 @@ export function createMockCommandExecutorPort(): jest.Mocked<CommandExecutorPort
 export function createMockNetworkPort(): jest.Mocked<NetworkPort> {
 	return {
 		getText: jest.fn(),
+		postJson: jest.fn(),
 	};
 }
 

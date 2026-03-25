@@ -20,6 +20,9 @@ describe('ObsidianNoteRepositoryAdapter', () => {
 				getFileCache: vi.fn(),
 				getFirstLinkpathDest: vi.fn(),
 			},
+			workspace: {
+				getLeavesOfType: vi.fn().mockReturnValue([]),
+			},
 			fileManager: {
 				renameFile: vi.fn(),
 			},

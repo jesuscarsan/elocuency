@@ -8,5 +8,5 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ${ELO_WORKSPACE_PATH:-./elo-workspace}/pgvector-data:/var/lib/postgresql/data
+      - ${ELO_WORKSPACE_PATH}/pgvector-data:/var/lib/postgresql/data
     restart: unless-stopped

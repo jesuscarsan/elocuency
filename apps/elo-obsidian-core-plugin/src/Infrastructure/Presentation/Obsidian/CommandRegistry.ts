@@ -118,7 +118,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: 'RelocateNoteByLinkFieldCommand',
+			id: 'relocate-note-by-link-field',
 			name: plugin.translationService.t('command.relocateNoteByLinkField'),
 			callback: async (file?: TFile) => {
 				await new RelocateNoteByLinkFieldCommand(app, plugin.translationService, settings).execute(
@@ -138,7 +138,7 @@ export function buildNoteCommands(
 			},
 		},
 		{
-			id: 'CreateReciprocityLinksNotesCommand',
+			id: 'create-reciprocity-links',
 			name: plugin.translationService.t('command.createReciprocityLinksNotes'),
 			callback: async (file?: TFile) => {
 				await new CreateReciprocityLinksNotesCommand(app, plugin.translationService).execute(file);

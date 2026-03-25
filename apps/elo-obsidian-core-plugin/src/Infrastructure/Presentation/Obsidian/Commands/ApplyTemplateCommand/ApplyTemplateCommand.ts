@@ -57,17 +57,16 @@ export class ApplyTemplateCommand {
 		const noteManager = new ObsidianNoteManager(this.obsidian);
 		const personasOrganizer = new PersonasNoteOrganizer(noteManager, uiService);
 		const networkAdapter = new ObsidianNetworkAdapter();
+		const serverUrl = this.settings.eloServerUrl || 'http://localhost:8001';
 
+		const authToken = this.settings.eloServerToken || '';
 		const useCase = new ApplyTemplateUseCase(
-			noteRepository,
-			templateRepository,
-			uiService,
-			this.llm,
-			imageService,
-			commandExecutor,
-			personasOrganizer,
+			serverUrl,
 			networkAdapter,
+			uiService,
+			commandExecutor,
 			this.translationService,
+			authToken,
 		);
 
 		await useCase.execute(file.path, promptUrl);

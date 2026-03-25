@@ -3,6 +3,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { IntentAnalyzerPort } from '../../domain/ports/IntentAnalyzerPort';
+import { LoggerPort } from '../../domain/ports/LoggerPort';
 import { ChatIntent, ChatCategory } from '../../domain/Entities/ChatIntent';
 import { ROUTER_SYSTEM_PROMPT } from '../Prompts/IntentAnalyzerPrompts';
 
@@ -10,7 +11,7 @@ export class LangChainIntentAnalyzerAdapter implements IntentAnalyzerPort {
   private routerPrompt: ChatPromptTemplate;
   private llmWithStructuredOutput: any; // We use 'any' strictly for internal chaining if typing gets messy, but let's try to type it
 
-  constructor(apiKey?: string) {
+  constructor(private readonly logger: LoggerPort, apiKey?: string) {
     // 1. Define the strictly typed output schema using Zod
     const intentSchema = z.object({
       intent: z.nativeEnum(ChatCategory).describe('The core intention of the user.'),

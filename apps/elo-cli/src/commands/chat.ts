@@ -69,7 +69,7 @@ export const chatCommand = new Command('chat')
                         return;
                     }
 
-                    console.log(chalk.dim(`   - Trying ${baseUrl}/agent/playground/ (Python Server check)...`));
+                    console.log(chalk.dim(`   - Trying ${baseUrl}/agent/playground/ (Chat web)...`));
                     const pyRes = await fetch(`${baseUrl}/agent/playground/`, {
                         method: 'GET',
                         signal: controller.signal
@@ -146,7 +146,7 @@ export const chatCommand = new Command('chat')
                     headers['Authorization'] = `Bearer ${authToken}`;
                 }
 
-                const payload = isTsServer 
+                const payload = isTsServer
                     ? { prompt: prompt, user_id: userId }
                     : {
                         input: { messages: [{ type: 'human', content: prompt }] },

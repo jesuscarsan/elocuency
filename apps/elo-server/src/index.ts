@@ -1,9 +1,20 @@
 import './env';
 import { FastifyServer } from './infrastructure/Presentation/FastifyServer';
+import { WinstonLoggerAdapter } from './infrastructure/logging/WinstonLoggerAdapter';
+import path from 'path';
 
 async function bootstrap() {
-  const server = new FastifyServer();
+  const workspacePath = process.env.ELO_WORKSPACE_PATH || process.cwd();
+  const logFile = path.join(workspacePath, 'logs', 'elo-server.log');
+  
+  const logger = new WinstonLoggerAdapter('elo-server', logFile);
+  logger.info('Starting elo-server...');
+
+  const server = new FastifyServer(logger);
   await server.start(process.env.PORT ? parseInt(process.env.PORT) : 8001);
 }
 
-bootstrap().catch(console.error);
+bootstrap().catch(err => {
+  console.error('Fatal error during bootstrap:', err);
+  process.exit(1);
+});
