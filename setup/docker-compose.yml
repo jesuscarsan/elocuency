@@ -31,14 +31,14 @@ services:
       - OBSIDIAN_API_KEY=${OBSIDIAN_API_KEY:-}
       - OBSIDIAN_URL=${OBSIDIAN_URL:-}
       - SERVER_AUTH_TOKEN=${SERVER_AUTH_TOKEN:-}
-      - VAULT_PATH=/data/vault
+      - MEMORY_PATH=/data/memory
       - ELO_WORKSPACE_PATH=/app/elo-workspace
     working_dir: /app/apps/elo-server
     ports:
       - "8001:8001"
     volumes:
       - ..:/app
-      - ${VAULT_PATH}:/data/vault
+      - ${MEMORY_PATH}:/data/memory
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"

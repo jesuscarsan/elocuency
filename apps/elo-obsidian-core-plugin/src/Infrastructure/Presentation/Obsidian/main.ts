@@ -9,6 +9,10 @@ import {
 	VIEW_TYPE_NOTE_OPERATIONS,
 } from '@/Infrastructure/Presentation/Obsidian/Views/NoteOperations/NoteOperationsView';
 import {
+	LiveChatView,
+	VIEW_TYPE_LIVE_CHAT,
+} from '@/Infrastructure/Presentation/Obsidian/Views/NoteOperations/LiveChatView';
+import {
 	ObsidianMetadataAdapter,
 	ObsidianTranslationAdapter,
 	TranslationService,
@@ -98,10 +102,15 @@ export default class ObsidianExtension extends Plugin {
 
 		// --- Views ---
 		this.registerView(VIEW_TYPE_NOTE_OPERATIONS, (leaf) => new NoteOperationsView(leaf, this));
+		this.registerView(VIEW_TYPE_LIVE_CHAT, (leaf) => new LiveChatView(leaf, this));
 
 		// --- Ribbon Icons ---
 		this.addRibbonIcon('microphone', this.translationService.t('ribbon.noteOperations'), () =>
 			this.activateNoteOperationsView(),
+		);
+
+		this.addRibbonIcon('mic', this.translationService.t('liveChat.title'), () =>
+			this.activateLiveChatView(),
 		);
 	}
 
@@ -132,7 +141,7 @@ export default class ObsidianExtension extends Plugin {
 			// 2. Fallback to local config
 			const localConfig = await this.loadLocalConfig();
 			if (localConfig) {
-				console.log('[ObsidianExtension] Config loaded from local vault');
+				console.log('[ObsidianExtension] Config loaded from local memory');
 				this.applyConfig(localConfig);
 				return;
 			}
@@ -244,6 +253,21 @@ export default class ObsidianExtension extends Plugin {
 			if (rightLeaf) {
 				await rightLeaf.setViewState({ type: VIEW_TYPE_NOTE_OPERATIONS, active: true });
 				leaf = workspace.getLeavesOfType(VIEW_TYPE_NOTE_OPERATIONS)[0];
+			}
+		}
+
+		if (leaf) workspace.revealLeaf(leaf);
+	}
+
+	async activateLiveChatView() {
+		const { workspace } = this.app;
+		let leaf = workspace.getLeavesOfType(VIEW_TYPE_LIVE_CHAT)[0];
+
+		if (!leaf) {
+			const rightLeaf = workspace.getRightLeaf(false);
+			if (rightLeaf) {
+				await rightLeaf.setViewState({ type: VIEW_TYPE_LIVE_CHAT, active: true });
+				leaf = workspace.getLeavesOfType(VIEW_TYPE_LIVE_CHAT)[0];
 			}
 		}
 

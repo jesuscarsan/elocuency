@@ -4,7 +4,7 @@ import { RunnableLambda, RunnableBranch, RunnableSequence } from '@langchain/cor
 import { SpecialistProcessorPort } from '../../domain/ports/SpecialistProcessorPort';
 import { ChatIntent, ChatCategory } from '../../domain/Entities/ChatIntent';
 import { VectorDbPort } from '../../domain/ports/VectorDbPort';
-import { SyncVaultUseCase } from '../../application/UseCases/SyncVaultUseCase';
+import { SyncMemoryUseCase } from '../../application/UseCases/SyncMemoryUseCase';
 import { LoggerPort } from '../../domain/ports/LoggerPort';
 import { ASK_OBSIDIAN_PROMPT, MODIFY_OBSIDIAN_PROMPT, WEB_SEARCH_PROMPT, ACTION_SCRIPT_PROMPT } from '../Prompts/SpecialistProcessorPrompts';
 
@@ -12,7 +12,7 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
   private theMasterChain: Parameters<typeof RunnableBranch.from>[0] | any;
 
   constructor(
-    private readonly syncVaultUseCase?: SyncVaultUseCase,
+    private readonly syncMemoryUseCase?: SyncMemoryUseCase,
     private readonly vectorDb?: VectorDbPort,
     private readonly logger?: LoggerPort,
     apiKey?: string
@@ -34,7 +34,7 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
       });
     }
 
-    const syncUseCase = this.syncVaultUseCase;
+    const syncUseCase = this.syncMemoryUseCase;
     const vDb = this.vectorDb;
 
     const askObsidianChain = RunnableLambda.from(async (input: { original_input: string; context: string }) => {
@@ -43,9 +43,9 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
         if (syncUseCase) {
           const synced = await syncUseCase.execute();
           if (synced > 0) {
-            this.logger?.info(`[Vault Sync] Synced ${synced} chunks before query.`);
+            this.logger?.info(`[Memory Sync] Synced ${synced} chunks before query.`);
           } else if (synced === -1) {
-            this.logger?.info('[Vault Sync] Skipped (cooldown active).');
+            this.logger?.info('[Memory Sync] Skipped (cooldown active).');
           }
         }
 
@@ -67,7 +67,7 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
         const res = await llm.invoke(prompt);
         return res.content.toString();
       } catch (e: any) {
-        return `[OBSIDIAN QA ERROR]: Failed to query vault. Error: ${e.message}`;
+        return `[MEMORY QA ERROR]: Failed to query memory. Error: ${e.message}`;
       }
     });
 
@@ -90,14 +90,14 @@ export class LangChainSpecialistProcessorAdapter implements SpecialistProcessorP
 
     const routeExecution = RunnableBranch.from([
       [
-        (x: ChatIntent & { original_input: string }) => x.intent === ChatCategory.AskObsidian,
+        (x: ChatIntent & { original_input: string }) => x.intent === ChatCategory.AskMemory,
         RunnableSequence.from([
           (x) => ({ original_input: x.original_input, context: x.extracted_context }),
           askObsidianChain,
         ]),
       ],
       [
-        (x: ChatIntent & { original_input: string }) => x.intent === ChatCategory.ModifyObsidian,
+        (x: ChatIntent & { original_input: string }) => x.intent === ChatCategory.ModifyMemory,
         RunnableSequence.from([
           (x) => ({ original_input: x.original_input, context: x.extracted_context }),
           modifyObsidianChain,

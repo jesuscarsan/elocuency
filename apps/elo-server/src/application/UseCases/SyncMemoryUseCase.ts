@@ -3,7 +3,7 @@ import { VectorDbPort, VectorDocument } from '../../domain/ports/VectorDbPort';
 import { LoggerPort } from '../../domain/ports/LoggerPort';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 
-export class SyncVaultUseCase {
+export class SyncMemoryUseCase {
   private lastSyncDate: Date | null = null;
   private readonly cooldownMs: number;
   private readonly chunkSize: number;

@@ -37,6 +37,13 @@ export default {
 	'noteOperations.commandError': 'Error al ejecutar el comando: {error}',
 	'noteOperations.commandNotFound': 'Comando no encontrado o inválido',
 
+	'liveChat.title': 'Chat de Gemini Live',
+	'liveChat.start': 'Iniciar Gemini Live',
+	'liveChat.stop': 'Detener Gemini Live',
+	'liveChat.statusConnected': 'Conectado',
+	'liveChat.statusDisconnected': 'Desconectado',
+	'liveChat.statusListening': 'Escuchando...',
+
 	'photos.openNoteToInsert': 'Abre una nota para insertar el enlace de la foto.',
 	'photos.photosConnectionError': 'Error al conectar con Fotos (¿Permisos?)',
 	'photos.selectPhotoFirst': 'Selecciona una foto en la app Fotos primero.',
@@ -89,7 +96,7 @@ export default {
 	'templates.templateApplied': '¡Plantilla aplicada con éxito!',
 	'templates.aiGenerationFailed': 'La IA no pudo generar el contenido.',
 	'templates.applyTemplateError': 'Error al aplicar la plantilla.',
-	'templates.promptTitle': "Nota de obsidian: '{title}'",
+	'templates.promptTitle': "Nota de la memoria: '{title}'",
 
 	'dictionary.noActiveView': 'No hay vista de markdown activa',
 	'dictionary.noActiveFile': 'No hay archivo activo',
@@ -106,7 +113,7 @@ export default {
 	'enhance.enhanced': '¡Nota mejorada!',
 	'enhance.failed': 'La mejora con IA ha fallado.',
 	'enhance.serverError': 'Error de conexión con elo-server. Comprueba que el servidor está funcionando y la URL en ajustes es correcta. Detalles: {error}',
-	'enhance.promptNote': 'Genera contenido para una nota de Obsidian: "{title}".',
+	'enhance.promptNote': 'Genera contenido para una nota de la memoria: "{title}".',
 	'enhance.promptFrontmatter': 'Frontmatter actual (JSON): {json}',
 	'enhance.promptBody': 'Cuerpo actual: "{body}"',
 	'enhance.promptReturnJson': 'Devuelve un JSON con los campos:',
@@ -163,7 +170,7 @@ export default {
 	'apply.fetchError': 'Error al obtener contenido de {url}',
 	'apply.serverError': 'Error de conexión con elo-server. Comprueba que el servidor está funcionando y la URL en ajustes es correcta. Detalles: {error}',
 	'apply.prompt':
-		"Nota de obsidian: '{title}'\n\nFrontmatter: '{frontmatterJson}'\n\nContenido actual de la nota:\n{currentBody}\n\nContexto adicional (URL):\n{urlContext}\n\nInstrucción:\n{promptTemplate}\n\nIMPORTANTE: Tu respuesta debe ser un objeto JSON VÁLIDO con las siguientes claves:\n- \"frontmatter\": Objeto con los metadatos actualizados o nuevos (Opcional).\n- \"body\": String con el contenido del cuerpo de la nota (markdown).\n\nNO DEVUELVAS NADA MÁS QUE EL JSON. En los campos 'Obras' y 'Países' y todos los nombres propios, devuélvelos como links the markdown estilo: [[nombre]]",
+		"Nota de la memoria: '{title}'\n\nFrontmatter: '{frontmatterJson}'\n\nContenido actual de la nota:\n{currentBody}\n\nContexto adicional (URL):\n{urlContext}\n\nInstrucción:\n{promptTemplate}\n\nIMPORTANTE: Tu respuesta debe ser un objeto JSON VÁLIDO con las siguientes claves:\n- \"frontmatter\": Objeto con los metadatos actualizados o nuevos (Opcional).\n- \"body\": String con el contenido del cuerpo de la nota (markdown).\n\nNO DEVUELVAS NADA MÁS QUE EL JSON. En los campos 'Obras' y 'Países' y todos los nombres propios, devuélvelos como links the markdown estilo: [[nombre]]",
 
 	'enrich.openNote': 'Abre una nota para enriquecerla.',
 	'enrich.urlRequired': 'La URL es obligatoria.',

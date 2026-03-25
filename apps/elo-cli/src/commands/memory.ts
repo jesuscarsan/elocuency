@@ -3,13 +3,13 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import chalk from 'chalk';
 
-export const vaultCommand = new Command('vault')
-    .description('Manage the Obsidian vault via Elo Server');
+export const memoryCommand = new Command('memory')
+    .description('Manage the Obsidian memory via Elo Server');
 
-vaultCommand
+memoryCommand
     .command('init')
-    .description('Initialize the vault with fundamental templates and structure')
-    .option('-l, --lang <lang>', 'Language for the vault templates (es, en)', 'es')
+    .description('Initialize the memory with fundamental templates and structure')
+    .option('-l, --lang <lang>', 'Language for the memory templates (es, en)', 'es')
     .action(async (options) => {
         let authToken = process.env.SERVER_AUTH_TOKEN;
 
@@ -73,7 +73,7 @@ vaultCommand
             console.log(chalk.dim(`Defaulting to: ${serverUrl}\n`));
         };
 
-        console.log(chalk.cyan(`\n📦 Initializing Vault...`));
+        console.log(chalk.cyan(`\n📦 Initializing Memory...`));
         await checkHost();
 
         try {
@@ -85,9 +85,9 @@ vaultCommand
                 headers['Authorization'] = `Bearer ${authToken}`;
             }
 
-            console.log(chalk.dim(`📤 Sending vault init request to: ${serverUrl}/api/vault/init (lang: ${options.lang})`));
+            console.log(chalk.dim(`📤 Sending memory init request to: ${serverUrl}/api/memory/init (lang: ${options.lang})`));
 
-            const response = await fetch(`${serverUrl}/api/vault/init`, {
+            const response = await fetch(`${serverUrl}/api/memory/init`, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({
@@ -113,22 +113,22 @@ vaultCommand
         }
     });
 
-vaultCommand
+memoryCommand
     .command('index')
-    .description('Index the Obsidian vault into the vector database for semantic search')
-    .option('-f, --force', 'Force a full re-index of the entire vault')
+    .description('Index the Obsidian memory into the vector database for semantic search')
+    .option('-f, --force', 'Force a full re-index of the entire memory')
     .action(async (options) => {
         const monorepoRoot = process.cwd();
         const serverDir = path.join(monorepoRoot, 'apps', 'elo-server');
-        const syncScript = path.join(serverDir, 'src', 'scripts', 'sync-vault.ts');
+        const syncScript = path.join(serverDir, 'src', 'scripts', 'sync-memory.ts');
 
         if (!fs.existsSync(syncScript)) {
-            console.error(chalk.red(`\n❌ sync-vault.ts not found at: ${syncScript}`));
+            console.error(chalk.red(`\n❌ sync-memory.ts not found at: ${syncScript}`));
             console.error(chalk.dim('Make sure you run this command from the monorepo root.'));
             process.exit(1);
         }
 
-        console.log(chalk.cyan('\n🔍 Indexing Obsidian vault into vector database...'));
+        console.log(chalk.cyan('\n🔍 Indexing Obsidian memory into vector database...'));
         if (options.force) {
             console.log(chalk.yellow('⚡ Force mode: re-indexing all notes.'));
         }
@@ -162,7 +162,7 @@ vaultCommand
         });
 
         if (result.status === 0) {
-            console.log(chalk.green('\n✅ Vault indexed successfully!'));
+            console.log(chalk.green('\n✅ Memory indexed successfully!'));
         } else {
             console.error(chalk.red(`\n❌ Indexing failed with exit code ${result.status}`));
             process.exit(result.status || 1);

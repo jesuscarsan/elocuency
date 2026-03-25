@@ -36,6 +36,13 @@ export default {
 	'noteOperations.commandError': 'Error executing command: {error}',
 	'noteOperations.commandNotFound': 'Command not found or invalid',
 
+	'liveChat.title': 'Gemini Live Chat',
+	'liveChat.start': 'Start Gemini Live',
+	'liveChat.stop': 'Stop Gemini Live',
+	'liveChat.statusConnected': 'Connected',
+	'liveChat.statusDisconnected': 'Disconnected',
+	'liveChat.statusListening': 'Listening...',
+
 	'photos.openNoteToInsert': 'Open a note to insert photo link.',
 	'photos.photosConnectionError': 'Error connecting to Photos (Permissions?)',
 	'photos.selectPhotoFirst': 'Select a photo in Photos app first.',
@@ -88,7 +95,7 @@ export default {
 	'templates.templateApplied': 'Template applied successfully!',
 	'templates.aiGenerationFailed': 'AI failed to generate content.',
 	'templates.applyTemplateError': 'Error applying template.',
-	'templates.promptTitle': "Obsidian note: '{title}'",
+	'templates.promptTitle': "Memory note: '{title}'",
 
 	'dictionary.noActiveView': 'No active markdown view',
 	'dictionary.noActiveFile': 'No active file',
@@ -104,7 +111,7 @@ export default {
 	'enhance.enhanced': 'Note enhanced!',
 	'enhance.failed': 'AI enhancement failed.',
 	'enhance.serverError': 'Error connecting to elo-server. Please check that the server is running and the URL in settings is correct. Details: {error}',
-	'enhance.promptNote': 'Generate content for an Obsidian note: "{title}".',
+	'enhance.promptNote': 'Generate content for a memory note: "{title}".',
 	'enhance.promptFrontmatter': 'Current frontmatter (JSON): {json}',
 	'enhance.promptBody': 'Current body: "{body}"',
 	'enhance.promptReturnJson': 'Return a JSON with the fields:',
@@ -159,7 +166,7 @@ export default {
 	'apply.fetchError': 'Error fetching web context from {url}. Ensure the server matches http://url',
 	'apply.serverError': 'Error connecting to elo-server. Please check that the server is running and the URL in settings is correct. Details: {error}',
 	'apply.prompt':
-		"Obsidian note: '{title}'\n\nFrontmatter: '{frontmatterJson}'\n\nCurrent note content:\n{currentBody}\n\nAdditional context (URL):\n{urlContext}\n\nInstruction:\n{promptTemplate}\n\nIMPORTANT: Your response must be a VALID JSON object with the following keys:\n- \"frontmatter\": Object with updated or new metadata (Optional).\n- \"body\": String with the content of the note body (markdown).\n\nDO NOT RETURN ANYTHING OTHER THAN THE JSON. In the fields 'Works' and 'Countries' and all proper names, return them as markdown links style: [[name]]",
+		"Memory note: '{title}'\n\nFrontmatter: '{frontmatterJson}'\n\nCurrent note content:\n{currentBody}\n\nAdditional context (URL):\n{urlContext}\n\nInstruction:\n{promptTemplate}\n\nIMPORTANT: Your response must be a VALID JSON object with the following keys:\n- \"frontmatter\": Object with updated or new metadata (Optional).\n- \"body\": String with the content of the note body (markdown).\n\nDO NOT RETURN ANYTHING OTHER THAN THE JSON. In the fields 'Works' and 'Countries' and all proper names, return them as markdown links style: [[name]]",
 
 	'enrich.openNote': 'Open a markdown note to enrich.',
 	'enrich.urlRequired': 'URL is required.',

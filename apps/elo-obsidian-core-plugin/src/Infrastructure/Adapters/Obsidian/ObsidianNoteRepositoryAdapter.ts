@@ -35,7 +35,7 @@ export class ObsidianNoteRepositoryAdapter implements NoteRepositoryPort {
 			return;
 		}
 
-		// Update vault
+		// Update memory
 		await this.app.vault.modify(file, note.content);
 
 		// SYNC: Update any open editor for this file immediately

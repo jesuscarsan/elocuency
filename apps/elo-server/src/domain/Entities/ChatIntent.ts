@@ -1,6 +1,6 @@
 export enum ChatCategory {
-  AskObsidian = 'ask_obsidian',
-  ModifyObsidian = 'modify_obsidian',
+  AskMemory = 'ask_memory',
+  ModifyMemory = 'modify_memory',
   WebSearch = 'web_search',
   ExecuteAction = 'execute_action',
   GeneralChat = 'general_chat',

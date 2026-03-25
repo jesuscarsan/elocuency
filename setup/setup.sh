@@ -147,7 +147,7 @@ if [ -d "$MONOREPO_ROOT/workspace" ] && [ ! -d "$WS_PATH" ]; then
     mv "$MONOREPO_ROOT/workspace" "$WS_PATH"
 fi
 
-prompt_var "VAULT_PATH" "Enter absolute path to your Obsidian Vault" ""
+prompt_var "MEMORY_PATH" "Enter absolute path to your Obsidian Memory (notes)" ""
 
 echo "Preparing folders in $WS_PATH..."
 mkdir -p "$WS_PATH/logs/caddy" "$WS_PATH/logs/elo-server" 

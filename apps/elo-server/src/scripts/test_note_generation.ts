@@ -1,29 +1,32 @@
 import { config } from 'dotenv';
-import { TemplateCacheAdapter } from '../infrastructure/OutAdapters/Vault/TemplateCacheAdapter';
+import { TemplateCacheAdapter } from '../infrastructure/OutAdapters/Memory/TemplateCacheAdapter';
 import { LangChainNoteGeneratorAdapter } from '../infrastructure/OutAdapters/LangChainNoteGeneratorAdapter';
-import { FileSystemNoteRepositoryAdapter } from '../infrastructure/OutAdapters/Vault/FileSystemNoteRepositoryAdapter';
+import { FileSystemNoteRepositoryAdapter } from '../infrastructure/OutAdapters/Memory/FileSystemNoteRepositoryAdapter';
 import { CacheTemplatesUseCase } from '../application/UseCases/CacheTemplatesUseCase';
 import { GenerateNoteUseCase } from '../application/UseCases/GenerateNoteUseCase';
+import { WinstonLoggerAdapter } from '../infrastructure/logging/WinstonLoggerAdapter';
 import * as path from 'path';
 
 // Load ENV from elocuency root
 config({ path: path.join(__dirname, '../../../../.env') });
 
 async function verify() {
-  const vaultPath = process.env.VAULT_PATH!;
+  const memoryPath = process.env.MEMORY_PATH!;
   const workspacePath = process.env.ELO_WORKSPACE_PATH!;
 
-  console.log(`Vault Path: ${vaultPath}`);
+  console.log(`Memory Path: ${memoryPath}`);
   console.log(`Workspace Path: ${workspacePath}`);
 
+  const logger = new WinstonLoggerAdapter('test-note-gen');
+
   // Init Adapters
-  const templateCacheAdapter = new TemplateCacheAdapter(vaultPath, workspacePath);
-  const noteRepoAdapter = new FileSystemNoteRepositoryAdapter(vaultPath);
+  const templateCacheAdapter = new TemplateCacheAdapter(memoryPath, workspacePath, logger);
+  const noteRepoAdapter = new FileSystemNoteRepositoryAdapter(memoryPath, logger);
   const llmAdapter = new LangChainNoteGeneratorAdapter();
 
   // Init UseCases
-  const cacheTemplatesUseCase = new CacheTemplatesUseCase(templateCacheAdapter);
-  const generateNoteUseCase = new GenerateNoteUseCase(llmAdapter, templateCacheAdapter, noteRepoAdapter);
+  const cacheTemplatesUseCase = new CacheTemplatesUseCase(templateCacheAdapter, logger);
+  const generateNoteUseCase = new GenerateNoteUseCase(llmAdapter, templateCacheAdapter, noteRepoAdapter, logger);
 
   // 1. Build Cache
   console.log('\n--- 1. Testing CacheTemplatesUseCase ---');

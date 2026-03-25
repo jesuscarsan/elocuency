@@ -84,7 +84,7 @@ DOCKER_VOLUMES=("-v" "$DIR":"$DIR")
 ENV_VARS=(
     "GOOGLE_AI_API_KEY"
     "OBSIDIAN_API_KEY"
-    "VAULT_PATH"
+    "MEMORY_PATH"
     "SERVER_AUTH_TOKEN"
     "NGROK_AUTHTOKEN"
     "OBSIDIAN_URL"
@@ -97,12 +97,12 @@ for var in "${ENV_VARS[@]}"; do
 done
 
 if [ -f "$WORKSPACE_CONFIG" ] && command -v jq &> /dev/null; then
-    VAULTS=$(jq -r '.markdownVaults? // empty | .[]' "$WORKSPACE_CONFIG")
-    while IFS= read -r vault; do
-        if [ -n "$vault" ]; then
-            DOCKER_VOLUMES+=("-v" "$vault":"$vault")
+    MEMORIES=$(jq -r '.markdownMemories? // empty | .[]' "$WORKSPACE_CONFIG")
+    while IFS= read -r memory; do
+        if [ -n "$memory" ]; then
+            DOCKER_VOLUMES+=("-v" "$memory":"$memory")
         fi
-    done <<< "$VAULTS"
+    done <<< "$MEMORIES"
 fi
 
 # 5. Delegar el comando al contenedor de Elo CLI

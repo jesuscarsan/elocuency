@@ -1,13 +1,13 @@
-export const ASK_OBSIDIAN_PROMPT = `Use the following context snippets from my Obsidian vault to answer the user's question. 
-If the context doesn't contain the answer, answer based on your general knowledge but clarify that the answer was not found in the vault.
+export const ASK_OBSIDIAN_PROMPT = `Use the following context snippets from my memory to answer the user's question. 
+If the context doesn't contain the answer, answer based on your general knowledge but clarify that the answer was not found in the memory.
 IMPORTANT: You must respond in the exact same language that the user used in their question.
         
-Context from Obsidian:
+Context from Memory:
 {contextStr}
 
 User Question: {original_input}`;
 
-export const MODIFY_OBSIDIAN_PROMPT = `[OBSIDIAN EDIT]: This is a placeholder for executing vault modification based on: {original_input}`;
+export const MODIFY_OBSIDIAN_PROMPT = `[MEMORY EDIT]: This is a placeholder for executing memory modification based on: {original_input}`;
 
 export const WEB_SEARCH_PROMPT = `[WEB SEARCH]: This is a placeholder for searching the web for: {context}`;
 

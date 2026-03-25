@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { FileSystemNoteRepositoryAdapter } from '../infrastructure/OutAdapters/Vault/FileSystemNoteRepositoryAdapter';
+import { FileSystemNoteRepositoryAdapter } from '../infrastructure/OutAdapters/Memory/FileSystemNoteRepositoryAdapter';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
@@ -10,36 +10,36 @@ import fs from 'fs';
 
 config({ path: '../../.env' }); // Load repo root
 
-async function syncVault() {
+async function syncMemory() {
   const logFile = process.env.ELO_WORKSPACE_PATH 
-    ? path.join(process.env.ELO_WORKSPACE_PATH, 'logs', 'sync-vault.log')
+    ? path.join(process.env.ELO_WORKSPACE_PATH, 'logs', 'sync-memory.log')
     : undefined;
-  const logger = new WinstonLoggerAdapter('sync-vault', logFile);
+  const logger = new WinstonLoggerAdapter('sync-memory', logFile);
 
-  logger.info('--- Starting Vault -> Postgres Synchronization ---');
+  logger.info('--- Starting Memory -> Postgres Synchronization ---');
   
-  const vaultPath = process.env.VAULT_PATH;
-  if (!vaultPath) {
-    console.error('\n❌ VAULT_PATH environment variable is not set.');
-    console.error('   Set it in your .env file to the absolute path of your Obsidian vault.');
+  const memoryPath = process.env.MEMORY_PATH;
+  if (!memoryPath) {
+    console.error('\n❌ MEMORY_PATH environment variable is not set.');
+    console.error('   Set it in your .env file to the absolute path of your Obsidian memory.');
     process.exit(1);
   }
 
-  console.log(`📂 Vault path: ${vaultPath}`);
+  console.log(`📂 Memory path: ${memoryPath}`);
 
   let noteRepo: FileSystemNoteRepositoryAdapter;
   try {
-    noteRepo = new FileSystemNoteRepositoryAdapter(vaultPath, logger);
+    noteRepo = new FileSystemNoteRepositoryAdapter(memoryPath, logger);
   } catch (e: any) {
     logger.error(`\n❌ ${e.message}`);
     process.exit(1);
   }
   
-  logger.info("Scanning vault for markdown files...");
+  logger.info("Scanning memory for markdown files...");
   const notes = await noteRepo.getAllNotes();
   
   if (!notes || notes.length === 0) {
-    logger.error("❌ No notes found in the vault.");
+    logger.error("❌ No notes found in the memory.");
     process.exit(1);
   }
   
@@ -130,7 +130,7 @@ async function syncVault() {
   process.exit(0);
 }
 
-syncVault().catch(err => {
+syncMemory().catch(err => {
   console.error(err);
   process.exit(1);
 });

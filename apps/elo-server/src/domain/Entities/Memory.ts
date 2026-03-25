@@ -1,6 +1,6 @@
 import { Note } from './Note';
 
-export class Vault {
+export class Memory {
   constructor(
     public readonly id: string,
     public readonly basePath: string,

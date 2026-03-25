@@ -7,16 +7,16 @@ import { LoggerPort } from '../../../domain/ports/LoggerPort';
 
 export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
   constructor(
-    private readonly vaultPath: string,
+    private readonly memoryPath: string,
     private readonly logger: LoggerPort
   ) {
-    if (!fs.existsSync(vaultPath)) {
-      throw new Error(`Vault path does not exist: ${vaultPath}`);
+    if (!fs.existsSync(memoryPath)) {
+      throw new Error(`Memory path does not exist: ${memoryPath}`);
     }
   }
 
   public async getNoteById(id: string): Promise<Note | null> {
-    const fullPath = path.join(this.vaultPath, id);
+    const fullPath = path.join(this.memoryPath, id);
     if (!fs.existsSync(fullPath)) return null;
 
     try {
@@ -29,7 +29,7 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
   }
 
   public async saveNote(note: Note): Promise<void> {
-    const fullPath = path.join(this.vaultPath, note.id);
+    const fullPath = path.join(this.memoryPath, note.id);
     const dir = path.dirname(fullPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -38,8 +38,8 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
   }
 
   public async renameNote(oldId: string, newId: string): Promise<void> {
-    const oldPath = path.join(this.vaultPath, oldId);
-    const newPath = path.join(this.vaultPath, newId);
+    const oldPath = path.join(this.memoryPath, oldId);
+    const newPath = path.join(this.memoryPath, newId);
     if (!fs.existsSync(oldPath)) {
       throw new Error(`Note not found: ${oldId}`);
     }
@@ -51,7 +51,7 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
   }
 
   public async deleteNote(id: string): Promise<void> {
-    const fullPath = path.join(this.vaultPath, id);
+    const fullPath = path.join(this.memoryPath, id);
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath);
     }
@@ -64,11 +64,11 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
   }
 
   public async getAllNotes(): Promise<Note[]> {
-    const files = this.listMarkdownFiles(this.vaultPath);
+    const files = this.listMarkdownFiles(this.memoryPath);
     const notes: Note[] = [];
 
     for (const filePath of files) {
-      const relativePath = path.relative(this.vaultPath, filePath);
+      const relativePath = path.relative(this.memoryPath, filePath);
       try {
         const raw = fs.readFileSync(filePath, 'utf-8');
         const note = this.parseNote(relativePath, raw, filePath);
@@ -83,14 +83,14 @@ export class FileSystemNoteRepositoryAdapter implements NoteRepositoryPort {
 
   public async getNotesModifiedSince(since: Date): Promise<Note[]> {
     const sinceMs = since.getTime();
-    const files = this.listMarkdownFiles(this.vaultPath);
+    const files = this.listMarkdownFiles(this.memoryPath);
     const notes: Note[] = [];
 
     for (const filePath of files) {
       try {
         const stat = fs.statSync(filePath);
         if (stat.mtimeMs > sinceMs) {
-          const relativePath = path.relative(this.vaultPath, filePath);
+          const relativePath = path.relative(this.memoryPath, filePath);
           const raw = fs.readFileSync(filePath, 'utf-8');
           const note = this.parseNote(relativePath, raw, filePath);
           notes.push(note);

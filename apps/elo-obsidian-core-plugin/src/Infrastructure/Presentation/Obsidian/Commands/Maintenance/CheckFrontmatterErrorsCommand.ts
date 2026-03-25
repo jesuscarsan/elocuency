@@ -11,7 +11,7 @@ export class CheckFrontmatterErrorsCommand {
 		const files = this.app.vault.getMarkdownFiles();
 		const problematicFiles: string[] = [];
 
-		new Notice('🔍 Scanning vault for frontmatter errors...', 3000);
+		new Notice('🔍 Scanning memory for frontmatter errors...', 3000);
 
 		for (const file of files) {
 			const content = await this.app.vault.read(file);

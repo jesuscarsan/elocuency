@@ -6,13 +6,13 @@ This document describes the structure and available settings for the `elo.config
 
 The file uses JSON format and contains the following top-level keys:
 
-### `markdownVaults`
+### `memoryPaths`
 
 - **Type**: `string[]`
 - **Description**: A list of absolute paths to the Obsidian vaults that the system should be aware of or index for semantic search.
 - **Example**:
   ```json
-  "markdownVaults": [
+  "memoryPaths": [
       "/Users/joshua/my-docs/KBs/JACS",
       "/Users/joshua/my-docs/KBs/Cocina"
   ]

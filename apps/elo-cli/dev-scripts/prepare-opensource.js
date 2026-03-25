@@ -248,11 +248,11 @@ function processApp(appName) {
 		let esbuildContent = fs.readFileSync(esbuildPath, 'utf8');
 		// Replace config loading with empty mdVaults
 		const configRegex =
-			/const config = JSON\.parse\(fs\.readFileSync\('\.\.\/\.\.\/elo\.config\.json', 'utf8'\)\);\s*const mdVaults = config\.mdVaults;/;
+			/const config = JSON\.parse\(fs\.readFileSync\('\.\.\/\.\.\/elo\.config\.json', 'utf8'\)\);\s*const markdownMemories = config\.markdownMemories;/;
 		if (esbuildContent.match(configRegex)) {
 			esbuildContent = esbuildContent.replace(
 				configRegex,
-				'const mdVaults = []; // Open Source: No auto-deploy',
+				'const markdownMemories = []; // Open Source: No auto-deploy',
 			);
 			fs.writeFileSync(esbuildPath, esbuildContent);
 			log.info('Patched esbuild.config.mjs to remove elo.config.json dependency.');

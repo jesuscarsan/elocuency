@@ -2,23 +2,26 @@ import { config } from 'dotenv';
 import { LangChainIntentAnalyzerAdapter } from '../infrastructure/OutAdapters/LangChainIntentAnalyzerAdapter';
 import { LangChainSpecialistProcessorAdapter } from '../infrastructure/OutAdapters/LangChainSpecialistProcessorAdapter';
 import { RouteChatMessageUseCase } from '../application/UseCases/RouteChatMessageUseCase';
+import { WinstonLoggerAdapter } from '../infrastructure/logging/WinstonLoggerAdapter';
 
 config({ path: '../../.env' }); // Load environment variables from repo root
 
 async function runTest() {
   console.log('--- Starting Semantic Router Test ---');
   
+  const logger = new WinstonLoggerAdapter('test-router');
+
   // 1. Instantiate Adapters (Infrastructure Layer)
-  const intentAnalyzer = new LangChainIntentAnalyzerAdapter();
-  const specialistProcessor = new LangChainSpecialistProcessorAdapter();
+  const intentAnalyzer = new LangChainIntentAnalyzerAdapter(logger);
+  const specialistProcessor = new LangChainSpecialistProcessorAdapter(undefined, undefined, logger);
   
   // 2. Instantiate Use Case (Application Layer)
-  const routerUseCase = new RouteChatMessageUseCase(intentAnalyzer, specialistProcessor);
+  const routerUseCase = new RouteChatMessageUseCase(intentAnalyzer, specialistProcessor, logger);
   
   // 3. Test Cases
   const queries = [
-    "I need to add a new note in my vault about the hexagonal architecture principles we just discussed.",
-    "Can you retrieve my notes about React performance?",
+    "I need to add a new note in my memory about the hexagonal architecture principles we just discussed.",
+    "Can you retrieve my notes from memory about React performance?",
     "Search google to see what the weather is like in Madrid right now.",
     "Trigger the n8n workflow for sending the daily summary email.",
     "Hey! How is your day going? Tell me a quick joke."
