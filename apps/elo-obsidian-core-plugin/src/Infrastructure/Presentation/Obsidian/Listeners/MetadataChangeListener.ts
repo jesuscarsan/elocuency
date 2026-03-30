@@ -63,7 +63,7 @@ export class MetadataChangeListener {
 		// A small delay (50ms) is enough for the UI event to finish.
 		window.setTimeout(async () => {
 			await this.processExecuteCommand(commandId);
-		}, 50);
+		}, 200);
 	}
 
 	private async processExecuteCommand(commandId: string) {

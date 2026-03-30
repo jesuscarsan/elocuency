@@ -18,7 +18,7 @@ export class ApplyTemplateUseCase {
 
 	async execute(targetNotePath: string, promptUrl?: string) {
 		console.log('[ApplyTemplateUseCase] Start execution via elo-server API');
-		
+
 		this.uiService.showMessage('apply.applying', { template: '...' });
 
 		const response = await this.networkPort.postJson<any>(
@@ -61,7 +61,7 @@ export class ApplyTemplateUseCase {
 		templateMatch: TemplateMatch,
 		predefinedPromptUrl?: string,
 	) {
-		let templateId = templateMatch.template.path.replace('!!metadata/templates/', '');
+		let templateId = templateMatch.template.path.replace('!!config/templates/', '');
 		if (templateId.startsWith('/')) templateId = templateId.slice(1);
 
 		const requestData = {

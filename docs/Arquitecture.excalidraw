@@ -585,8 +585,8 @@
       "type": "text",
       "x": 853.7649853819272,
       "y": 588.6644557729966,
-      "width": 236.91983032226562,
-      "height": 200,
+      "width": 179.83987426757812,
+      "height": 175,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -600,8 +600,8 @@
       "index": "aQ",
       "roundness": null,
       "seed": 2058127816,
-      "version": 506,
-      "versionNonce": 2044155938,
+      "version": 515,
+      "versionNonce": 11152875,
       "isDeleted": false,
       "boundElements": [
         {
@@ -613,16 +613,16 @@
           "type": "arrow"
         }
       ],
-      "updated": 1771538762594,
+      "updated": 1774855660626,
       "link": null,
       "locked": false,
-      "text": "/elo-workspace\n   /n8n\n   /langchain-tools\n   /mcps\n   /chromadb\n   /logs\n   /apps (in production) \n   elo-config.json",
+      "text": "/elo-workspace\n   /n8n\n   /langchain-tools\n   /mcps\n   /pgvector\n   /logs\n   elo-config.json",
       "fontSize": 20,
       "fontFamily": 5,
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "/elo-workspace\n   /n8n\n   /langchain-tools\n   /mcps\n   /chromadb\n   /logs\n   /apps (in production) \n   elo-config.json",
+      "originalText": "/elo-workspace\n   /n8n\n   /langchain-tools\n   /mcps\n   /pgvector\n   /logs\n   elo-config.json",
       "autoResize": true,
       "lineHeight": 1.25
     },
@@ -3006,10 +3006,10 @@
     {
       "id": "MXTNPLatQid72qSeg-i3R",
       "type": "arrow",
-      "x": 714.6071520213527,
-      "y": 733.9326985550697,
-      "width": 115.21495932304799,
-      "height": 55.60255775417545,
+      "x": 714.6071520213526,
+      "y": 733.0904505796742,
+      "width": 115.21495932304788,
+      "height": 63.21666492900556,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3025,11 +3025,11 @@
         "type": 2
       },
       "seed": 815647928,
-      "version": 994,
-      "versionNonce": 1653946274,
+      "version": 1003,
+      "versionNonce": 1113714475,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1771538762596,
+      "updated": 1774855660628,
       "link": null,
       "locked": false,
       "points": [
@@ -3038,8 +3038,8 @@
           0
         ],
         [
-          115.21495932304799,
-          -55.60255775417545
+          115.21495932304788,
+          -63.21666492900556
         ]
       ],
       "lastCommittedPoint": null,
@@ -3235,9 +3235,9 @@
       "id": "NBSJu3VusYL6EmHwazo5H",
       "type": "arrow",
       "x": 716.6218503047029,
-      "y": 647.9226236843194,
+      "y": 648.0587250497421,
       "width": 112.55777254006887,
-      "height": 3.565802419680381,
+      "height": 0.24351511436259443,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3253,11 +3253,11 @@
         "type": 2
       },
       "seed": 638915272,
-      "version": 770,
-      "versionNonce": 1731986402,
+      "version": 779,
+      "versionNonce": 581122187,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1771538762595,
+      "updated": 1774855660628,
       "link": null,
       "locked": false,
       "points": [
@@ -3267,7 +3267,7 @@
         ],
         [
           112.55777254006887,
-          3.565802419680381
+          0.24351511436259443
         ]
       ],
       "lastCommittedPoint": null,
@@ -3308,7 +3308,7 @@
       "version": 367,
       "versionNonce": 354114894,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1772305832502,
       "link": null,
       "locked": false,
@@ -3382,7 +3382,7 @@
       "version": 126,
       "versionNonce": 236525970,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1772306111333,
       "link": null,
       "locked": false,
@@ -3419,7 +3419,7 @@
       "version": 106,
       "versionNonce": 1649283154,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1772306090730,
       "link": null,
       "locked": false,

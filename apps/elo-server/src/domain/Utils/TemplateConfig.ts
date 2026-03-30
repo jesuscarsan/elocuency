@@ -10,7 +10,7 @@ export interface TemplateConfig {
   path?: string;
   prompt?: string;
   hasFrontmatter?: boolean;
-  desambiguationSufix?: string;
+  titlePattern?: string;
   [key: string]: any;
 }
 

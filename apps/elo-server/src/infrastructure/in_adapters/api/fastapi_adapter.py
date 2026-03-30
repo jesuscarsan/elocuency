@@ -72,11 +72,11 @@ def create_app(ask_ai_use_case: AskAIUseCase, config: AppConfig, lifespan: Calla
         if not os.path.exists(source_dir):
             raise HTTPException(status_code=404, detail=f"Vault templates for language '{lang}' not found at {source_dir}.")
             
-        target_metadata_dir = os.path.join(config.obsidian.vault_path, "!!metadata")
+        target_metadata_dir = os.path.join(config.obsidian.vault_path, "!!config")
         
         try:
-            # Copy all contents from source_dir over to vault_path/!!metadata
-            # dirs_exist_ok=True allows merging into an existing !!metadata without crashing
+            # Copy all contents from source_dir over to vault_path/!!config
+            # dirs_exist_ok=True allows merging into an existing !!config without crashing
             shutil.copytree(source_dir, target_metadata_dir, dirs_exist_ok=True)
             return InitVaultResponse(message=f"Vault successfully initialized with '{lang}' templates.", target_path=target_metadata_dir)
         except Exception as e:

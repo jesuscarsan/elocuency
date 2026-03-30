@@ -13,7 +13,10 @@ export class ChatSession {
     public readonly id: string,
     public readonly userId: string,
     public readonly startedAt: Date = new Date(),
-  ) {}
+    initialMessages: ChatMessage[] = []
+  ) {
+    this.messages = initialMessages;
+  }
 
   public addMessage(role: Role, content: string): void {
     this.messages.push({

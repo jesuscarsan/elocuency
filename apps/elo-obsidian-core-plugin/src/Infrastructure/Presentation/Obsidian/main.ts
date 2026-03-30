@@ -25,6 +25,7 @@ import { EloServerLlmAdapter as LlmAdapter, setTagFolderMapping } from '@elo/cor
 import { setFrontmatterRegistry, FrontmatterKeys, FrontmatterRegistry, FrontmatterFieldConfig } from './Constants/FrontmatterRegistry';
 import { setMyWorldConfig, MyWorldConfig, MyWorldRegistry } from './Constants/MyWorldRegistry';
 import { getPlaceTypes, getPlaceTypeRegistry, PlaceTypeConfig } from './Constants/PlaceTypes';
+import { NoteChangeListener } from './Listeners/NoteChangeListener';
 
 export default class ObsidianExtension extends Plugin {
 	settings: UnresolvedLinkGeneratorSettings = DEFAULT_SETTINGS;
@@ -112,6 +113,9 @@ export default class ObsidianExtension extends Plugin {
 		this.addRibbonIcon('mic', this.translationService.t('liveChat.title'), () =>
 			this.activateLiveChatView(),
 		);
+
+		// --- Background Synchronizers ---
+		new NoteChangeListener(this.app, this.settings);
 	}
 
 	onunload() {
@@ -215,8 +219,16 @@ export default class ObsidianExtension extends Plugin {
 		if (config.myWorldPath) {
 			setMyWorldConfig(config.myWorldPath);
 			console.log('[ObsidianExtension] MyWorldConfig initialized:', config.myWorldPath);
+			if (config.myWorldPath.worldMemoryPath) {
+				this.settings.memory.worldPath = config.myWorldPath.worldMemoryPath;
+			}
 		} else {
 			setMyWorldConfig({});
+		}
+
+		if (config.memory && config.memory.worldPath) {
+			this.settings.memory.worldPath = config.memory.worldPath;
+			console.log('[ObsidianExtension] memory.worldPath initialized:', config.memory.worldPath);
 		}
 	}
 

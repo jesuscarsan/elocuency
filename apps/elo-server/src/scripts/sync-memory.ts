@@ -3,12 +3,35 @@ import { FileSystemNoteRepositoryAdapter } from '../infrastructure/OutAdapters/M
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
-import { PoolConfig } from 'pg';
+import { Pool, PoolConfig } from 'pg';
 import { WinstonLoggerAdapter } from '../infrastructure/logging/WinstonLoggerAdapter';
 import path from 'path';
 import fs from 'fs';
+import { MarkdownCleaner } from '../application/services/MarkdownCleaner';
 
 config({ path: '../../.env' }); // Load repo root
+
+// Load elo-config.json to get worldPath
+const eloWorkspacePath = process.env.ELO_WORKSPACE_PATH;
+const configPath = eloWorkspacePath ? path.join(eloWorkspacePath, 'elo-config.json') : null;
+let worldPathPrefix = 'Mi mundo'; // Default fallback
+
+const isTestMode = process.argv.includes('--test') || process.env.TEST_MODE === 'true';
+if (isTestMode) {
+  console.log('🧪 Test Mode Enabled');
+  worldPathPrefix = ''; // No prefix for test folder
+}
+
+if (!isTestMode && configPath && fs.existsSync(configPath)) {
+  try {
+    const eloConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    if (eloConfig.memory && eloConfig.memory.worldPath) {
+      worldPathPrefix = eloConfig.memory.worldPath;
+    }
+  } catch (e) {
+    console.warn('⚠️ Warning: Failed to parse elo-config.json, using default worldPath');
+  }
+}
 
 async function syncMemory() {
   const logFile = process.env.ELO_WORKSPACE_PATH 
@@ -16,9 +39,18 @@ async function syncMemory() {
     : undefined;
   const logger = new WinstonLoggerAdapter('sync-memory', logFile);
 
-  logger.info('--- Starting Memory -> Postgres Synchronization ---');
+  const initializeFlag = process.argv.includes('--initialize') || process.argv.includes('-i');
   
-  const memoryPath = process.env.MEMORY_PATH;
+  if (initializeFlag) {
+    logger.info('🧹 Initialize mode: Clearing vector database before sync...');
+  }
+
+  let memoryPath = process.env.MEMORY_PATH;
+  
+  if (isTestMode) {
+    memoryPath = path.join(__dirname, '../../assets/memory-test');
+  }
+
   if (!memoryPath) {
     console.error('\n❌ MEMORY_PATH environment variable is not set.');
     console.error('   Set it in your .env file to the absolute path of your Obsidian memory.');
@@ -60,6 +92,7 @@ async function syncMemory() {
   });
 
   const poolConfig: PoolConfig = { connectionString };
+  const pool = new Pool(poolConfig);
 
   const vectorStore = await PGVectorStore.initialize(embeddings, {
     postgresConnectionOptions: poolConfig,
@@ -68,14 +101,28 @@ async function syncMemory() {
       idColumnName: 'id',
       vectorColumnName: 'embedding',
       contentColumnName: 'document',
-      metadataColumnName: 'cmetadata',
+    metadataColumnName: 'cmetadata',
     },
   });
 
-  const textSplitter = new RecursiveCharacterTextSplitter({
+  if (initializeFlag) {
+    logger.info('🔥 Deleting ALL previous entries from langchain_pg_embedding...');
+    try {
+      await pool.query("DELETE FROM langchain_pg_embedding");
+      logger.info('✅ Database cleared.');
+    } catch (err) {
+      logger.error('❌ Error clearing database in initialize mode');
+      throw err;
+    }
+  }
+
+  const { MarkdownTextSplitter } = await import('@langchain/textsplitters');
+  const textSplitter = new MarkdownTextSplitter({
     chunkSize: 1000,
     chunkOverlap: 200,
   });
+
+  const cleaner = new MarkdownCleaner();
 
   let processed = 0;
   let currentNoteIndex = 0;
@@ -88,9 +135,42 @@ async function syncMemory() {
 
     if (!note.content) continue;
     
+    // Normalize paths and title
+    const noteId = note.id; // full relative path
+    const title = path.basename(noteId, '.md');
+    
+    // Normalize path by stripping worldPath prefix and .md extension
+    let normalizedPath = noteId.endsWith('.md') ? noteId.slice(0, -3) : noteId;
+    if (normalizedPath.startsWith(worldPathPrefix + '/')) {
+      normalizedPath = normalizedPath.slice(worldPathPrefix.length + 1);
+    } else if (normalizedPath === worldPathPrefix) {
+      normalizedPath = ''; // Root world path note
+    }
+
+    // Delete existing entries for this note title to prevent duplicates
+    try {
+      await pool.query(
+        "DELETE FROM langchain_pg_embedding WHERE cmetadata->>'title' = $1", 
+        [title]
+      );
+    } catch (err) {
+      logger.error(`❌ Error deleting previous entries for title: ${title}`);
+      throw err;
+    }
+
+    const cleanContent = cleaner.clean(note.content, { path: normalizedPath, title: title });
+
+    // Context Injection: Prepend Title to every chunk
+    const contentWithContext = `Title: ${title}\n\n${cleanContent}`;
+
     const docs = await textSplitter.createDocuments(
-      [note.content],
-      [{ path: note.id, source: note.id, title: note.title, tags: note.tags }]
+      [contentWithContext],
+      [{ 
+        path: normalizedPath, 
+        source: normalizedPath, 
+        title: title, 
+        tags: note.tags 
+      }]
     );
     
     const validDocs = docs.filter(doc => doc.pageContent.trim().length > 0);
@@ -125,6 +205,7 @@ async function syncMemory() {
   }
 
   await vectorStore.end();
+  await pool.end();
 
   logger.info(`\n✅ Successfully synchronized ${processed} chunks to PostgreSQL!`);
   process.exit(0);

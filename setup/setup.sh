@@ -169,11 +169,12 @@ if [ "$runtime_choice" == "2" ]; then
         exit 1
     fi
 
-    echo "Starting PostgreSQL Vector DB..."
-    if command -v docker &> /dev/null; then
-        docker-compose -f "$MONOREPO_ROOT/docker-compose.yml" up -d pgvector
+    echo -e "\n${YELLOW}Running database migrations...${NC}"
+    cd "$MONOREPO_ROOT"
+    if command -v elo &> /dev/null; then 
+        elo server update
     else
-        echo -e "${YELLOW}Warning: Docker not installed. You will need to start your Postgres DB manually.${NC}"
+        npx ts-node "$MONOREPO_ROOT/apps/elo-server/src/infrastructure/OutAdapters/Database/scripts/migrate.ts"
     fi
 
     echo -e "\n${GREEN}Setup complete! Run 'elo server start' to start native services.${NC}"
@@ -217,6 +218,12 @@ else
 
     if [ $? -eq 0 ]; then
         echo -e "\n${GREEN}Success! Elo Server is running via Docker.${NC}"
+        
+        echo -e "\n${YELLOW}Running database migrations...${NC}"
+        # Give a small delay for DB to be ready
+        sleep 3
+        elo server update || echo "⚠️ Migration check failed. You may need to run 'elo server update' manually."
+
         echo "  - Access UI/API: http://localhost/"
         echo "  - n8n Automation: http://localhost/n8n/"
         echo "  - Logs: tail -f $WS_PATH/logs/elo-server.log"

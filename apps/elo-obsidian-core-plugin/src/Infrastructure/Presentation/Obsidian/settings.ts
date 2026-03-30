@@ -3,7 +3,9 @@ export type LocationStrategy = 'same-folder' | 'fixed-folder';
 export interface UnresolvedLinkGeneratorSettings {
 	locationStrategy: LocationStrategy;
 	targetFolder: string;
-	locationsFolder: string;
+	memory: {
+		worldPath: string;
+	};
 	missingNotesTemplatePath: string;
 	hideEmptyProperties: boolean;
 	userLanguage: string;
@@ -15,7 +17,9 @@ export interface UnresolvedLinkGeneratorSettings {
 export const DEFAULT_SETTINGS: UnresolvedLinkGeneratorSettings = {
 	locationStrategy: 'same-folder',
 	targetFolder: '',
-	locationsFolder: 'Mi mundo',
+	memory: {
+		worldPath: 'Mi mundo',
+	},
 	missingNotesTemplatePath: '# {{title}}\n',
 	hideEmptyProperties: false,
 	userLanguage: 'es',

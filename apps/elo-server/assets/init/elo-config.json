@@ -1,0 +1,458 @@
+{
+    "memory": {
+        "worldPath": "Mi mundo"
+    },
+    "markdownMemories": [
+        "/Users/joshua/my-docs/KBs/JACS"
+    ],
+    "markdownMemories--": [
+        "/Users/joshua/my-docs/KBs/JACS",
+        "/Users/joshua/my-docs/KBs/Cocina",
+        "/Users/joshua/my-docs/KBs/Tecnolog\u00eda",
+        "/Users/joshua/my-docs/KBs/teo-3-eso-kb"
+    ],
+    "mcps": [
+        {
+            "name": "elo-obsidian-api-mcp",
+            "active": true
+        },
+        {
+            "name": "mcp-obsidian",
+            "active": false
+        }
+    ],
+    "langchainTools": [
+        {
+            "name": "n8n_workflows",
+            "active": true
+        }
+    ],
+    "ai": {
+        "model": "gemini-2.0-flash"
+    },
+    "obsidian": {
+        "url": "http://host.docker.internal:27123",
+        "lastIndexDatetime": "2026-02-18T18:11:14"
+    },
+    "myWorldPath": {
+        "placesTagsNameStart": "Lugares/",
+        "placeTypes": {
+            "Provincias": { "geocodingSuffix": "Provincia" },
+            "Regiones": { "geocodingSuffix": "Region" },
+            "Países": { "geocodingSuffix": "Pais" },
+            "Municipios": {},
+            "Ciudades": {}
+        },
+        "placeSuffixes": [
+            "Restaurantes",
+            "Monumentos",
+            "Paisajes",
+            "Playas",
+            "Montañas",
+            "Parques",
+            "Cafeterías",
+            "Bares",
+            "Museos-Artes",
+            "Museos-Ciencia",
+            "Hoteles",
+            "Tiendas",
+            "Estadios",
+            "Auditorios",
+            "Bibliotecas",
+            "Capitales",
+            "Municipios",
+            "Provincias",
+            "Regiones",
+            "Países",
+            "Ciudades",
+            "Continentes",
+            "Barrios",
+            "Pueblos",
+            "Grandes-almacenes",
+            "Parques-naturales",
+            "Casas",
+            "Oficinas",
+            "Pisos",
+            "Calles",
+            "Islas",
+            "Tiendas-de-ropa",
+            "Colegios",
+            "Institutos",
+            "Universidades",
+            "Hospitales",
+            "Eventos/Festivales-de-cine",
+            "Eventos/Festivales-de-musica",
+            "Eventos/Fiestas"
+        ]
+    },
+    "tagFolderMapping": {
+        "Personas/Conocidos-mios": "(Conocidos)",
+        "Personas/Compañeros-de-trabajo": "(Conocidos)",
+        "Personas/Vecinos": "(Conocidos)",
+        "Personas/Familia": "(Familia)",
+        "Personas/Públicas": "(Personajes)",
+        "Personas/Históricas": "(Históricos)",
+        "Obras/Discos": "(Audiovisuales)",
+        "Obras/Películas": "(Audiovisuales)",
+        "Obras/Videojuegos": "(Audiovisuales)",
+        "Obras/Canciones": "(Música)",
+        "Obras/Libros": "(Libros)",
+        "Obras/Bebidas": "(Gastronomía)",
+        "Obras/Comidas": "(Gastronomía)",
+        "Obras/Canales-Stream": "(Medios)",
+        "Obras/Series-TV": "(Audiovisuales)",
+        "Obras/Albúm-de-música": "(Audiovisuales)",
+        "Orgs/Multinacionales": "(Empresas)",
+        "Orgs/Empresas": "(Empresas)",
+        "Orgs/Colegios": "(Colegios)",
+        "Lugares/Restaurantes": "(Restaurantes)",
+        "Lugares/Bares": "(Bares)",
+        "Lugares/Cafeterías": "(Bares)",
+        "Lugares/Negocios": "(Negocios)",
+        "Lugares/Tiendas": "(Tiendas)",
+        "Eventos/Fiestas": "(Eventos)",
+        "Eventos/Festivales-de-cine": "(Eventos)",
+        "Eventos/Festivales-de-música": "(Eventos)",
+        "Eventos/Festivales-de-teatro": "(Eventos)"
+    },
+    "frontmatterRegistry": {
+        "!!commands": {
+            "key": "!!commands",
+            "description": "Comandos adicionales para la IA",
+            "type": "array"
+        },
+        "!!prompt": {
+            "key": "!!prompt",
+            "description": "Prompt personalizado para la IA",
+            "type": "string"
+        },
+        "!!promptUrl": {
+            "key": "!!promptUrl",
+            "description": "URL de contexto para el prompt",
+            "type": "string"
+        },
+        "Municipio": {
+            "key": "Municipio",
+            "description": "Nombre del municipio, ciudad o pueblo",
+            "type": "string",
+            "isRelocateField": true,
+            "relocatePriority": 10,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Provincia": {
+            "key": "Provincia",
+            "description": "Nombre de la provincia administrativa",
+            "type": "string",
+            "isRelocateField": true,
+            "relocatePriority": 20,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Región": {
+            "key": "Región",
+            "description": "Comunidad autónoma o región",
+            "type": "string",
+            "isRelocateField": true,
+            "relocatePriority": 30,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "País": {
+            "key": "País",
+            "description": "País",
+            "type": "string",
+            "isRelocateField": true,
+            "relocatePriority": 40,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Países": {
+            "key": "Países",
+            "description": "Países",
+            "type": "array",
+            "isRelocateField": true,
+            "relocatePriority": 40,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Lugar Id": {
+            "key": "Lugar Id",
+            "description": "Identificador único del lugar (ej. Google Place ID)",
+            "type": "string",
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Lugar": {
+            "key": "Lugar",
+            "description": "Lugar relacionado",
+            "type": "string",
+            "isRelocateField": true,
+            "relocatePriority": 5,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Lugares": {
+            "key": "Lugares",
+            "description": "Lugares relacionados",
+            "type": "array",
+            "isRelocateField": true,
+            "relocatePriority": 5,
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Sede principal": {
+            "key": "Sede principal",
+            "description": "Sede principal",
+            "isRelocateField": true,
+            "relocatePriority": 5,
+            "type": "string",
+            "asLink": true,
+            "commands": [
+                "relocate-note-by-link-field"
+            ]
+        },
+        "Latitud": {
+            "key": "Latitud",
+            "description": "Coordenada de latitud geográfica",
+            "type": "number"
+        },
+        "Longitud": {
+            "key": "Longitud",
+            "description": "Coordenada de longitud geográfica",
+            "type": "number"
+        },
+        "Url": {
+            "key": "Url",
+            "description": "URL de la web, video, streaming, ...",
+            "type": "string"
+        },
+        "Spotify uri": {
+            "key": "Spotify uri",
+            "description": "URI de Spotify",
+            "type": "string"
+        },
+        "Capital": {
+            "key": "Capital",
+            "description": "Capital del país (si aplica)",
+            "type": "string",
+            "asLink": true
+        },
+        "tags": {
+            "key": "tags",
+            "description": "Etiquetas",
+            "type": "array"
+        },
+        "Conocidos": {
+            "key": "Conocidos",
+            "description": "Lista de conocidos",
+            "type": "array",
+            "recipro বৃহত্তরField": "Conocidos",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Hijos": {
+            "key": "Hijos",
+            "description": "Hijos de la persona",
+            "type": "array",
+            "reciprocityField": "Padres",
+            "amongField": "Hermanos",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Padres": {
+            "key": "Padres",
+            "description": "Padres de la persona",
+            "type": "array",
+            "reciprocityField": "Hijos",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Pareja": {
+            "key": "Pareja",
+            "description": "Pareja actual",
+            "type": "array",
+            "reciprocityField": "Pareja",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Exparejas": {
+            "key": "Exparejas",
+            "description": "Exparejas",
+            "type": "array",
+            "reciprocityField": "Exparejas",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Hermanos": {
+            "key": "Hermanos",
+            "description": "Hermanos",
+            "type": "array",
+            "reciprocityField": "Hermanos",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Familiares": {
+            "key": "Familiares",
+            "description": "Otros familiares",
+            "type": "array",
+            "reciprocityField": "Familiares",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Compañeros de trabajo": {
+            "key": "Compañeros de trabajo",
+            "description": "Compañeros de trabajo",
+            "type": "array",
+            "reciprocityField": "Compañeros de trabajo",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Jefes": {
+            "key": "Jefes",
+            "description": "Jefes directos",
+            "type": "array",
+            "reciprocityField": "Empleados",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Empleados": {
+            "key": "Empleados",
+            "description": "Empleados a cargo",
+            "type": "array",
+            "reciprocityField": "Jefes",
+            "asLink": true,
+            "commands": [
+                "create-reciprocity-links"
+            ]
+        },
+        "Estilos musicales": {
+            "key": "Estilos musicales",
+            "description": "Estilos musicales del artista",
+            "type": "array"
+        },
+        "Spotify popularidad": {
+            "key": "Spotify popularidad",
+            "description": "Popularidad del artista en Spotify (0-100)",
+            "type": "number"
+        },
+        "!!images": {
+            "key": "!!images",
+            "description": "Lista de fotos enlazadas (elo-bridge)",
+            "type": "array"
+        },
+        "Teléfono": {
+            "key": "Teléfono",
+            "description": "Teléfono de contacto",
+            "type": "string"
+        },
+        "Email": {
+            "key": "Email",
+            "description": "Email de contacto",
+            "type": "string"
+        },
+        "Cumpleaños": {
+            "key": "Cumpleaños",
+            "description": "Cumpleaños (YYYY-MM-DD)",
+            "type": "date"
+        },
+        "!!appleContactId": {
+            "key": "!!appleContactId",
+            "description": "ID de contacto en Apple (elo-bridge)",
+            "type": "string"
+        },
+        "Apodo": {
+            "key": "Apodo",
+            "description": "Apodo o nombre corto",
+            "type": "string"
+        },
+        "Puesto de trabajo": {
+            "key": "Puesto de trabajo",
+            "description": "Puesto de trabajo o cargo",
+            "type": "string"
+        },
+        "Empresa": {
+            "key": "Empresa",
+            "description": "Empresa u organización",
+            "type": "string"
+        },
+        "Direcciones": {
+            "key": "Direcciones",
+            "description": "Direcciones postales",
+            "type": "array"
+        },
+        "Urls": {
+            "key": "Urls",
+            "description": "Sitios web y enlaces",
+            "type": "array"
+        },
+        "Eventos": {
+            "key": "Eventos",
+            "description": "Eventos o fechas importantes",
+            "type": "array"
+        },
+        "Relaciones": {
+            "key": "Relaciones",
+            "description": "Relaciones con otras personas",
+            "type": "array"
+        },
+        "Género": {
+            "key": "Género",
+            "description": "Género",
+            "type": "string"
+        },
+        "Ocupaciones": {
+            "key": "Ocupaciones",
+            "description": "Ocupaciones (adicionales al puesto)",
+            "type": "array"
+        },
+        "Intereses": {
+            "key": "Intereses",
+            "description": "Intereses",
+            "type": "array"
+        },
+        "Habilidades": {
+            "key": "Habilidades",
+            "description": "Habilidades",
+            "type": "array"
+        },
+        "Residencias": {
+            "key": "Residencias",
+            "description": "Residencias o lugares de vivienda",
+            "type": "array"
+        }
+    }
+}

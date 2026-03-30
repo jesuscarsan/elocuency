@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApplyTemplateUseCase, ApplyTemplateRequest } from './ApplyTemplateUseCase';
+import { ApplyTemplateAIUseCase, ApplyTemplateRequest } from './ApplyTemplateAIUseCase';
 import { NoteRepositoryPort } from '../../domain/ports/NoteRepositoryPort';
 import { TemplateCachePort, TemplateInfo } from '../../domain/ports/TemplateCachePort';
 import { LLMServicePort } from '../../domain/ports/LLMServicePort';
@@ -8,13 +8,13 @@ import { PersonasNoteOrganizer } from '../services/PersonasNoteOrganizer';
 import { Note } from '../../domain/Entities/Note';
 import * as path from 'path';
 
-describe('ApplyTemplateUseCase Data Preservation', () => {
+describe('ApplyTemplateAIUseCase Data Preservation', () => {
   let noteRepository: NoteRepositoryPort;
   let templateCache: TemplateCachePort;
   let llmService: LLMServicePort;
   let imageSearch: ImageSearchPort;
   let personasOrganizer: PersonasNoteOrganizer;
-  let useCase: ApplyTemplateUseCase;
+  let useCase: ApplyTemplateAIUseCase;
 
   beforeEach(() => {
     noteRepository = {
@@ -47,7 +47,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
       debug: vi.fn(),
     } as any;
 
-    useCase = new ApplyTemplateUseCase(
+    useCase = new ApplyTemplateAIUseCase(
       noteRepository,
       templateCache,
       llmService,
@@ -71,7 +71,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
 
     const templateContent = '---\ntags: [new-tag]\nCategory: TemplateCat\nNewField: Value\n---\nTemplate Boilerplate';
     const templateNote = new Note(
-      '!!metadata/templates/Persona.md',
+      '!!config/templates/Persona.md',
       'Persona',
       templateContent,
       [],
@@ -82,7 +82,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
 
     vi.mocked(noteRepository.getNoteById).mockImplementation((id) => {
       if (id === 'notes/my-note.md') return Promise.resolve(targetNote);
-      if (id === '!!metadata/templates/Persona.md') return Promise.resolve(templateNote);
+      if (id === '!!config/templates/Persona.md') return Promise.resolve(templateNote);
       return Promise.resolve(null);
     });
 
@@ -104,7 +104,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
     expect(savedNote.content).toContain('NewField: Value'); // Added
     expect(savedNote.content).toContain('Template Boilerplate'); // Prepended
     expect(savedNote.content).toContain('Existing body content'); // Appended
-    
+
     // Check tags (merged)
     expect(savedNote.content).toContain('old-tag');
     expect(savedNote.content).toContain('new-tag');
@@ -125,7 +125,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
 
     const templateContent = '---\n"!!commands": [ApplyPromptCommand]\n"!!prompt": "enrich this"\n---\nTemplate structure';
     const templateNote = new Note(
-      '!!metadata/templates/Persona.md',
+      '!!config/templates/Persona.md',
       'Persona',
       templateContent,
       [],
@@ -136,14 +136,14 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
 
     vi.mocked(noteRepository.getNoteById).mockImplementation((id) => {
       if (id === 'notes/my-note.md') {
-          // Second call in executePromptLogic returns the note after initial merge
-          if (vi.mocked(noteRepository.saveNote).mock.calls.length > 0) {
-              const firstSave = vi.mocked(noteRepository.saveNote).mock.calls[0][0] as Note;
-              return Promise.resolve(firstSave);
-          }
-          return Promise.resolve(targetNote);
+        // Second call in executePromptLogic returns the note after initial merge
+        if (vi.mocked(noteRepository.saveNote).mock.calls.length > 0) {
+          const firstSave = vi.mocked(noteRepository.saveNote).mock.calls[0][0] as Note;
+          return Promise.resolve(firstSave);
+        }
+        return Promise.resolve(targetNote);
       }
-      if (id === '!!metadata/templates/Persona.md') return Promise.resolve(templateNote);
+      if (id === '!!config/templates/Persona.md') return Promise.resolve(templateNote);
       return Promise.resolve(null);
     });
 
@@ -190,7 +190,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
 
     const templateContent = '---\n"!!commands": [ApplyPromptCommand]\n"!!prompt": "enrich"\n---\n';
     const templateNote = new Note(
-      '!!metadata/templates/Persona.md',
+      '!!config/templates/Persona.md',
       'Persona',
       templateContent,
       [],
@@ -201,7 +201,7 @@ describe('ApplyTemplateUseCase Data Preservation', () => {
 
     vi.mocked(noteRepository.getNoteById).mockImplementation((id) => {
       if (id === 'notes/my-note.md') return Promise.resolve(targetNote);
-      if (id === '!!metadata/templates/Persona.md') return Promise.resolve(templateNote);
+      if (id === '!!config/templates/Persona.md') return Promise.resolve(templateNote);
       return Promise.resolve(null);
     });
 

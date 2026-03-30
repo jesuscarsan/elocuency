@@ -15,6 +15,6 @@ export interface VectorDbPort {
   init(): Promise<void>;
   addDocuments(documents: VectorDocument[]): Promise<void>;
   search(query: string, limit?: number): Promise<VectorSearchResult[]>;
-  deleteDocument(id: string): Promise<void>;
+  deleteNoteDocuments(noteId: string): Promise<void>;
   close(): Promise<void>;
 }

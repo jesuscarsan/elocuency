@@ -1,6 +1,5 @@
 import { App, TFile, getAllTags, parseYaml } from 'obsidian';
 import {
-	executeInEditMode,
 	getActiveMarkdownView,
 } from '@/Infrastructure/Presentation/Obsidian/Utils/ViewMode';
 import { FrontmatterKeys, FrontmatterRegistry } from '../../Constants/FrontmatterRegistry';
@@ -18,28 +17,19 @@ export class RelocateNoteByLinkFieldCommand {
 		private readonly settings: UnresolvedLinkGeneratorSettings,
 	) { }
 
-	async execute(targetFile?: TFile): Promise<void> {
+	async execute(overrideFile?: TFile): Promise<void> {
 		console.log('[RelocateNoteByLinkFieldCommand] Start');
 
-		// Defocus any active input to prevent "removeChild" errors in Obsidian's property view
-		// when the file is moved or mode is changed while it's still processing a suggestion/blur.
-		if (document.activeElement instanceof HTMLElement) {
-			document.activeElement.blur();
-		}
-
-		// Small delay to allow Obsidian's UI to react to the blur (e.g., save properties, clean up DOM)
-		await new Promise((resolve) => window.setTimeout(resolve, 50));
-
-		const view = getActiveMarkdownView(this.app, targetFile);
+		const view = getActiveMarkdownView(this.app, overrideFile);
 		if (!view?.file) {
 			showMessage('relocate.noActiveFile', undefined, this.translationService);
 			console.log('[RelocateNoteByLinkFieldCommand] End (No active view)');
 			return;
 		}
 
-		await executeInEditMode(view, async () => {
-			const activeFile = view.file;
-			console.log('RelocateteNoteCommand: Active file', activeFile?.path);
+		const activeFile = view.file;
+		console.log('RelocateteNoteCommand: Active file', activeFile?.path);
+
 			// check again
 			if (!activeFile) return;
 
@@ -146,7 +136,7 @@ export class RelocateNoteByLinkFieldCommand {
 			// MANUAL FALLBACK: PARSE EDITOR CONTENT
 			// Use this if cache seems empty but we suspect tags might exist, or just always as a safety net
 			try {
-				const content = view.editor.getValue();
+				const content = await this.app.vault.read(activeFile);
 				const match = content.match(/^---\n([\s\S]*?)\n---/);
 				if (match) {
 					const yamlRaw = match[1];
@@ -190,7 +180,7 @@ export class RelocateNoteByLinkFieldCommand {
 
 			console.log('RelocateNote: determined suffix:', targetFolderSuffix);
 
-			const isTargetLugar = targetFolder.path.startsWith(this.settings.locationsFolder);
+			const isTargetLugar = targetFolder.path.startsWith(this.settings.memory.worldPath);
 
 			let finalFolderPath = targetFolder.path;
 
@@ -229,7 +219,7 @@ export class RelocateNoteByLinkFieldCommand {
 				console.error(error);
 				showMessage('relocate.moveError', { error: String(error) }, this.translationService);
 			}
-		});
+
 		console.log('[RelocateNoteByLinkFieldCommand] End');
 	}
 }

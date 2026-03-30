@@ -1,10 +1,11 @@
 import { VectorDbPort, VectorDocument, VectorSearchResult } from '../../../domain/ports/VectorDbPort';
 import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
-import { PoolConfig } from 'pg';
+import { Pool, PoolConfig } from 'pg';
 
 export interface PgVectorConfig {
-  connectionString: string;
+  connectionString?: string;
+  pool?: Pool;
   apiKey: string;
   embeddingModel?: string;
   tableName?: string;
@@ -26,20 +27,33 @@ export class PgVectorDbAdapter implements VectorDbPort {
       model: this.config.embeddingModel || 'models/gemini-embedding-2-preview',
     });
 
-    const poolConfig: PoolConfig = {
-      connectionString: this.config.connectionString,
-    };
+    if (this.config.pool) {
+      this.vectorStore = await PGVectorStore.initialize(embeddings, {
+        pool: this.config.pool,
+        tableName: this.config.tableName || 'langchain_pg_embedding',
+        columns: {
+          idColumnName: 'id',
+          vectorColumnName: 'embedding',
+          contentColumnName: 'document',
+          metadataColumnName: 'cmetadata',
+        },
+      });
+    } else {
+      const poolConfig: PoolConfig = {
+        connectionString: this.config.connectionString,
+      };
 
-    this.vectorStore = await PGVectorStore.initialize(embeddings, {
-      postgresConnectionOptions: poolConfig,
-      tableName: this.config.tableName || 'langchain_pg_embedding',
-      columns: {
-        idColumnName: 'id',
-        vectorColumnName: 'embedding',
-        contentColumnName: 'document',
-        metadataColumnName: 'cmetadata',
-      },
-    });
+      this.vectorStore = await PGVectorStore.initialize(embeddings, {
+        postgresConnectionOptions: poolConfig,
+        tableName: this.config.tableName || 'langchain_pg_embedding',
+        columns: {
+          idColumnName: 'id',
+          vectorColumnName: 'embedding',
+          contentColumnName: 'document',
+          metadataColumnName: 'cmetadata',
+        },
+      });
+    }
   }
 
   public async addDocuments(documents: VectorDocument[]): Promise<void> {
@@ -66,9 +80,20 @@ export class PgVectorDbAdapter implements VectorDbPort {
     }));
   }
 
-  public async deleteDocument(id: string): Promise<void> {
+  public async deleteNoteDocuments(noteId: string): Promise<void> {
     await this.ensureInitialized();
-    await this.vectorStore!.delete({ ids: [id] });
+    // Raw SQL to delete by metadata path
+    const tableName = this.config.tableName || 'langchain_pg_embedding';
+    // We access the pool through the vectorStore's internal pool if possible, 
+    // but better use a query on the vectorStore if it supports it.
+    // PGVectorStore doesn't expose a clean "delete by metadata" in its public API easily, 
+    // so we use the internal pool (which is in pgvector's connection pool)
+    
+    // @ts-ignore - access internal pool for direct delete
+    const pool = (this.vectorStore as any).pool;
+    if (pool) {
+      await pool.query(`DELETE FROM ${tableName} WHERE cmetadata->>'path' = $1`, [noteId]);
+    }
   }
 
   public async close(): Promise<void> {

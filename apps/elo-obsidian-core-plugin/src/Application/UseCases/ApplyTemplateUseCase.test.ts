@@ -75,7 +75,7 @@ describe('ApplyTemplateUseCase', () => {
 		networkPort.postJson.mockResolvedValue({ status: 'success', notePath: 'test.md' });
 
 		const mockMatch = {
-			template: { path: '!!metadata/templates/T1', basename: 'T1', content: '', config: {} },
+			template: { path: '!!config/templates/T1', basename: 'T1', content: '', config: {} },
 			score: 1
 		};
 

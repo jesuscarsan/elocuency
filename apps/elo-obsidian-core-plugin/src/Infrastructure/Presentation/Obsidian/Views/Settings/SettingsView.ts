@@ -83,14 +83,14 @@ export class SettingsView extends PluginSettingTab {
 			});
 
 		new Setting(containerEl)
-			.setName(t('settings.locationsFolderName'))
-			.setDesc(t('settings.locationsFolderDesc'))
+			.setName(t('settings.worldMemoryPathName'))
+			.setDesc(t('settings.worldMemoryPathDesc'))
 			.addText((text: TextComponent) => {
 				text
 					.setPlaceholder('Mi mundo')
-					.setValue(this.plugin.settings.locationsFolder)
+					.setValue(this.plugin.settings.memory.worldPath)
 					.onChange(async (value: string) => {
-						this.plugin.settings.locationsFolder = value.trim();
+						this.plugin.settings.memory.worldPath = value.trim();
 						await this.plugin.saveSettings();
 					});
 			});

@@ -1,9 +1,12 @@
-import { IntentAnalyzerPort } from '../../domain/ports/IntentAnalyzerPort';
-import { SpecialistProcessorPort } from '../../domain/ports/SpecialistProcessorPort';
+import { ChatSessionRepositoryPort } from '../../domain/ports/ChatSessionRepositoryPort';
 import { LoggerPort } from '../../domain/ports/LoggerPort';
+import { MasterConversationGraph } from '../../infrastructure/OutAdapters/LangGraph/MasterConversationGraph';
+import { ChatSession } from '../../domain/Entities/ChatSession';
+import { randomUUID } from 'crypto';
 
 export interface RouteChatMessageRequest {
   message: string;
+  userId: string;
 }
 
 export interface RouteChatMessageResponse {
@@ -13,21 +16,41 @@ export interface RouteChatMessageResponse {
 
 export class RouteChatMessageUseCase {
   constructor(
-    private readonly intentAnalyzer: IntentAnalyzerPort,
-    private readonly specialistProcessor: SpecialistProcessorPort,
+    private readonly masterGraph: MasterConversationGraph,
+    private readonly chatSessionRepository: ChatSessionRepositoryPort,
     private readonly logger: LoggerPort
   ) {}
 
-
   public async execute(request: RouteChatMessageRequest): Promise<RouteChatMessageResponse> {
-    // 1. Analyze the core intent of the message
-    const chatIntent = await this.intentAnalyzer.analyze(request.message);
+    // 1. Retrieve or create chat session
+    let session = await this.chatSessionRepository.findByUserId(request.userId);
+    if (!session) {
+      session = new ChatSession(randomUUID(), request.userId);
+    }
 
-    // 2. Route the execution to the assigned specialist sub-graph/chain
-    const response = await this.specialistProcessor.process(chatIntent, request.message);
+    const history = [...session.getMessages()]; // Spread to convert readonly to mutable array
+
+    // 2. Execute Master Conversation Graph
+    const graph = this.masterGraph.createGraph();
+    const config = { configurable: { thread_id: request.userId } };
+
+    const result = await graph.invoke({
+      input: request.message,
+      history: history,
+      userId: request.userId,
+      status: 'analyzing'
+    }, config);
+
+    console.log(`[UseCase] Graph Result:`, JSON.stringify(result));
+    const response = result.response || `[ERROR]: No response generated.`;
+
+    // 3. Update session history
+    session.addMessage('user', request.message);
+    session.addMessage('assistant', response);
+    await this.chatSessionRepository.save(session);
 
     return {
-      intent: chatIntent.intent,
+      intent: result.intent || 'unknown',
       response,
     };
   }

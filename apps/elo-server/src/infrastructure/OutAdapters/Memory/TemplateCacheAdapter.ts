@@ -9,11 +9,11 @@ export class TemplateCacheAdapter implements TemplateCachePort {
   private readonly cacheFile: string;
 
   constructor(
-    memoryPath: string, 
+    memoryPath: string,
     workspacePath: string,
     private readonly logger: LoggerPort
   ) {
-    this.templatesDir = path.join(memoryPath, '!!metadata', 'templates');
+    this.templatesDir = path.join(memoryPath, '!!config', 'templates');
     this.cacheFile = path.join(workspacePath, 'templates.json');
 
     if (!fs.existsSync(workspacePath)) {
@@ -34,12 +34,12 @@ export class TemplateCacheAdapter implements TemplateCachePort {
       try {
         const raw = fs.readFileSync(filePath, 'utf-8');
         const parsed = matter(raw);
-        
+
         const description = parsed.data['!!description'];
-        
+
         // Only add to cache if it has a description
         if (description && typeof description === 'string') {
-          // Store path relative to !!metadata/templates or MEMORY_PATH
+          // Store path relative to !!config/templates or MEMORY_PATH
           const relativePath = path.relative(this.templatesDir, filePath);
           templates.push({
             template: relativePath,

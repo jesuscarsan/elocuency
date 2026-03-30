@@ -4,6 +4,7 @@ export enum ChatCategory {
   WebSearch = 'web_search',
   ExecuteAction = 'execute_action',
   GeneralChat = 'general_chat',
+  CreateNote = 'create_note',
 }
 
 export interface ChatIntent {

@@ -13,7 +13,7 @@ export class LocationPathBuilder {
         placeName: string,
         details: GeocodingResponse,
         metadata: PlaceMetadata,
-        locationsFolder: string = 'Mi mundo'
+        worldPath: string = 'Mi mundo'
     ): string {
         const municipio = details.municipality?.trim();
         const provincia = details.province?.trim();
@@ -24,8 +24,8 @@ export class LocationPathBuilder {
 
         const { continent, isRegionFamous } = metadata;
 
-        // Base path: LocationsFolder/Continente/País
-        const parts = [locationsFolder, continent, pais];
+        // Base path: worldPath/Continente/País
+        const parts = [worldPath, continent, pais];
 
         // Region logic
         if (region) parts.push(region);

@@ -30,7 +30,7 @@ export interface ApplyTemplateResponse {
   commands?: string[];
 }
 
-export class ApplyTemplateUseCase {
+export class ApplyTemplateAIUseCase {
   constructor(
     private readonly noteRepository: NoteRepositoryPort,
     private readonly templateCache: TemplateCachePort,
@@ -38,7 +38,7 @@ export class ApplyTemplateUseCase {
     private readonly imageSearch: ImageSearchPort,
     private readonly personasOrganizer: PersonasNoteOrganizer,
     private readonly logger: LoggerPort,
-  ) {}
+  ) { }
 
   async execute(request: ApplyTemplateRequest): Promise<ApplyTemplateResponse> {
     const note = await this.noteRepository.getNoteById(request.targetNotePath);
@@ -72,7 +72,8 @@ export class ApplyTemplateUseCase {
     templateInfo: TemplateInfo,
     predefinedPromptUrl?: string,
   ): Promise<ApplyTemplateResponse> {
-    const fullTemplateId = path.join('!!metadata/templates', templateInfo.template);
+    const initialConceptName = path.basename(notePath, '.md');
+    const fullTemplateId = path.join('!!config/templates', templateInfo.template);
     const templateNote = await this.noteRepository.getNoteById(fullTemplateId);
 
     if (!templateNote) {
@@ -96,7 +97,7 @@ export class ApplyTemplateUseCase {
       const targetPath = config.path.endsWith('.md')
         ? config.path
         : `${config.path.replace(/\/$/, '')}/${path.basename(currentNote.id)}`;
-      
+
       if (currentNotePath !== targetPath) {
         await this.noteRepository.renameNote(currentNotePath, targetPath);
         currentNotePath = targetPath;
@@ -138,8 +139,8 @@ export class ApplyTemplateUseCase {
       }
     }
 
-    if (config.desambiguationSufix && typeof config.desambiguationSufix === 'string') {
-      currentNotePath = await this.applyDisambiguationSuffix(currentNotePath, config.desambiguationSufix);
+    if (config.titlePattern && typeof config.titlePattern === 'string') {
+      currentNotePath = await this.applyTitlePattern(currentNotePath, config.titlePattern, initialConceptName);
     }
 
     return {
@@ -165,12 +166,12 @@ export class ApplyTemplateUseCase {
     const title = filename.endsWith('.md') ? filename.slice(0, -3) : filename;
 
     const images = await this.imageSearch.searchImages(title, 3);
-    
+
     if (images.length > 0) {
       finalFm['!!images'] = images;
       const frontmatterBlock = formatFrontmatterBlock(finalFm);
       const finalContent = [frontmatterBlock, split.body].filter(Boolean).join('\n\n');
-      
+
       const updatedNote = new Note(
         currentNotePath,
         finalNote.title,
@@ -265,7 +266,7 @@ export class ApplyTemplateUseCase {
 
     const fmTags = finalFm['tags'] || finalFm['Tags'] || finalFm['tag'];
     let fmTagList = Array.isArray(fmTags) ? fmTags : fmTags ? [fmTags] : [];
-    
+
     const allTags = [...(finalNote.tags || []), ...fmTagList];
     const normalizedTags = new Set(
       allTags
@@ -296,7 +297,7 @@ export class ApplyTemplateUseCase {
 
     const newPath = finalFolderPath ? `${finalFolderPath}/${activeFileName}` : activeFileName;
     await this.noteRepository.renameNote(currentNotePath, newPath);
-    
+
     return newPath;
   }
 
@@ -311,7 +312,7 @@ export class ApplyTemplateUseCase {
       const configStr = require('fs').readFileSync(configPath, 'utf8');
       try {
         eloConfig = JSON.parse(configStr.replace(/,\s*([\]}])/g, '$1'));
-      } catch(e) {}
+      } catch (e) { }
     }
 
     const registry = eloConfig.frontmatterRegistry || {};
@@ -369,7 +370,7 @@ export class ApplyTemplateUseCase {
 
           const finalTmplBlock = formatFrontmatterBlock(tmplFm);
           const newContent = [finalTmplBlock, tmplSplit.body].filter(Boolean).join('\n\n');
-          
+
           targetNote = new Note(newFilePath, name, newContent, [], new Date(), new Date(), {});
           await this.noteRepository.saveNote(targetNote);
           allNotes.push(targetNote);
@@ -400,7 +401,7 @@ export class ApplyTemplateUseCase {
         for (const fileId of processedFiles) {
           const noteObj = allNotes.find(n => n.id === fileId);
           if (!noteObj) continue;
-          
+
           const others = processedFiles.filter(fid => fileId !== fid);
           for (const otherId of others) {
             const otherName = path.basename(otherId).replace('.md', '');
@@ -452,49 +453,61 @@ export class ApplyTemplateUseCase {
 
     const frontmatterBlock = formatFrontmatterBlock(fm);
     const finalContent = [frontmatterBlock, split.body].filter(Boolean).join('\n\n');
-    
+
     const updatedNote = new Note(
-        noteLoc.id,
-        noteLoc.title,
-        finalContent,
-        noteLoc.tags,
-        noteLoc.createdDate,
-        new Date(),
-        noteLoc.properties
+      noteLoc.id,
+      noteLoc.title,
+      finalContent,
+      noteLoc.tags,
+      noteLoc.createdDate,
+      new Date(),
+      noteLoc.properties
     );
     await this.noteRepository.saveNote(updatedNote);
   }
 
-  private async applyDisambiguationSuffix(currentNotePath: string, suffixTemplate: string): Promise<string> {
+  private async applyTitlePattern(currentNotePath: string, pattern: string, conceptName: string): Promise<string> {
     const finalNote = await this.noteRepository.getNoteById(currentNotePath);
     if (!finalNote) return currentNotePath;
 
     const split = splitFrontmatter(finalNote.content);
     const finalFm = parseFrontmatter(split.frontmatterText) || {};
 
-    let suffix = suffixTemplate;
-    const matches = suffix.match(/\[(.*?)\]/g);
+    let newTitle = pattern.replace(/{concept}/gi, conceptName);
+
+    const matches = newTitle.match(/\{(.*?)\}/g);
     if (matches) {
       for (const match of matches) {
         const field = match.slice(1, -1);
-        const value = finalFm[field] === undefined || finalFm[field] === null ? '' : finalFm[field];
-        suffix = suffix.replace(match, String(value));
+        const rawValue = finalFm[field] === undefined || finalFm[field] === null ? '' : finalFm[field];
+
+        let cleanValue = '';
+        if (Array.isArray(rawValue) && rawValue.length > 0) cleanValue = String(rawValue[0]);
+        else if (typeof rawValue === 'string') cleanValue = rawValue;
+
+        // Clean obsidian links: "[[Value|Alias]]" -> "Value"
+        cleanValue = cleanValue.replace(/\[\[(.*?)\]\]/g, (m, inner) => inner.split('|')[0]).trim();
+
+        newTitle = newTitle.replace(match, cleanValue);
       }
     }
 
-    suffix = suffix.trim();
-    if (suffix) {
-      const folderPath = currentNotePath.includes('/') ? currentNotePath.substring(0, currentNotePath.lastIndexOf('/')) : '';
-      const filename = currentNotePath.split('/').pop() || '';
-      const baseName = filename.endsWith('.md') ? filename.slice(0, -3) : filename;
+    // Cleanup potential artifact dashes/spaces if fields were missing inside the pattern
+    newTitle = newTitle.replace(/\s+-\s+(?=-|\)|$)/g, ' ').replace(/\(\s*-\s*/g, '(').trim();
 
-      const newBaseName = `${baseName} (${suffix})`;
-      const newPath = folderPath ? `${folderPath}/${newBaseName}.md` : `${newBaseName}.md`;
+    // Cleanup any empty parentheses like () or ( ) if everything inside was empty
+    newTitle = newTitle.replace(/\s*\(\s*\)$/, '').trim();
 
-      if (newPath !== currentNotePath) {
-        await this.noteRepository.renameNote(currentNotePath, newPath);
-        return newPath;
-      }
+    if (!newTitle) newTitle = conceptName; // Fallback just in case
+
+    const sanitizedTitle = newTitle.replace(/[\\/:*?"<>|\n\r]/g, '');
+
+    const folderPath = currentNotePath.includes('/') ? currentNotePath.substring(0, currentNotePath.lastIndexOf('/')) : '';
+    const newPath = folderPath ? `${folderPath}/${sanitizedTitle}.md` : `${sanitizedTitle}.md`;
+
+    if (newPath !== currentNotePath) {
+      await this.noteRepository.renameNote(currentNotePath, newPath);
+      return newPath;
     }
     return currentNotePath;
   }
@@ -540,7 +553,7 @@ export class ApplyTemplateUseCase {
         let enrichment: any = null;
         try {
           enrichment = JSON.parse(enrichmentStr);
-        } catch(e) {
+        } catch (e) {
           this.logger.error("Failed to parse LLM JSON response");
         }
 
