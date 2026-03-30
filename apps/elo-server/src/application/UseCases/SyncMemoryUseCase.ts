@@ -81,12 +81,14 @@ export class SyncMemoryUseCase {
         [{ path: note.id, source: note.id, title: note.title, tags: note.tags }]
       );
 
+      let chunkIndex = 0;
       for (const chunk of chunks) {
         documents.push({
-          id: `${note.id}::${documents.length}`,
+          id: `${note.id}::${chunkIndex}`,
           content: chunk.pageContent,
           metadata: chunk.metadata as Record<string, unknown>,
         });
+        chunkIndex++;
       }
     }
 

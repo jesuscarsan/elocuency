@@ -551,14 +551,11 @@ export class FastifyServer {
 
       if (currentDbVersion < LATEST_DB_VERSION) {
         const errorMsg = `[FATAL] Database version mismatch! (Code: ${LATEST_DB_VERSION}, Config: ${currentDbVersion}).\n\nPlease run 'elo server update' to migrate the database schema before starting the server.`;
-        console.error('\n' + '='.repeat(80));
-        console.error(errorMsg);
-        console.error('='.repeat(80) + '\n');
         this.logger.error(errorMsg);
         process.exit(1);
       }
 
-      console.log('DEBUG: Initializing Shared Adapters...');
+      this.logger.info('[FastifyServer] Initializing shared adapters...');
 
       this.taskQueue = new PgTaskQueueAdapter(this.pool!, this.logger);
       await this.taskQueue.init();
@@ -606,9 +603,13 @@ export class FastifyServer {
         this.baseLLM
       );
 
-      this.masterGraph = new MasterConversationGraph(this.baseLLM, this.vectorDb, this.generateNoteAI, this.logger);
+      const webSearch = new GoogleWebSearchAdapter(
+        process.env.GOOGLE_SEARCH_API_KEY || '',
+        process.env.GOOGLE_SEARCH_ENGINE_ID || ''
+      );
+      this.masterGraph = new MasterConversationGraph(this.baseLLM, this.vectorDb, webSearch, this.generateNoteAI, this.logger);
 
-      console.log('DEBUG: Server components initialized successfully.');
+      this.logger.info('[FastifyServer] Server components initialized successfully.');
 
       // 2. Run Task Worker in background (don't await)
       this.startTaskWorker().catch((err: any) => {

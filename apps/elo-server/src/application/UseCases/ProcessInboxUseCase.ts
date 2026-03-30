@@ -95,7 +95,13 @@ CRITICAL RULES:
 2. "body" should be lean, factual markdown text.
 3. "titlePattern" should be the definitive Obsidian filename based on semantic rules.`;
 
-        const res = await formatter.invoke(systemPrompt);
+        let res: { titlePattern: string; frontmatterJson: string; body: string };
+        try {
+          res = await formatter.invoke(systemPrompt);
+        } catch (e) {
+          this.logger.error(`[ProcessInbox] LLM formatting failed for ${concept.name}: ${e}`);
+          continue;
+        }
 
         // Step 6: Create and Relocate Semantic Note
         let parsedFrontmatter: Record<string, any> = {};
@@ -126,7 +132,12 @@ CRITICAL RULES:
           newNoteFM
         );
 
-        await this.noteRepository.saveNote(semanticNote);
+        try {
+          await this.noteRepository.saveNote(semanticNote);
+        } catch (e) {
+          this.logger.error(`[ProcessInbox] Failed to save note ${finalPath}: ${e}`);
+          continue;
+        }
         generatedNotes.push({ finalPath, title: sanitizedTitle, templatePath: bestCandidate.templatePath });
 
         // Enqueue Apply Template to normalize and relocate
@@ -180,8 +191,13 @@ ${templatesStr}
 
 For each entity, determine its type and list the best template candidates from the list above.`;
 
-    const res = await extractor.invoke(prompt);
-    return res.concepts;
+    try {
+      const res = await extractor.invoke(prompt);
+      return res.concepts;
+    } catch (e) {
+      this.logger.error(`[ProcessInbox] Entity extraction LLM call failed: ${e}`);
+      return [];
+    }
   }
 
   private async getTemplateFields(templatePath: string): Promise<string[]> {

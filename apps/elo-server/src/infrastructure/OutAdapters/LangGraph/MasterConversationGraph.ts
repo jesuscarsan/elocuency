@@ -5,6 +5,7 @@ import { ChatMessage } from '../../../domain/Entities/ChatSession';
 import { ChatIntent, ChatCategory } from '../../../domain/Entities/ChatIntent';
 import { LoggerPort } from '../../../domain/ports/LoggerPort';
 import { VectorDbPort } from '../../../domain/ports/VectorDbPort';
+import { WebSearchPort } from '../../../domain/ports/WebSearchPort';
 import { GenerateNoteAIUseCase } from '../../../application/UseCases/GenerateNoteAIUseCase';
 import { ROUTER_SYSTEM_PROMPT } from '../../Prompts/IntentAnalyzerPrompts';
 import { ASK_OBSIDIAN_PROMPT, GENERAL_CHAT_PROMPT } from '../../Prompts/SpecialistProcessorPrompts';
@@ -36,6 +37,7 @@ export class MasterConversationGraph {
   constructor(
     private readonly llm: BaseChatModel,
     private readonly vectorDb: VectorDbPort,
+    private readonly webSearch: WebSearchPort,
     private readonly generateNoteAIUseCase: GenerateNoteAIUseCase,
     private readonly logger: LoggerPort
   ) {}
@@ -70,7 +72,7 @@ export class MasterConversationGraph {
       history: formattedHistory
     });
 
-    console.log(`[MasterGraph] analyzeIntent Result:`, JSON.stringify(result));
+    this.logger.debug(`[MasterGraph] analyzeIntent Result: ${JSON.stringify(result)}`);
     const trace = `[Analyze] Intent: ${result.intent} | Context: ${result.extracted_context}`;
     this.logger.info(`[MasterGraph] ${trace}`);
 
@@ -150,6 +152,28 @@ export class MasterConversationGraph {
   }
 
   /**
+   * Node: web_search
+   * Performs a web search and returns formatted results.
+   */
+  private async webSearchAction(state: MasterConversationStateType) {
+    const query = state.extractedContext || state.input;
+    const trace = `[WebSearch] Searching for: "${query}"`;
+    this.logger.info(`[MasterGraph] ${trace}`);
+
+    try {
+      const results = await this.webSearch.search(query, 5);
+      const formatted = results.map(r => `**${r.title}**\n${r.snippet}\n${r.link}`).join('\n\n');
+      const response = results.length > 0 ? formatted : 'No results found.';
+      const traceRes = `[WebSearch] Returned ${results.length} results.`;
+      this.logger.info(`[MasterGraph] ${traceRes}`);
+      return { response, status: 'completed' as const, traces: [trace, traceRes] };
+    } catch (e) {
+      this.logger.error(`[MasterGraph] WebSearch failed: ${e}`);
+      return { response: 'Web search failed. Please try again later.', status: 'error' as const, traces: [trace] };
+    }
+  }
+
+  /**
    * Node: general_chat
    * Standard LLM response.
    */
@@ -168,7 +192,7 @@ export class MasterConversationGraph {
     
     const res = await this.llm.invoke(messages);
     const contentText = typeof res.content === 'string' ? res.content : JSON.stringify(res.content);
-    console.log(`[MasterGraph] general_chat LLM Response:`, contentText.substring(0, 100));
+    this.logger.debug(`[MasterGraph] general_chat LLM Response: ${contentText.substring(0, 100)}`);
     
     const traceRes = `[GeneralChat] Generated standard LLM response (${contentText.substring(0, 50)}...)`;
     this.logger.info(`[MasterGraph] ${traceRes}`);
@@ -187,24 +211,31 @@ export class MasterConversationGraph {
       .addNode('analyze_intent', this.analyzeIntent.bind(this))
       .addNode('memory_qa', this.memoryQAAction.bind(this))
       .addNode('create_note', this.createNoteAction.bind(this))
+      .addNode('web_search', this.webSearchAction.bind(this))
       .addNode('general_chat', this.generalChatAction.bind(this))
-      
+
       .addEdge(START, 'analyze_intent')
-      
+
       .addConditionalEdges('analyze_intent', (state) => {
         switch (state.intent) {
           case ChatCategory.AskMemory:
             return 'memory_qa';
           case ChatCategory.CreateNote:
-          case ChatCategory.ModifyMemory: // FIX: Both route to create_note
+          case ChatCategory.ModifyMemory:
             return 'create_note';
+          case ChatCategory.WebSearch:
+            return 'web_search';
+          case ChatCategory.ExecuteAction:
+            this.logger.warn('[MasterGraph] ExecuteAction not implemented, falling back to general_chat');
+            return 'general_chat';
           default:
             return 'general_chat';
         }
       })
-      
+
       .addEdge('memory_qa', END)
       .addEdge('create_note', END)
+      .addEdge('web_search', END)
       .addEdge('general_chat', END);
 
     return workflow.compile({ checkpointer });
