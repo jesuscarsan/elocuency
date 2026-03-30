@@ -15,6 +15,27 @@ import { mergeNotes, mergeBodyContent } from '../../domain/Utils/NoteMerger';
 import { extractConfigFromTemplate } from '../../domain/Utils/TemplateConfig';
 import { ApplyTemplatePrompts } from '../../infrastructure/Prompts/ApplyTemplatePrompts';
 import * as path from 'path';
+import * as fs from 'fs';
+
+interface RegistryEntry {
+  key: string;
+  isRelocateField?: boolean;
+  relocatePriority?: number;
+  reciprocityField?: string;
+  amongField?: string;
+}
+
+interface EloConfig {
+  frontmatterRegistry?: Record<string, RegistryEntry>;
+  tagFolderMapping?: Record<string, string>;
+  myWorldPath?: { placesTagsNameStart?: string; worldMemoryPath?: string };
+  memory?: { worldPath?: string };
+}
+
+interface LLMEnrichment {
+  frontmatter?: Record<string, unknown>;
+  body?: string;
+}
 
 export interface ApplyTemplateRequest {
   targetNotePath: string;
@@ -150,6 +171,19 @@ export class ApplyTemplateAIUseCase {
     };
   }
 
+  private loadEloConfig(): EloConfig {
+    const workspacePath = process.env.ELO_WORKSPACE_PATH || '';
+    const configPath = path.join(workspacePath, 'elo-config.json');
+    if (!fs.existsSync(configPath)) return {};
+    try {
+      const sanitized = fs.readFileSync(configPath, 'utf8').replace(/,\s*([\]}])/g, '$1');
+      return JSON.parse(sanitized) as EloConfig;
+    } catch (e) {
+      this.logger.error(`ApplyTemplateUseCase config parse error: ${e}`);
+      return {};
+    }
+  }
+
   private async executeAddImagesLogic(currentNotePath: string): Promise<string> {
     const finalNote = await this.noteRepository.getNoteById(currentNotePath);
     if (!finalNote) return currentNotePath;
@@ -194,21 +228,10 @@ export class ApplyTemplateAIUseCase {
     const split = splitFrontmatter(finalNote.content);
     const finalFm = parseFrontmatter(split.frontmatterText) || {};
 
-    const workspacePath = process.env.ELO_WORKSPACE_PATH || '';
-    const configPath = path.join(workspacePath, 'elo-config.json');
-    let eloConfig: any = {};
-    if (require('fs').existsSync(configPath)) {
-      const configStr = require('fs').readFileSync(configPath, 'utf8');
-      const sanitizedStr = configStr.replace(/,\s*([\]}])/g, '$1');
-      try {
-        eloConfig = JSON.parse(sanitizedStr);
-      } catch (e) {
-        this.logger.error(`ApplyTemplateUseCase config parse error: ${e}`);
-      }
-    }
+    const eloConfig = this.loadEloConfig();
 
     const registry = eloConfig.frontmatterRegistry || {};
-    const candidateFields = Object.values(registry).filter((entry: any) => entry.isRelocateField) as any[];
+    const candidateFields = Object.values(registry).filter((e): e is RegistryEntry => !!e.isRelocateField);
 
     if (candidateFields.length === 0) return currentNotePath;
 
@@ -305,18 +328,10 @@ export class ApplyTemplateAIUseCase {
     const sourceNote = await this.noteRepository.getNoteById(currentNotePath);
     if (!sourceNote) return currentNotePath;
 
-    const workspacePath = process.env.ELO_WORKSPACE_PATH || '';
-    const configPath = path.join(workspacePath, 'elo-config.json');
-    let eloConfig: any = {};
-    if (require('fs').existsSync(configPath)) {
-      const configStr = require('fs').readFileSync(configPath, 'utf8');
-      try {
-        eloConfig = JSON.parse(configStr.replace(/,\s*([\]}])/g, '$1'));
-      } catch (e) { }
-    }
+    const eloConfig = this.loadEloConfig();
 
     const registry = eloConfig.frontmatterRegistry || {};
-    const registryEntries = Object.values(registry).filter((entry: any) => entry.reciprocityField) as any[];
+    const registryEntries = Object.values(registry).filter((e): e is RegistryEntry => !!e.reciprocityField);
 
     if (registryEntries.length === 0) return currentNotePath;
 
@@ -394,7 +409,9 @@ export class ApplyTemplateAIUseCase {
         currentContentChanged = true;
 
         // Ensure reciprocity on targetNote
-        await this.addReciprocityLinkToNote(targetNote, path.basename(sourceNote.id).replace('.md', ''), reciprocityKey);
+        if (reciprocityKey) {
+          await this.addReciprocityLinkToNote(targetNote, path.basename(sourceNote.id).replace('.md', ''), reciprocityKey);
+        }
       }
 
       if (amongKey && processedFiles.length > 1) {
@@ -443,8 +460,12 @@ export class ApplyTemplateAIUseCase {
     if (!fm[reciprocityKey]) {
       fm[reciprocityKey] = [link];
     } else {
-      let current: any[] = Array.isArray(fm[reciprocityKey]) ? fm[reciprocityKey] : [fm[reciprocityKey]];
-      const exists = current.some((v: string) => typeof v === 'string' && v.includes(targetName));
+      const current: string[] = Array.isArray(fm[reciprocityKey]) ? fm[reciprocityKey] : [fm[reciprocityKey]];
+      const normalTarget = targetName.toLowerCase();
+      const exists = current.some((v) => {
+        if (typeof v !== 'string') return false;
+        return v.replace(/\[\[|\]\]/g, '').split('|')[0].trim().toLowerCase() === normalTarget;
+      });
       if (!exists) {
         current.push(link);
       }
@@ -486,7 +507,7 @@ export class ApplyTemplateAIUseCase {
         else if (typeof rawValue === 'string') cleanValue = rawValue;
 
         // Clean obsidian links: "[[Value|Alias]]" -> "Value"
-        cleanValue = cleanValue.replace(/\[\[(.*?)\]\]/g, (m, inner) => inner.split('|')[0]).trim();
+        cleanValue = cleanValue.replace(/\[\[(.*?)\]\]/g, (_m, inner) => inner.split('|')[0]).trim();
 
         newTitle = newTitle.replace(match, cleanValue);
       }
@@ -550,7 +571,7 @@ export class ApplyTemplateAIUseCase {
         });
 
         const enrichmentStr = response.content.trim().replace(/^```json/, '').replace(/```$/, '');
-        let enrichment: any = null;
+        let enrichment: LLMEnrichment | null = null;
         try {
           enrichment = JSON.parse(enrichmentStr);
         } catch (e) {

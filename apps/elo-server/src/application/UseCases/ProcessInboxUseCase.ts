@@ -32,7 +32,16 @@ export class ProcessInboxUseCase {
       const split = splitFrontmatter(note.content);
       const fm = parseFrontmatter(split.frontmatterText) || {};
 
-      if (fm['!!status'] === 'processed') continue;
+      if (fm['!!status'] === 'processed' || fm['!!status'] === 'in-progress') continue;
+
+      // Mark as in-progress immediately so crashes don't cause duplicate reprocessing
+      fm['!!status'] = 'in-progress';
+      const inProgressNote = new Note(
+        note.id, note.title,
+        `${formatFrontmatterBlock(fm)}\n\n${split.body}`,
+        note.tags, note.createdDate, new Date(), fm
+      );
+      await this.noteRepository.saveNote(inProgressNote);
 
       this.logger.info(`[ProcessInbox] Processing context for: ${note.id}`);
       

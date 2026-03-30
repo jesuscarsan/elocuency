@@ -31,6 +31,39 @@ import { GoogleMapsGeocodingAdapter } from '../OutAdapters/Google/GoogleMapsAdap
 import { TaskType } from '../../domain/ports/TaskQueuePort';
 import { PgChatSessionRepositoryAdapter } from '../OutAdapters/Database/PgChatSessionRepositoryAdapter';
 import { LATEST_DB_VERSION } from '../Config/DbVersion';
+import { z } from 'zod';
+
+const GenerateSchema = z.object({
+  prompt: z.string().min(1, 'prompt is required'),
+  model_name: z.string().optional(),
+  json_mode: z.boolean().optional(),
+  temperature: z.number().optional(),
+});
+
+const ApplyTemplateSchema = z.object({
+  targetNotePath: z.string().min(1, 'targetNotePath is required'),
+  templateId: z.string().optional(),
+  promptUrl: z.string().url().optional(),
+});
+
+const MemoryInitSchema = z.object({
+  language: z.enum(['en', 'es']).optional(),
+});
+
+const SyncNoteSchema = z.object({
+  path: z.string().min(1, 'path is required'),
+});
+
+const AskSchema = z.object({
+  prompt: z.string().min(1, 'prompt is required'),
+  user_id: z.string().optional(),
+});
+
+const GeocodeSchema = z.object({
+  place_name: z.string().min(1, 'place_name is required'),
+  place_id: z.string().optional(),
+  language: z.string().optional(),
+});
 
 export class FastifyServer {
   private app: FastifyInstance;
@@ -114,11 +147,15 @@ export class FastifyServer {
     this.app.get('/agent/playground/', servePlayground);
 
     this.app.post('/api/ai/generate', async (request, reply) => {
-      const body = request.body as any;
-      const prompt = body.prompt;
-      let modelName = body.model_name;
-      const jsonMode = body.json_mode || false;
-      const temperature = body.temperature ?? 0.4;
+      const parsed = GenerateSchema.safeParse(request.body);
+      if (!parsed.success) {
+        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        return;
+      }
+      const prompt = parsed.data.prompt;
+      let modelName = parsed.data.model_name;
+      const jsonMode = parsed.data.json_mode || false;
+      const temperature = parsed.data.temperature ?? 0.4;
 
       if (!modelName) {
         modelName = process.env.BASIC_AI_MODEL;
@@ -164,15 +201,12 @@ export class FastifyServer {
     });
 
     this.app.post('/api/templates/apply', async (request, reply) => {
-      const body = request.body as any;
-      const targetNotePath = body.targetNotePath;
-      const templateId = body.templateId;
-      const promptUrl = body.promptUrl;
-
-      if (!targetNotePath) {
-        reply.status(400).send({ detail: "targetNotePath is required" });
+      const parsed = ApplyTemplateSchema.safeParse(request.body);
+      if (!parsed.success) {
+        reply.status(400).send({ detail: parsed.error.errors[0].message });
         return;
       }
+      const { targetNotePath, templateId, promptUrl } = parsed.data;
 
       try {
         const memoryPath = process.env.MEMORY_PATH;
@@ -254,8 +288,12 @@ export class FastifyServer {
     });
 
     this.app.post('/api/memory/init', async (request, reply) => {
-      const body = request.body as any;
-      const lang = body.language === 'en' ? 'en' : 'es';
+      const parsed = MemoryInitSchema.safeParse(request.body);
+      if (!parsed.success) {
+        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        return;
+      }
+      const lang = parsed.data.language ?? 'es';
       const fs = await import('fs');
       const path = await import('path');
 
@@ -276,19 +314,23 @@ export class FastifyServer {
     });
 
     this.app.post('/ask', async (request, reply) => {
-      process.stdout.write(`\n[TRACER] Incoming request: POST /ask from ${request.ip}\n`);
-      const body = request.body as any;
+      const parsed = AskSchema.safeParse(request.body);
+      if (!parsed.success) {
+        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        return;
+      }
+      this.logger.info(`[FastifyServer] Incoming request: POST /ask from ${request.ip}`);
       try {
         if (!this.masterGraph || !this.chatSessionRepo) {
           reply.status(503).send({ detail: 'Server is still initializing AI or Database components.' });
           return;
         }
 
-        const userId = body.user_id || (request.headers['x-user-id'] as string) || 'anonymous';
+        const userId = parsed.data.user_id || (request.headers['x-user-id'] as string) || 'anonymous';
         const useCase = new RouteChatMessageUseCase(this.masterGraph, this.chatSessionRepo, this.logger);
 
-        const result = await useCase.execute({ message: body.prompt, userId });
-        console.log(`[FastifyServer] /ask Result:`, JSON.stringify(result));
+        const result = await useCase.execute({ message: parsed.data.prompt, userId });
+        this.logger.debug(`[FastifyServer] /ask Result: ${JSON.stringify(result)}`);
         return { response: result.response, intent: result.intent };
       } catch (e: any) {
         this.logger.error(`[FastifyServer] Error in /ask: ${e.message}`, { stack: e.stack });
@@ -297,11 +339,15 @@ export class FastifyServer {
     });
 
     this.app.post('/api/geocode', async (request, reply) => {
-      const body = request.body as any;
+      const parsed = GeocodeSchema.safeParse(request.body);
+      if (!parsed.success) {
+        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        return;
+      }
       try {
         const apiKey = process.env.GOOGLE_MAPS_API_KEY || '';
         const adapter = new GoogleMapsGeocodingAdapter(apiKey);
-        const results = await adapter.geocode(body.place_name, body.place_id, body.language || 'es');
+        const results = await adapter.geocode(parsed.data.place_name, parsed.data.place_id, parsed.data.language || 'es');
         return { results };
       } catch (e: any) {
         reply.status(500).send({ detail: e.message });
@@ -309,13 +355,12 @@ export class FastifyServer {
     });
 
     this.app.post('/api/memory/sync-note', async (request, reply) => {
-      const body = request.body as any;
-      const notePath = body.path;
-
-      if (!notePath) {
-        reply.status(400).send({ detail: "notePath is required" });
+      const parsed = SyncNoteSchema.safeParse(request.body);
+      if (!parsed.success) {
+        reply.status(400).send({ detail: parsed.error.errors[0].message });
         return;
       }
+      const notePath = parsed.data.path;
 
       try {
         const { PgTaskQueueAdapter } = await import('../OutAdapters/Database/PgTaskQueueAdapter');
@@ -516,22 +561,7 @@ export class FastifyServer {
       connectionString: process.env.DATABASE_URL,
       max: 20, // Limit connections to prevent exhaustion
     });
-    console.log('[DEBUG] Shared Database Pool instance created.');
     this.logger.info('[FastifyServer] Shared Database Pool initialized.');
-
-    if (!process.env.BASIC_AI_MODEL) {
-      console.log('DEBUG: BASIC_AI_MODEL is missing!');
-      this.app.log.error("FATAL ERROR: BASIC_AI_MODEL environment variable is required but not configured.");
-      process.exit(1);
-    }
-    console.log('DEBUG: BASIC_AI_MODEL found:', process.env.BASIC_AI_MODEL);
-
-    if (!process.env.ELO_WORKSPACE_PATH) {
-      console.log('DEBUG: ELO_WORKSPACE_PATH is missing!');
-      this.app.log.error("FATAL ERROR: ELO_WORKSPACE_PATH environment variable is required but not configured.");
-      process.exit(1);
-    }
-    console.log('DEBUG: ELO_WORKSPACE_PATH found:', process.env.ELO_WORKSPACE_PATH);
 
     try {
       // 1. Initialize Singleton Adapters & AI Graph
@@ -642,13 +672,10 @@ export class FastifyServer {
         })();
       }
 
-      console.log('DEBUG: About to call app.listen with port:', port);
       await this.app.listen({ port, host: '0.0.0.0' });
-      console.log('DEBUG: app.listen() completed successfully');
       this.logger.info(`Server listening at http://localhost:${port}`);
     } catch (err: any) {
-      console.error('DEBUG: Error in start():', err);
-      this.app.log.error(err);
+      this.logger.error(`[FastifyServer] Fatal error during start: ${err.message}`);
       process.exit(1);
     }
   }
