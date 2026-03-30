@@ -149,7 +149,7 @@ export class FastifyServer {
     this.app.post('/api/ai/generate', async (request, reply) => {
       const parsed = GenerateSchema.safeParse(request.body);
       if (!parsed.success) {
-        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        reply.status(400).send({ detail: parsed.error.issues[0].message });
         return;
       }
       const prompt = parsed.data.prompt;
@@ -203,7 +203,7 @@ export class FastifyServer {
     this.app.post('/api/templates/apply', async (request, reply) => {
       const parsed = ApplyTemplateSchema.safeParse(request.body);
       if (!parsed.success) {
-        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        reply.status(400).send({ detail: parsed.error.issues[0].message });
         return;
       }
       const { targetNotePath, templateId, promptUrl } = parsed.data;
@@ -290,7 +290,7 @@ export class FastifyServer {
     this.app.post('/api/memory/init', async (request, reply) => {
       const parsed = MemoryInitSchema.safeParse(request.body);
       if (!parsed.success) {
-        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        reply.status(400).send({ detail: parsed.error.issues[0].message });
         return;
       }
       const lang = parsed.data.language ?? 'es';
@@ -316,7 +316,7 @@ export class FastifyServer {
     this.app.post('/ask', async (request, reply) => {
       const parsed = AskSchema.safeParse(request.body);
       if (!parsed.success) {
-        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        reply.status(400).send({ detail: parsed.error.issues[0].message });
         return;
       }
       this.logger.info(`[FastifyServer] Incoming request: POST /ask from ${request.ip}`);
@@ -341,7 +341,7 @@ export class FastifyServer {
     this.app.post('/api/geocode', async (request, reply) => {
       const parsed = GeocodeSchema.safeParse(request.body);
       if (!parsed.success) {
-        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        reply.status(400).send({ detail: parsed.error.issues[0].message });
         return;
       }
       try {
@@ -357,7 +357,7 @@ export class FastifyServer {
     this.app.post('/api/memory/sync-note', async (request, reply) => {
       const parsed = SyncNoteSchema.safeParse(request.body);
       if (!parsed.success) {
-        reply.status(400).send({ detail: parsed.error.errors[0].message });
+        reply.status(400).send({ detail: parsed.error.issues[0].message });
         return;
       }
       const notePath = parsed.data.path;
